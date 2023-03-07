@@ -1,7 +1,7 @@
 <template lang="pug">
 v-app.main
   v-row
-    v-col.col-3.px-0
+    v-col.col-3.pl-8.mt-2
       SideTreeview
     v-divider(vertical)
     v-col.col-9.px-0
@@ -65,9 +65,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="css">
-*{
-  overflow: hidden;
-}
-</style>
