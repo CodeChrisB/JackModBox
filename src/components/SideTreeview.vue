@@ -10,7 +10,11 @@ div
       :style="panelHeight"
       )
         v-row().my-1(v-for="game in item.children")
-          v-btn(@click="onClick(game)")
+          v-btn(
+            text
+            block
+            @click="onClick(game)"
+            )
             span() {{ game.name }}
     v-divider.mt-4
 
@@ -44,12 +48,11 @@ export default {
   computed:{
     panelHeight(){
       let count = this.panels.filter(x=>x).length
-      console.log('gap',this.items)
       //calc(100vh)/open   -panels
       //return "min-height:3000px!important;background-color:red;"
       return `
-      min-height:calc((96vh - ${this.panels.length*29}px) / ${count});
-      max-height:calc((96vh - ${this.panels.length*29}px) / ${count});
+      min-height:calc((96vh - ${this.panels.length*30}px) / ${count});
+      max-height:calc((96vh - ${this.panels.length*30}px) / ${count});
       `
     }
   },
@@ -67,13 +70,10 @@ export default {
  
     },
     onClick(e){
-      console.log(e)
-      this.$router.pass('fileviewer',{key:"surivetheinternet"})
+      this.$router.pass('fileviewer',{key:this.steamPath+ e.id})
     },
     toggle(index){
-      console.log(this.panels[index])
       this.$set(this.panels, index, !this.panels[index])
-      console.log(this.panels[index])
     }
   }
 
@@ -87,4 +87,8 @@ a{
 * .panel {
  overflow-y: auto;
 }
+
+.panel::-webkit-scrollbar{
+    display: none;
+  }
 </style>

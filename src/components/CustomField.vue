@@ -84,14 +84,12 @@ import ArrayField from './ArrayField.vue'
     },
     methods: {
       emit(){
-        console.log('customfield update')
         this.$emit('update',{content:this.templateJson,index:this.index})
       },
       firstLetterUp(str){
         return str.charAt(0).toUpperCase() + str.slice(1);
       },
       onUpdate(e,key){
-        console.log(e,key)
         this.templateJson[key] = e
         this.emit()
       },  

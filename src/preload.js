@@ -68,7 +68,8 @@ contextBridge.exposeInMainWorld("file", {
   },
   fs: fs,
   join: (arr) =>  path.join(arr),
-  isFile: (path)=> !fs.lstatSync(path).isDirectory(),
+  isFile: (path)=> !fs.lstatSync(path).isDirectory() ? 1:-1,
+  isFolder: (path)=> fs.lstatSync(path).isDirectory() ? 1:-1,
   deepReadDir: read
 });
 

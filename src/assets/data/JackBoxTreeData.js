@@ -15,7 +15,7 @@ export const GameIds = Object.freeze({
     surivetheinternet:{
         key:"surivetheinternet",
         name:"Survive The Internet",
-        id:'\\The Jackbox Party Pack 4\\games\\SurviveTheInternet\\content'
+        id:'\\The Jackbox Party Pack 4\\games\\SurviveTheInternet'
     },
     //pack 5
     //pack 6

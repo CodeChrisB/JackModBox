@@ -91,10 +91,6 @@ export default {
     genContent(){
       let base = JSON.parse(this.editor.getValue())
       base.content = this.customEditorValue
-      console.log(base)
-
-
-
       return  JSON.stringify(base, null, 2)
     },
     loadFile(){
@@ -106,7 +102,6 @@ export default {
       this.isDirty=true
     },
     onCustomEditorChanged(val){
-      console.log('Monaco Editor update',val)
       this.isDirty=true
       this.customEditorValue=val
     },  

@@ -46,10 +46,8 @@ export default {
   },
   methods:{
     onUpdate(e){
-      console.log('update in ce')
       this.internalValue.content[e.index] = e.content
       this.$emit('changed',this.internalValue.content)
-      console.log('index val',this.internalValue.content[e.index] )
     }
   },
   watch:{

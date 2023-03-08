@@ -5,6 +5,7 @@ v-app.main
       SideTreeview
     v-divider(vertical)
     v-col.col-9.px-0
+      CustomPath
       router-view
       
 
@@ -13,34 +14,16 @@ v-app.main
 <script>
 import HelloWorld from './components/HelloWorld';
 import SideTreeview from './components/SideTreeview.vue';
+import CustomPath from './components/CustomPath.vue';
 import { SETTING } from './assets/data/SettingData'
 export default {
   name: 'App',
 
   components: {
     HelloWorld,
-    SideTreeview
+    SideTreeview,
+    CustomPath
   },
-  
-  data: () => ({
-    breadCrumbs: [
-        {
-          text: 'Dashboard',
-          disabled: false,
-          href: 'breadcrumbs_dashboard',
-        },
-        {
-          text: 'Link 1',
-          disabled: false,
-          href: 'breadcrumbs_link_1',
-        },
-        {
-          text: 'Link 2',
-          disabled: true,
-          href: 'breadcrumbs_link_2',
-        },
-      ],
-  }),
   mounted() {
     //window.file.save("settings.json", "yoooo")
     this.text = window.file.getSetting(SETTING.STEAM_PATH)
@@ -50,11 +33,6 @@ export default {
       this.$router.push("settings")
     }
     
-
-    // this.jsonReader("settings.json",(err,fileData) => {
-    //   console.log(fileData)
-    // })
-
   },  
   methods: {
     writeToFileSync(filepath, content) {
