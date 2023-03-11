@@ -12,11 +12,7 @@ export const GameIds = Object.freeze({
     fibbage3:{name:"Fibbage 3",id:'\\The Jackbox Party Pack 4\\games\\Fibbage3'},
     monsterMingle:{name:"Monster Mingle",id:'\\The Jackbox Party Pack 4\\games\\MonsterMingle'},
     civic:{name:"Civic Doodle",id:'\\The Jackbox Party Pack 4\\games\\Overdrawn'},
-    surivetheinternet:{
-        key:"surivetheinternet",
-        name:"Survive The Internet",
-        id:'\\The Jackbox Party Pack 4\\games\\SurviveTheInternet'
-    },
+    surivetheinternet:{name:"Survive The Internet",id:'\\The Jackbox Party Pack 4\\games\\SurviveTheInternet'},
     //pack 5
     //pack 6
     //pack 7
@@ -24,8 +20,8 @@ export const GameIds = Object.freeze({
     drawfulAnimate:{name:'Drawful Animte',id:'\\The Jackbox Party Pack 8\\games\\DrawfulAnimate'},
     wheel:{name:'The Wheel',id:'\\The Jackbox Party Pack 8\\games\\TheWheel'},
     jobjob:{name:'Job Job',id:'\\The Jackbox Party Pack 8\\games\\JobGame'},
-    pollmine:{name:'Poll Mine',id:'\\The Jackbox Party Pack 8\\games\\??'},
-    weaponsDrawn:{name:'Weapons Drawn',id:'\\The Jackbox Party Pack 8\\games\\??'}
+    pollmine:{name:'Poll Mine',id:'\\The Jackbox Party Pack 8\\games\\SurveyBomb'},
+    weaponsDrawn:{name:'Weapons Drawn',id:'\\The Jackbox Party Pack 8\\games\\MurderDetectives'}
     //pack 9
     
 })
@@ -34,21 +30,21 @@ export const JackBoxTreeData = [
     genNode("Pack 2",2),
     genNode("Pack 3",3),
     genNode("Pack 4",4,[
-        genChildNode(GameIds.bracketeering,true),
-        genChildNode(GameIds.fibbage3,true),
-        genChildNode(GameIds.monsterMingle,true),
-        genChildNode(GameIds.civic,true),
+        genChildNode(GameIds.bracketeering),
+        genChildNode(GameIds.fibbage3),
+        genChildNode(GameIds.monsterMingle),
+        genChildNode(GameIds.civic),
         genChildNode(GameIds.surivetheinternet)
     ]),
     genNode("Pack 5",5),
     genNode("Pack 6",6),
     genNode("Pack 7",7),
     genNode("Pack 8",8,[
-        genChildNode(GameIds.drawfulAnimate,true),
-        genChildNode(GameIds.wheel,false),
-        genChildNode(GameIds.jobjob,true),
-        genChildNode(GameIds.pollmine,true),
-        genChildNode(GameIds.weaponsDrawn,true)
+        genChildNode(GameIds.drawfulAnimate),
+        genChildNode(GameIds.wheel),
+        genChildNode(GameIds.jobjob),
+        genChildNode(GameIds.pollmine),
+        genChildNode(GameIds.weaponsDrawn)
     ]),
     genNode("Pack 9",9),
 ]

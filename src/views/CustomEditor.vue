@@ -4,6 +4,7 @@ v-row.ma-1
       v-for="(obj,index) in internalValue.content"
       :obj="obj" 
       :index="index"
+      show-modded
       v-on:update="onUpdate"
     )
 

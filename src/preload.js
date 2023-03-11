@@ -1,5 +1,6 @@
 import { contextBridge } from "electron";
 import fs from "fs";
+import fse from "fs-extra"
 import path from "path";
 const deepReadDir = async (dirPath) => await Promise.all(
   (await  fs.readdir(dirPath, {withFileTypes: true})).map(async (dirent) => {
@@ -45,14 +46,14 @@ contextBridge.exposeInMainWorld("file", {
     if(fs.statSync(settingsPath).size){
       let file = fs.readFileSync(settingsPath)
       try {
-        JSON.parse((file))
+        settings = JSON.parse((file))
       } catch (error) {
         settings = {}
       }
     }
 
     settings[setting] = val
-    fs.writeFileSync(settingsPath, JSON.stringify(settings));
+    fs.writeFileSync(settingsPath, JSON.stringify(settings,null,2));
   },
   getSetting:(setting) =>{
     let settings = {}
@@ -67,6 +68,14 @@ contextBridge.exposeInMainWorld("file", {
     return settings[setting]
   },
   fs: fs,
+  copyFolder: (srcDir,destDir,overwrite) =>{
+    try {
+      fse.copySync(srcDir, destDir, { overwrite: true|false })
+      return true
+    } catch (err) {
+      return false
+    }
+  },
   join: (arr) =>  path.join(arr),
   isFile: (path)=> !fs.lstatSync(path).isDirectory() ? 1:-1,
   isFolder: (path)=> fs.lstatSync(path).isDirectory() ? 1:-1,

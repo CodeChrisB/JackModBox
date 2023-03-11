@@ -13,7 +13,7 @@ div
             label="Mods Folder"
             hint=`A folder to save & load your mods from`
             append-outer-icon="mdi-content-save"
-            @click:append-outer="file.setSetting(SETTING.MODS_PATH,steamPath)"
+            @click:append-outer="file.setSetting(SETTING.MODS_PATH,modPath)"
         )
 
     span hello

@@ -5,10 +5,14 @@ div.ma-2
       v-for="(file) in files"
       @click="onFileClick(file)"
     )
-      v-row.d-flex.justify-center.ma-4
-        v-icon(style="transform:scale(2)") {{file.isFolder=== 1 ?  'mdi-folder': 'mdi-file-document-outline'}}
-      v-row.d-flex.justify-center
-        span.text-caption(style="word-break: break-word") {{file.name}}
+      div(v-if="file.suffix === 'jpg'")
+        v-img(:src="file.fullPath")
+         span {{ file.fullPath }}
+      div(v-else)
+        v-row.d-flex.justify-center.ma-4
+          v-icon(style="transform:scale(2)") {{file.isFolder=== 1 ?  'mdi-folder': 'mdi-file-document-outline'}}
+        v-row.d-flex.justify-center
+          span.text-caption(style="word-break: break-word") {{file.name}}
 </template>
 
 <script>
@@ -36,7 +40,9 @@ export default {
         files = files.map(x => {
           return {
             name: x,
-            isFolder: this.file.isFolder([this.folderPath, x].join('\\'))
+            isFolder: this.file.isFolder([this.folderPath, x].join('\\')),
+            suffix:x.split('.').slice(-1)[0],
+            fullPath:[this.folderPath,x].join('\\')
           }
         }
         ).sort(({isFolder:a}, {isFolder:b}) =>b-a)

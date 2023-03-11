@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.form.mt-1
+v-card(:flat="flat").form.mt-1
   div(
     v-for="key in Object.keys(templateJson)" 
     v-if="!['id','modded'].includes(key)"
@@ -16,10 +16,12 @@ v-card.form.mt-1
       array-field(
         v-if="Array.isArray(templateJson[key])"
         :obj="templateJson[key]"
+        :obj-key="key"
         @update="onUpdate($event,key)"
       )
   v-spacer
   v-checkbox(
+    v-if="showModded"
     v-model="templateJson['modded']"
     label="Already Modded"
     hide-details
@@ -36,11 +38,18 @@ import ArrayField from './ArrayField.vue'
       ArrayField
     },
     props:{
+      flat:{
+        type:Boolean,
+      },
       index:{
         type:Number
       },
       obj:{
         type:Object
+      },
+      showModded:{
+        type:Boolean,
+        default:false
       }
     },
     created() {

@@ -1,6 +1,10 @@
 <template lang="pug">
 div
   v-row.pa-0.ml-2.mt-1
+    v-icon.mb-3(
+      small 
+      @click="toSettings"
+    ) mdi-cog
     v-btn.mb-3(
       text
       
@@ -15,7 +19,7 @@ div
       )
         span {{ item.text }}
         span(v-if="index !== computedCrumbs.length-1") /
-  v-row.ma-0
+  v-row.ma-0.pa-0
     v-divider.mb-2
 
         
@@ -60,6 +64,7 @@ export default {
   watch: {
     "$route.params.key": {
       handler(newVal) {
+        if(!newVal)return
         this.path = newVal?.split('\\').filter(x=>x !== "")
         this.addToHistory(this.path)
       },
@@ -73,6 +78,9 @@ export default {
     back(){
       this.path = this.path.slice(0,this.path.length-1)
       this.$router.pass('fileviewer',{key:this.path.join('\\')})
+    },
+    toSettings(){
+      this.$router.push("settings")
     }
   }
 };

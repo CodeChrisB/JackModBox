@@ -1,7 +1,7 @@
 <template lang="pug">
 v-app.main
   v-row
-    v-col.col-3.pl-8.mt-2
+    v-col.col-3.mt-2
       SideTreeview
     v-divider(vertical)
     v-col.col-9.px-0
@@ -43,3 +43,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.col-3{
+  padding: 0px!important;
+}
+</style>

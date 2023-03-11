@@ -25,6 +25,7 @@ export default{
 
 <style>
 .dialog-bg{
+  z-index: 10;
   position:fixed;
   top:0;
   left:0;
@@ -34,7 +35,7 @@ export default{
 }
 .dialog-inner{
   background:white;
-  z-index: 2;
+  z-index: 11;
   padding:20px;
   position:fixed;
   top:200px;
@@ -42,4 +43,7 @@ export default{
   transform: translateX(-50%);
   min-width:200px;
 }   
+input{
+  border: 1px solid black;
+}
 </style>
