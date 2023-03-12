@@ -23,7 +23,7 @@ export default{
 }
 </script>
 
-<style>
+<style scoped>
 .dialog-bg{
   z-index: 10;
   position:fixed;

@@ -2,21 +2,25 @@
 div 
     v-col.col-6
         v-text-field(
-            v-model="steamPath"
+            v-model="settings[SETTING.STEAM_PATH]"
             label="SteamApps Folder"
             hint=`SteamLibrary  >  steamapps  >  common`
             append-outer-icon="mdi-content-save"
-            @click:append-outer="file.setSetting(SETTING.STEAM_PATH,steamPath)"
+            @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH])"
         )
         v-text-field(
-            v-model="modPath"
+            v-model="settings[SETTING.MODS_PATH]"
             label="Mods Folder"
             hint=`A folder to save & load your mods from`
             append-outer-icon="mdi-content-save"
-            @click:append-outer="file.setSetting(SETTING.MODS_PATH,modPath)"
+            @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH])"
+        )
+        v-checkbox(
+            v-model="settings[SETTING.SHOW_ALL_NO_PACKS]"
+            label="Show all Games without Packs (requires restart currently)"
+            @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS])"
         )
 
-    span hello
 </template>
 
 <script>
@@ -31,14 +35,13 @@ export default {
     },  
     methods:{
         getData(){
-            this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
-            this.modPath = this.file.getSetting(SETTING.MODS_PATH)
+            this.settings = this.file.getSetting()
+            console.log(this.settings)
         }
     },
     data() {
         return {
-            steamPath: "",
-            modPath:""
+            settings:{}
         }
     },
 

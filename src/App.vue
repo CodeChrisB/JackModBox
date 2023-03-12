@@ -45,6 +45,9 @@ export default {
 </script>
 
 <style scoped>
+.main{
+  overflow: hidden;
+}
 .col-3{
   padding: 0px!important;
 }

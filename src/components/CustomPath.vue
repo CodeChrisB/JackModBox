@@ -1,13 +1,18 @@
 <template lang="pug">
 div
   v-row.pa-0.ml-2.mt-1
-    v-icon.mb-3(
-      small 
-      @click="toSettings"
-    ) mdi-cog
+    router-link(
+      to='settings'
+      tag="button"
+    )
+      v-icon.mb-3(
+        small 
+        @click="toSettings"
+      ) mdi-cog
+
     v-btn.mb-3(
       text
-      
+      icon
       @click="back()",
       small
     ) 
@@ -66,15 +71,11 @@ export default {
       handler(newVal) {
         if(!newVal)return
         this.path = newVal?.split('\\').filter(x=>x !== "")
-        this.addToHistory(this.path)
       },
       immediate: true
     }
   },
   methods: {
-    addToHistory(path){
-      this.history =this.history.length === 0 ? [path] : this.history.unshift(path)
-    },
     back(){
       this.path = this.path.slice(0,this.path.length-1)
       this.$router.pass('fileviewer',{key:this.path.join('\\')})

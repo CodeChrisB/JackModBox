@@ -7,7 +7,7 @@ div
     v-row.ma-0(
       style="min-height:30px"
       )
-        span.hover(@click="toggle(index)").ml-6 {{ item.name }}
+        span.text-body-2.hover(@click="toggle(index)").ml-6 {{ item.name }}
         v-spacer.hover(@click="toggle(index)")
         v-menu(offset-y='')
           template(v-slot:activator='{ on, attrs }')
@@ -20,10 +20,6 @@ div
             )
               v-list-item-title {{ item.title }}
 
-
-
-
-
     v-col.panel(
       v-if="panels[index]"
       :style="panelHeight"
@@ -33,7 +29,7 @@ div
             text
             @click="onClick(game)"
             )
-            span() {{ game.name }}
+            span.text-caption {{ game.name }}
           v-menu.col-2(offset-y='')
             template(v-slot:activator='{ on, attrs }')
               v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
@@ -42,6 +38,7 @@ div
               v-divider
               v-list-item(
                 v-for='(item, itemIndex) in menu.game' :key='itemIndex' @click="gameClick(item,game)"
+                v-if="game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly"
               )
                 v-list-item-title {{ item.title }}
 
@@ -49,53 +46,65 @@ div
 
 <script>
 import { SETTING } from '@/assets/data/SettingData'
-import  { JackBoxTreeData } from '@/assets/data/JackBoxTreeData'
+import { JackBoxTreeData,AllGames } from '@/assets/data/JackBoxTreeData'
 
 import CustomDialog from './CustomDialog.vue'
 import dialog from './dialog'
+const State = Object.freeze({
+  GameOnly: 1,
+  ModOnly: 2,
+  Both: 3
+})
 export default {
   name: 'SettingsView',
-  components:{CustomDialog},
+  components: { CustomDialog },
   created() {
     this.file = window.file
     this.SETTING = SETTING
+    this.State = State
     this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
     this.modPath = this.file.getSetting(SETTING.MODS_PATH)
     if (this.steamPath) {
       this.loadPacks()
     }
+    if (this.modPath) {
+      this.loadModPacks()
+    }
   },
   data() {
 
     return {
-      active:null,
-      menu:{
+      active: null,
+      menu: {
 
         pack: [
-          { title: 'Open',id:0 },
-          { title: 'Close others',id:1 },
+          { title: 'Open', id: 0 },
+          {title:'Open in Explorer', id:1},
+          { title: 'Close others', id: 2 },
         ],
-        game:[
-          {title: 'Export Content',id:0}
+        game: [
+          { title: 'Export Content', id: 0, visiblity: State.GameOnly },
+          { title: 'Rename', id: 1, mod: true, visiblity: State.ModOnly },
+          { title: 'Open Game', id: 2, mod: true, visiblity: State.Both }
         ]
       },
-      panels:[],
-      packs:[],
+      panels: [],
+      packs: [],
       steamPath: "",
       items: [],
       packsFound: [],
       loadedFolders: []
     }
   },
-  computed:{
-    panelHeight(){
-      let count = this.panels.filter(x=>x).length
+  computed: {
+    panelHeight() {
+      let count = this.panels.filter(x => x).length
       //calc(100vh)/open   -panels
       //return "min-height:3000px!important;background-color:red;"
       //max-height:calc((100vh - ${this.panels.length*30}px) / ${count});
       return false ? '' : `
-      min-height:calc((100vh - ${this.panels.length*30}px) /${count});
-      max-height:calc((100vh - ${this.panels.length*30}px) /${count});
+      min-height:calc((100vh - ${this.panels.length * 30}px) /${count});
+      max-height:calc((100vh - ${this.panels.length * 30}px) /${count});
       `
     }
   },
@@ -105,72 +114,147 @@ export default {
         this.panels = files.filter(x => x.startsWith('The Jackbox Party Pack'))
           .map(x => x.replace('The Jackbox Party Pack', '').replace(' ', ''))
           .map(x => x === '' ? '1' : x)
-          .map(x=> parseInt(x))
-        this.items = JackBoxTreeData.filter((x)=>this.panels.includes(x.id))
-        this.panels = this.panels.map(x=>false)
-      }) 
+          .map(x => parseInt(x))
+        
+        console.log(this.panels)
+        if(this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)){
+        //   name: name,
+        // id: id ?? name,
+        // children: children,
+        // disabled: disabled,
+          this.items = [...AllGames]
+          this.panels=[true]
+        }else {
+          this.panels = this.panels.map(x => false)
+        }
+        console.log(this.items)
+      })
 
- 
+
     },
-    onClick(e){
-      this.$router.pass('fileviewer',{key:this.steamPath+ e.id})
+    loadModPacks() {
+      this.file.fs.readdir(this.modPath, (error, files) => {
+        console.log(this.panels, files)
+        let modPanel = {
+          name: 'Mods',
+          isMod:true,
+          children: [
+            ...files.map(x => {
+              return {
+                name: x,
+                id: [this.modPath, x].join('\\'),
+                isMod: true
+
+              }
+            })
+          ]
+        }
+        this.items.unshift(modPanel)
+        this.panels.unshift(false)
+        console.log(this.items)
+      })
     },
-    toggle(index){
+    onClick(e) {
+      console.log(e)
+      this.$router.pass('fileviewer', {
+        key: e.isMod ? e.id : this.steamPath + e.id
+      }
+      )
+    },
+    toggle(index) {
       this.$set(this.panels, index, !this.panels[index])
     },
-    set(index,state){
+    set(index, state) {
       this.$set(this.panels, index, state)
     },
-    itemClick(item,index){
-      console.log(item,index)
-      if(item.id===0){
+    itemClick(item, index) {
+      console.log(this.items[index])
+      if (item.id === 0) {
         this.toggle(index)
-      }else if(item.id === 1){
-        this.panels = this.panels.map((x,i)=>index===i)
-        
-      } else if(item.id === 2)
-      console.log(this.panels)
-    },
-    async gameClick(item,game){
-      if(item.id===0){
-        //Copy to mod folder
-        console.log(item)
-        console.log()
-        console.log(this.modPath)
-        this.answer = await dialog
-          .title('Prompt Title')
-          .inputType('string')
-          .cancelText('Close')
-          .okText('Create Mod')
-          .html()
-          .prompt('Hello message with <strong>html</strong>')
-          console.log([this.steamPath,game.id,this.answer].join('\\'))
-        if(this.answer){
-          this.file.copyFolder(
-            [this.steamPath,game.id,].join('\\'),
-            [this.modPath,this.answer].join('\\')
-          )
+      } else if(item.id ===1) {
+        if(this.items[index].isMod){
+          this.file.openInFileExplorer(this.modPath)
+        } else {
+          this.file.openInFileExplorer([this.steamPath,'The Jackbox Party Pack'+(this.items[index].id>1 ? ' '+this.items[index].id :'')].join('\\'))
         }
-        //this.file.copyFolder
+      } else if (item.id === 2) {
+        this.panels = this.panels.map((x, i) => index === i)
+
+      } 
+    },
+    async gameClick(item, game) {
+      console.log(game)
+      let tmp = null
+      let self = this
+      switch (item.id) {
+        case 0:
+          this.answer = await dialog
+            .title('Export Mod')
+            .inputType('string')
+            .cancelText('Close')
+            .okText('Create Mod')
+            .html()
+            .prompt('Enter a Name for your Mod')
+
+          if (this.answer) {
+            this.file.copyFolder(
+              [this.steamPath, game.id,].join('\\'),
+              [this.modPath, this.answer].join('\\')
+            )
+            self.reloadSideView()
+          }
+          break;
+        case 1:
+          this.answer = await dialog
+              .title(`Rename [${game.name}]`)
+              .inputType('string')
+              .cancelText('Close')
+              .okText('Rename')
+              .html()
+              .prompt('Change the Name of your Mod')
+            if (this.answer) {
+              tmp = game.id.split('\\')
+              tmp[tmp.length-1] = this.answer
+              console.log(game.id,tmp.join('\\'))
+              this.file.fs.rename(game.id,tmp.join('\\'),function(err){
+                self.reloadSideView()
+              })
+            }
+        break
       }
+      if (item.id === 0) {
+        //Copy to mod folder
+
+        //this.file.copyFolder
+      } else if (item.id === 1) {
+
+      }
+    },
+    reloadSideView(){
+      this.items.shift()
+      this.panels.shift()
+      this.loadPacks()
+      this.loadModPacks()
     }
   }
 
 }
 </script>
-
+ 
 <style>
-a{
+a {
   text-decoration: none;
 }
+
 * .panel {
- overflow-y: auto;
+  overflow-y: auto;
 }
 
-.panel::-webkit-scrollbar{
-    display: none;
-  }
-.hover{
+.panel::-webkit-scrollbar {
+  display: none;
+}
+
+.hover {
   cursor: pointer;
   margin: 0px;
 }
