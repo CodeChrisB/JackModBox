@@ -7,7 +7,7 @@ div
     )
       v-icon.mb-3(
         small 
-        @click="toSettings"
+        @click="path=null;toSettings"
       ) mdi-cog
 
     v-btn.mb-3(

@@ -7,7 +7,7 @@ div.ma-2
     )
       div(v-if="file.suffix === 'jpg'")
         v-img(:src="file.fullPath")
-         span {{ file.fullPath }}
+        span {{ file.fullPath }}
       div(v-else)
         v-row.d-flex.justify-center.ma-4
           v-icon(style="transform:scale(2)") {{file.isFolder=== 1 ?  'mdi-folder': 'mdi-file-document-outline'}}

@@ -45,7 +45,7 @@ export default {
 </script>
 
 <style scoped>
-.main{
+html{
   overflow: hidden;
 }
 .col-3{

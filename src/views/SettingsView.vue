@@ -36,7 +36,6 @@ export default {
     methods:{
         getData(){
             this.settings = this.file.getSetting()
-            console.log(this.settings)
         }
     },
     data() {

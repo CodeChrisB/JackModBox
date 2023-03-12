@@ -5,7 +5,7 @@ div
     v-for="(item,index) in items"
   ).ma-0.rounded-0.elevation-1
     v-row.ma-0(
-      style="min-height:30px"
+      style="min-height:10px"
       )
         span.text-body-2.hover(@click="toggle(index)").ml-6 {{ item.name }}
         v-spacer.hover(@click="toggle(index)")
@@ -20,17 +20,17 @@ div
             )
               v-list-item-title {{ item.title }}
 
-    v-col.panel(
+    v-col.panel.pa-0(
       v-if="panels[index]"
       :style="panelHeight"
       )
-        v-row()(v-for="game in item.children")
-          v-btn.col-10(
+        v-row.ma-0.pa-0(v-for="game in item.children")
+          v-btn.flex-grow-1.flex-shrink-0.pa-0.pl-4(
             text
             @click="onClick(game)"
             )
             span.text-caption {{ game.name }}
-          v-menu.col-2(offset-y='')
+          v-menu.ma-0(offset-y='')
             template(v-slot:activator='{ on, attrs }')
               v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
             v-list
@@ -103,8 +103,9 @@ export default {
       //return "min-height:3000px!important;background-color:red;"
       //max-height:calc((100vh - ${this.panels.length*30}px) / ${count});
       return false ? '' : `
-      min-height:calc((100vh - ${this.panels.length * 30}px) /${count});
-      max-height:calc((100vh - ${this.panels.length * 30}px) /${count});
+      min-height:calc((100vh - ${this.panels.length * 24}px) /${count});
+      max-height:calc((100vh - ${this.panels.length * 24}px) /${count});
+      overflow: auto;
       `
     }
   },
@@ -116,7 +117,6 @@ export default {
           .map(x => x === '' ? '1' : x)
           .map(x => parseInt(x))
         
-        console.log(this.panels)
         if(this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)){
         //   name: name,
         // id: id ?? name,
@@ -125,16 +125,15 @@ export default {
           this.items = [...AllGames]
           this.panels=[true]
         }else {
-          this.panels = this.panels.map(x => false)
+          this.items = JackBoxTreeData.filter((x)=>this.panels.includes(x.id))
+          this.panels = this.panels.map(x=>false)
         }
-        console.log(this.items)
       })
 
 
     },
     loadModPacks() {
       this.file.fs.readdir(this.modPath, (error, files) => {
-        console.log(this.panels, files)
         let modPanel = {
           name: 'Mods',
           isMod:true,
@@ -151,11 +150,9 @@ export default {
         }
         this.items.unshift(modPanel)
         this.panels.unshift(false)
-        console.log(this.items)
       })
     },
     onClick(e) {
-      console.log(e)
       this.$router.pass('fileviewer', {
         key: e.isMod ? e.id : this.steamPath + e.id
       }
@@ -168,7 +165,6 @@ export default {
       this.$set(this.panels, index, state)
     },
     itemClick(item, index) {
-      console.log(this.items[index])
       if (item.id === 0) {
         this.toggle(index)
       } else if(item.id ===1) {
@@ -183,7 +179,6 @@ export default {
       } 
     },
     async gameClick(item, game) {
-      console.log(game)
       let tmp = null
       let self = this
       switch (item.id) {
@@ -215,7 +210,6 @@ export default {
             if (this.answer) {
               tmp = game.id.split('\\')
               tmp[tmp.length-1] = this.answer
-              console.log(game.id,tmp.join('\\'))
               this.file.fs.rename(game.id,tmp.join('\\'),function(err){
                 self.reloadSideView()
               })

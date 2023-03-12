@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import FileViewer from '@/views/FileViewer.vue'
-import MonacoEditor from '@/views/MonacoEditor.vue'
+import MonacoEditor from '@/views/Editor/MonacoEditor.vue'
 Vue.use(VueRouter)
 
 const routes = [
