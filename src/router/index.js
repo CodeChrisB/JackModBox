@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import FileViewer from '@/views/FileViewer.vue'
 import MonacoEditor from '@/views/Editor/MonacoEditor.vue'
+import GameView from '@/views/GameView.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -21,6 +22,11 @@ const routes = [
     path:'/fileviewer/:key',
     name:'fileviewer',
     component: FileViewer
+  },
+  {
+    path:'/gameview/:key',
+    name:'gameview',
+    component: GameView
   },
   {
     path:'/monaco/:key',

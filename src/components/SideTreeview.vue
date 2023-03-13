@@ -153,8 +153,9 @@ export default {
       })
     },
     onClick(e) {
-      this.$router.pass('fileviewer', {
-        key: e.isMod ? e.id : this.steamPath + e.id
+      console.log(e.key)
+      this.$router.pass('gameview', {
+        key: e.key
       }
       )
     },

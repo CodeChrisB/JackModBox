@@ -4,7 +4,7 @@ v-app.main
     v-col.col-3.mt-2
       SideTreeview
     v-divider(vertical)
-    v-col.col-9.px-0
+    v-col.col-9.px-0.pr-4
       CustomPath
       router-view
       

@@ -1,5 +1,6 @@
 <template lang="pug">
 div(style="overflow-y:scroll").mt-1
+
   v-row.mt-1.pl-2
     v-card(style="width:100%;padding:3px;background-color:#0078d7")
       v-btn.ml-4(
@@ -26,6 +27,8 @@ div(style="overflow-y:scroll").mt-1
       style="height:100vh;width:100%;"
           v-resize="onResize"
     )
+    span yo
+  CustomPath
       Dialog
       MonacoEditor.me(
         v-show="mode"
@@ -48,10 +51,13 @@ div(style="overflow-y:scroll").mt-1
 import MonacoEditor from 'monaco-editor-vue';
 import CustomEditor from './CustomEditor.vue';
 import Dialog from '@/components/CustomDialog.vue'
+import CustomPath from '@/components/CustomPath.vue';
+
 
 export default {
   name: "App",
   components: {
+    CustomPath,
     CustomEditor,
     MonacoEditor,
     Dialog
