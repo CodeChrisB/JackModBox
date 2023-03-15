@@ -15,7 +15,7 @@ export const Mod = Object.freeze({
         id:3,
         text:"Changeable Images"
     },
-    CanChangeForAudience:{
+    HasAudienceContent:{
         id:4,
         text:"Has Audience Content"
     },
@@ -264,12 +264,19 @@ export const GameIds = Object.freeze({
             audioReplacer:[
                 {
                     expand:true,
-                    hint:"Replace All Narations in game with an Empty Audiofile so that Mr. Bubble don't narrate your Mod wrong.",
+                    hint:"Replace All Narations in game with an Empty Audiofile so that M. Bubble don't narrate your mod wrong.",
                     originalFilename:"question.ogg",
                     path:"content\\en\\ApplyYourselfInterviewQuestion\\",
                     toReplace:"empty.ogg"
                 }
             ],
+            fastEditFields:[
+                //e.g Main Menu or really important stuff . not sure atm...
+            ],
+            expandFiles:[
+                //e.g prompts seperated by id folders maybe adding them  together in a single editor then redistribute them idk
+                //or just create 1 arrry out of it and then give every id field one elemnt from the array
+            ],  
             expandFolders:[],
             modability:{
                 score:100,
@@ -279,6 +286,7 @@ export const GameIds = Object.freeze({
                     Mod.HasTextPrompts.id,
                     Mod.ChangesWillShowOnDevices.id,
                     Mod.HasChangableImages.id,
+                    Mod.HasAudienceContent.id
                 ]
             }
         }

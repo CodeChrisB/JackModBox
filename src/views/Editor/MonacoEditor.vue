@@ -27,8 +27,6 @@ div(style="overflow-y:scroll").mt-1
       style="height:100vh;width:100%;"
           v-resize="onResize"
     )
-    span yo
-  CustomPath
       Dialog
       MonacoEditor.me(
         v-show="mode"

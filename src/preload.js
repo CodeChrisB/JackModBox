@@ -118,6 +118,20 @@ contextBridge.exposeInMainWorld("file", {
       // Write the decoded audio file to the specified path
       fs.writeFile(path, decodedAudio,(err)=>{return cb(err)})
   },
+  loadImage: async(imagePath)=>{
+    try {
+      // Read the file as a buffer
+      const buffer = await fs.promises.readFile(imagePath);
+  
+      // Convert the buffer to a base64 string
+      const base64Image = buffer.toString('base64');
+  
+      return base64Image;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  },
   join: (arr) => path.join(arr),
   isFile: (path) => !fs.lstatSync(path).isDirectory() ? 1 : -1,
   isFolder: (path) => fs.lstatSync(path).isDirectory() ? 1 : -1,
