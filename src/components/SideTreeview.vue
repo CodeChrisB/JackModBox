@@ -29,7 +29,7 @@ div
             text
             @click="onClick(game)"
             )
-            span.text-caption {{ game.name }}
+            span.text-caption.text-truncate {{ game.name }}
           v-menu.ma-0(offset-y='')
             template(v-slot:activator='{ on, attrs }')
               v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical

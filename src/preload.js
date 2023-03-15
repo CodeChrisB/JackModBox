@@ -87,10 +87,42 @@ contextBridge.exposeInMainWorld("file", {
     }
     spawn(explorer, [e], { detached: true }).unref();
   },
+  openFolder: async (path,folderOnly=false) => {
+    const files = await fs.readdir(path, { withFileTypes: true });
+    return files.map(x=>!folderOnly || x.isDirectory())
+  },
+  openExpandFolder: async(pathname) =>{
+    const result = [];
+
+    try {
+      const files = await fs.promises.readdir(pathname, { withFileTypes: true });
+      for (const file of files) {
+        if (file.isDirectory()) {
+          const subPath = path.join(pathname, file.name);
+          const subFiles = await fs.promises.readdir(subPath, { withFileTypes: true });
+          result.push(...subFiles.map(subFile => path.join(subPath, subFile.name)))
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  
+    return result;
+  
+  },
+
+  replaceFileWithBase64:(path,audioFile,cb)=>{
+      // Decode the base64-encoded audio file
+      const decodedAudio = Buffer.from(audioFile, 'base64')
+
+      // Write the decoded audio file to the specified path
+      fs.writeFile(path, decodedAudio,(err)=>{return cb(err)})
+  },
   join: (arr) => path.join(arr),
   isFile: (path) => !fs.lstatSync(path).isDirectory() ? 1 : -1,
   isFolder: (path) => fs.lstatSync(path).isDirectory() ? 1 : -1,
-  deepReadDir: read
+  deepReadDir: read,
+  dirname: __dirname
 });
 
 // setSetting:(setting,val) => {

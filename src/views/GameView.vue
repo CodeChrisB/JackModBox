@@ -3,6 +3,19 @@ v-row
   v-col.col-8
     v-card
       v-btn(@click="toFileViewer(game.id)") Open File Viewer
+
+      v-row(v-if="game.content.audioReplacer")
+        v-col.col-4.ma-2(v-for="audioReplacer in game.content.audioReplacer")
+          v-card.mb-3(
+          )
+            v-row.d-flex.justify-center.ma-4
+              v-icon(@click="onAudioReplacer(audioReplacer)").mt-5(style="transform:scale(2)") mdi-music-circle-outline
+            v-divider
+            v-row.ma-4
+              span.text-caption {{ audioReplacer.hint }}
+      div
+        v-divider
+        span {{ game.content }}
   v-col.col-4
     v-card.pa-4
       v-card
@@ -32,53 +45,69 @@ v-row
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
-import { GameIds,Mod } from '@/assets/data/JackBoxTreeData'
+import { GameIds, Mod } from '@/assets/data/JackBoxTreeData'
 import { SETTING } from '@/assets/data/SettingData'
-
+const  emptyOGG  =require('@/assets/audioFile/empty.ogg')
 export default {
   name: 'HomeView',
   components: {
     HelloWorld
   },
-  data(){
+  data() {
     return {
-      key:null,
-      game:{}
+      key: null,
+      game: {}
     }
   },
-  computed:{
-    modabilityScore(){
+  computed: {
+    modabilityScore() {
       return (this.game?.content?.modability?.score) ?? 0
     }
   },
-  methods:{
-    getModIcon(mod){
-      if(this.game && this.game.content && this.game.content.modability) {
+  methods: {
+    onAudioReplacer(ar){
+      console.log(emptyOGG)
+      let folder = [this.gamePath,ar.path].join('\\')
+
+      window.file.openExpandFolder(folder).then(x=>{
+        x = x.filter(path=>path.includes(ar.originalFilename))
+        x.forEach(audioFile=>{
+          console.log('Overwriting '+audioFile)
+          window.file.replaceFileWithBase64(audioFile,emptyOGG,(err)=>{
+            console.log(err)
+          })  
+        })
+
+      })
+    },  
+    getModIcon(mod) {
+      if (this.game && this.game.content && this.game.content.modability) {
         return (this.game.content.modability.content.includes(mod) ? 'mdi-checkbox-outline' : 'mdi-checkbox-blank-outline')
       }
       return 'mdi-checkbox-blank-outline'
     },
-    toFileViewer(e){
+    toFileViewer(e) {
       console.log(e)
-      console.log('route0',[this.steamPath,e].join('\\'))
+      console.log('route0', [this.steamPath, e].join('\\'))
       this.$router.pass('fileviewer', {
-        key: [this.steamPath,e].join('\\')
+        key: [this.steamPath, e].join('\\')
       })
     }
   },
   watch: {
     "$route.params.key": {
       handler(newVal) {
-        if(!newVal)return
+        if (!newVal) return
         this.key = this.$route.params.key
         this.game = Object.assign({}, this.game, GameIds[this.key])
       },
       immediate: true
     }
   },
-  created(){
+  created() {
     this.MOD = Mod
     this.steamPath = window.file.getSetting(SETTING.STEAM_PATH)
+    this.gamePath = [this.steamPath,this.game.id].join("\\")
     console.log(this.steamPath)
   }
 }
@@ -86,8 +115,13 @@ export default {
   
 
 <style>
-.tooltip .tooltip-inner{
-  max-width: 100px !important;
-  width: 100px !important;
+.tooltip-inner {
+  max-width: 60px !important;
+  width: 60px !important;
+}
+
+.container {
+  min-width: 23%;
+  max-width: 250px;
 }
 </style>

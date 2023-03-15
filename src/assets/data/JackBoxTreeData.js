@@ -14,7 +14,13 @@ export const Mod = Object.freeze({
     HasChangableImages:{
         id:3,
         text:"Changeable Images"
-    }
+    },
+    CanChangeForAudience:{
+        id:4,
+        text:"Has Audience Content"
+    },
+    
+
 })
 
 
@@ -255,6 +261,16 @@ export const GameIds = Object.freeze({
         name: 'Job Job', 
         id: '\\The Jackbox Party Pack 8\\games\\JobGame',
         content:{
+            audioReplacer:[
+                {
+                    expand:true,
+                    hint:"Replace All Narations in game with an Empty Audiofile so that Mr. Bubble don't narrate your Mod wrong.",
+                    originalFilename:"question.ogg",
+                    path:"content\\en\\ApplyYourselfInterviewQuestion\\",
+                    toReplace:"empty.ogg"
+                }
+            ],
+            expandFolders:[],
             modability:{
                 score:100,
                 content:
