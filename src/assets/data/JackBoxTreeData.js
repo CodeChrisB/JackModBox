@@ -465,7 +465,6 @@ function genNode(name, id = null, children = [], disabled) {
 }
 
 function genChildNode(obj, disabled) {
-    console.log(obj)
     return {
         key: obj.key,
         ...genNode(obj.name, obj.id, [], disabled),

@@ -2,12 +2,20 @@
 v-row
   v-col.col-8
     v-card
-      v-btn(@click="toFileViewer(game.id)") Open File Viewer
+      v-row
+        v-col.col-4.ma-2
+          v-card.mb-3
+            v-row.d-flex.justify-center.ma-4
+              v-icon(@click="toFileViewer(game.id)").mt-5(style="transform:scale(2)") mdi-folder
+            v-divider
+            v-row.ma-4
+              span.text-caption Browse and Edit all the Files of the Game.
 
-      v-row(v-if="game.content.audioReplacer")
-        v-col.col-4.ma-2(v-for="audioReplacer in game.content.audioReplacer")
-          v-card.mb-3(
-          )
+        v-col.col-4.ma-2(
+          v-for="audioReplacer in audioReplacerList"
+          v-if="game?.content?.audioReplacer"
+        )
+          v-card.mb-3
             v-row.d-flex.justify-center.ma-4
               v-icon(@click="onAudioReplacer(audioReplacer)").mt-5(style="transform:scale(2)") mdi-music-circle-outline
             v-divider
@@ -29,6 +37,7 @@ v-row
               v-bind="attrs"
               v-on="on"
               width=15
+              style="pointer-events:none"
             )
               template(v-slot:default="{value}")
                 strong {{ Math.ceil(value) }}%
@@ -60,6 +69,9 @@ export default {
     }
   },
   computed: {
+    audioReplacerList(){
+      return (this.game?.content?.audioReplacer) ?? []
+    },
     modabilityScore() {
       return (this.game?.content?.modability?.score) ?? 0
     }
@@ -99,12 +111,13 @@ export default {
       handler(newVal) {
         if (!newVal) return
         this.key = this.$route.params.key
-        this.game = Object.assign({}, this.game, GameIds[this.key])
+        this.game = GameIds[this.key]
       },
       immediate: true
     }
   },
   created() {
+    console.log('Bus',this.bus)
     this.MOD = Mod
     this.steamPath = window.file.getSetting(SETTING.STEAM_PATH)
     this.gamePath = [this.steamPath,this.game.id].join("\\")

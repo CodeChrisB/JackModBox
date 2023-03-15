@@ -70,6 +70,9 @@ export default {
     if (this.modPath) {
       this.loadModPacks()
     }
+
+    let self=this
+    this.$listen("reloadSideview", self.reloadSideView);
   },
   data() {
 
@@ -153,7 +156,6 @@ export default {
       })
     },
     onClick(e) {
-      console.log(e.key)
       this.$router.pass('gameview', {
         key: e.key
       }
@@ -226,6 +228,9 @@ export default {
       }
     },
     reloadSideView(){
+      this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
+      this.modPath = this.file.getSetting(SETTING.MODS_PATH)
+      console.log('reload')
       this.items.shift()
       this.panels.shift()
       this.loadPacks()

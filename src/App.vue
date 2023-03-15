@@ -25,7 +25,7 @@ export default {
     CustomPath
   },
   mounted() {
-    //window.file.save("settings.json", "yoooo")
+   
     this.text = window.file.getSetting(SETTING.STEAM_PATH)
 
     if(!this.text || this.text === ""){
@@ -33,13 +33,6 @@ export default {
       this.$router.push("settings")
     }
     
-  },  
-  methods: {
-    writeToFileSync(filepath, content) {
-      if (window && window.require) {
-        window.file.save(filepath, content)
-      }
-    }
   }
 };
 </script>

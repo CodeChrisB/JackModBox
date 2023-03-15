@@ -1,5 +1,5 @@
 {
   "steampath": "D:\\SteamLibrary\\steamapps\\common",
-  "modpath": "D:\\Programs\\Jackbox Mods",
-  "usePacksOrdering": true
+  "usePacksOrdering": true,
+  "modpath": ""
 }

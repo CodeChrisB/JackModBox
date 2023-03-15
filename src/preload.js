@@ -39,10 +39,11 @@ function noDotFiles(x) {
 
 const settingsPath = 'settings.json'
 contextBridge.exposeInMainWorld("file", {
-  setSetting: (setting, val) => {
+  setSetting: async (setting, val) => {
     const dir = path.dirname(settingsPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(settingsPath)) {
+      // Create the file with empty content
+      await fs.writeFileSync(settingsPath, '');
     }
     let settings = {}
     if (fs.statSync(settingsPath).size) {
