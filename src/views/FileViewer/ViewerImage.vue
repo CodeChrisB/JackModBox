@@ -42,18 +42,21 @@ export default {
     closeDialog() {
       this.$emit("update:dialog", false);
     },
-    onDrop(e) {
+    async onDrop(e) {
       this.dragover = false;
-      if (e.dataTransfer.files.length > 1) {
-      } else {
-        console.log(e.dataTransfer.files[0])
+      if (e.dataTransfer.files.length > 0) {
+        console.log('local')
+        console.log(e.dataTransfer)
         window.file.overwriteFile(this.path, e.dataTransfer.files[0].path).then(suceed => {
           this.getImage()
         })
-
-      }
-
-
+      } else {
+        console.log('online')
+        debugger
+        const html = e.dataTransfer.getData('text/html');
+        const regex = /data:image\/\w+;base64,([\s\S]+)/;
+        const base64String = html.match(regex)[1];
+        window.file.replaceFileWithBase64(this.path,base64String,(err)=>{this.getImage()})  }
     },
     getImage() {
       const fs = window.file.fs;

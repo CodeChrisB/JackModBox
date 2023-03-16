@@ -112,9 +112,9 @@ contextBridge.exposeInMainWorld("file", {
   
   },
 
-  replaceFileWithBase64:(path,audioFile,cb)=>{
+  replaceFileWithBase64:(path,file,cb)=>{
       // Decode the base64-encoded audio file
-      const decodedAudio = Buffer.from(audioFile, 'base64')
+      const decodedAudio = Buffer.from(file, 'base64')
 
       // Write the decoded audio file to the specified path
       fs.writeFile(path, decodedAudio,(err)=>{return cb(err)})

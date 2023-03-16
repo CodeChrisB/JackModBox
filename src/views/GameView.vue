@@ -23,7 +23,7 @@ v-row
               span.text-caption {{ audioReplacer.hint }}
               v-row
       v-divider
-      span.ma-3 Fast Acess
+      span(v-if="fastFolders.length>0").ma-3 Fast Acess
       v-row
         v-col.col-2.ma-2(
           v-for="folder in fastFolders"
@@ -128,6 +128,7 @@ export default {
     "$route.params.key": {
       handler(newVal) {
         if (!newVal) return
+        if(newVal === "settings") return
         this.key = this.$route.params.key
         this.game = GameIds[this.key]
       },

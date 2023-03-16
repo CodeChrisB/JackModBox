@@ -1,14 +1,10 @@
 <template lang="pug">
 div
   v-row.pa-0.ml-2.mt-1
-    router-link(
-      to='settings'
-      tag="button"
-    )
-      v-icon.mb-3(
-        small 
-        @click="path=null;toSettings"
-      ) mdi-cog
+    v-icon.mb-3(
+      small 
+      @click="toSettings"
+    ) mdi-cog
 
     v-btn.mb-3(
       text
@@ -86,7 +82,7 @@ export default {
       }
     },
     toSettings(){
-      this.$router.push("settings")
+      this.$router.replace("/settings")
     }
   }
 };
