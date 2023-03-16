@@ -110,8 +110,10 @@ export default {
       return 'mdi-checkbox-blank-outline'
     },
     toFileViewer(e) {
+      console.log(this.steamPath)
+      console.log(e)
       this.$router.pass('fileviewer', {
-        key: [this.steamPath, e].join('\\')
+        key: [this.steamPath, e].join('')
       })
     },
     onFastAcessClick(folder){

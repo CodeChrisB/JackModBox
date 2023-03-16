@@ -3,6 +3,8 @@ import fs from "fs";
 import fse from "fs-extra"
 import path from "path";
 import os from "os"
+import { request } from "https";
+import https from "https"
 import { spawn } from "child_process";
 const deepReadDir = async (dirPath) => await Promise.all(
   (await fs.readdir(dirPath, { withFileTypes: true })).map(async (dirent) => {
@@ -71,6 +73,18 @@ contextBridge.exposeInMainWorld("file", {
     return setting ? settings[setting] : settings
   },
   fs: fs,
+  request:request,
+  downloadImageAsBase64: async (url)=> {
+    console.log('inside',url)
+    const response = await https.get(url);
+    if (response.statusCode !== 200) throw new Error(`Failed to download image: ${response.statusMessage}`);
+    const chunks = [];
+    response.on('data', (chunk) => chunks.push(chunk));
+    await new Promise((resolve) => response.on('end', resolve));
+    const data = Buffer.concat(chunks);
+    const base64 = data.toString('base64');
+    return `data:${response.headers['content-type']};base64,${base64}`;
+  },
   copyFolder: (srcDir, destDir, overwrite) => {
     try {
       fse.copySync(srcDir, destDir, { overwrite: true | false })
@@ -80,6 +94,7 @@ contextBridge.exposeInMainWorld("file", {
     }
   },
   openInFileExplorer(e) {
+    console.log(e)
     let explorer;
     switch (os.platform()) {
       case "win32": explorer = "explorer"; break;
@@ -112,13 +127,34 @@ contextBridge.exposeInMainWorld("file", {
   
   },
 
-  replaceFileWithBase64:(path,file,cb)=>{
-      // Decode the base64-encoded audio file
-      const decodedAudio = Buffer.from(file, 'base64')
-
-      // Write the decoded audio file to the specified path
-      fs.writeFile(path, decodedAudio,(err)=>{return cb(err)})
+  replaceFileWithBase64:(pathToFile, base64Image, callback) => {
+    // Convert the base64 image to a Buffer
+    const imageBuffer = Buffer.from(base64Image, 'base64');
+  
+    // Read the file at the given path
+    fs.readFile(pathToFile, (err, data) => {
+      if (err) {
+        // Call the callback with the error
+        callback(err);
+        return;
+      }
+  
+      // Replace the file's contents with the base64 image
+      const newData = imageBuffer.toString('utf8');
+      fs.writeFile(pathToFile, newData, (err) => {
+        if (err) {
+          // Call the callback with the error
+          callback(err);
+          return;
+        }
+  
+        // Call the callback with no arguments to indicate success
+        callback();
+      });
+    });
   },
+  
+  
   overwriteFile: async (fileToReplacePath, replacerFilePath) => {
     try {
       let data = await fs.promises.readFile(replacerFilePath);

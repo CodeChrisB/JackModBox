@@ -49,6 +49,11 @@ export default {
           title:'Open',
           func: (game) => this.onFileClick(game),
           visible:[State.FOLDER,State.JSON]
+        },
+        {
+          title:'Open',
+          func: (game) => window.file.openInFileExplorer(game.fullPath),
+          visible:[State.FOLDER,State.JSON]
         }
       ],
       files: [],

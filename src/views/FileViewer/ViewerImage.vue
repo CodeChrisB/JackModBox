@@ -10,10 +10,10 @@ v-card(@drop.prevent='onDrop($event)' @dragover.prevent='dragover = true' @drage
         | mdi-cloud-upload
       p
         | Drop your file(s) here, or click to select them.
-
-
-</template>
-
+  
+  
+  </template>
+  
 <script>
 export default {
   props: {
@@ -52,18 +52,44 @@ export default {
         })
       } else {
         console.log('online')
-        debugger
         const html = e.dataTransfer.getData('text/html');
-        const regex = /data:image\/\w+;base64,([\s\S]+)/;
-        const base64String = html.match(regex)[1];
-        window.file.replaceFileWithBase64(this.path,base64String,(err)=>{this.getImage()})  }
+        const regexBase64 = /data:image\/\w+;base64,([\s\S]+)/;
+        const regexUrl = /https?:\/\/[^\s<>"]+|www\.[^\s<>"]+/gi;
+        const srcRegex = /src="([^"]+)"/;
+
+        //The Image was just a bas64 string
+        let match = (html.match(regexBase64) ?? [])[0];
+        if (match) { this.saveBas64Image(match); return }
+
+        //is it a url ?
+        match = (html.match(regexUrl) ?? [])[0];
+        if (match) { this.saveUrl(match) }
+        //is it an image tag
+
+        //idk anymore skip
+
+
+
+      }
     },
     getImage() {
       const fs = window.file.fs;
       const imageData = fs.readFileSync(this.innerPath);
+      console.log(imageData)
       if (!imageData) return
       this.imageUrl = URL.createObjectURL(new Blob([imageData], { type: "image/png" }));
+    },
+    saveBas64Image(image) {
+      console.log('saveBas64Image', image)
+      window.file.replaceFileWithBase64(this.path, image, (err) => { this.getImage() })
+    },
+    saveUrl(url) {
+      console.log('saveUrl', url)
+      window.file.downloadImageAsBase64(url).then(base64 => {
+        this.saveBas64Image(base64)
+      })
     }
   }
 }
 </script>
+  
