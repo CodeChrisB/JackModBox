@@ -35,6 +35,10 @@ export default {
   name: 'CustomPath',
   data: () => ({
     path: [],
+    backTo:{
+      name:null,
+      key:null
+    }
   }),
   computed: {
     computedCrumbs() {
@@ -56,11 +60,9 @@ export default {
       return fullNew
     }
   },
-  components: {
-
-  },
-  mounted() {
-
+  created(){
+    let self =this
+    this.$listen('setCustomPath-BackTo',(e)=>self.backTo=e)
   },
   watch: {
     "$route.params.key": {
@@ -73,8 +75,15 @@ export default {
   },
   methods: {
     back(){
+      console.log(this.backTo.name,this.path.slice(-1)[0])
+      if(this.backTo.name === this.path.slice(-1)[0]){
+        this.$router.pass('gameview', {
+          key: this.backTo.key
+        })
+        return
+      }
+
       this.path = this.path.slice(0,this.path.length-1)
-      console.log("Go to home?",this.path.length === 0)
       if(this.path.length === 0) {
         this.$router.push({ name: 'home' })
       }else{
