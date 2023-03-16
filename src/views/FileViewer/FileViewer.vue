@@ -100,6 +100,7 @@ export default {
         this.$router.pass('fileviewer',{key:this.clickedFile})
       }else{
         this.clickedFile = this.folderPath + "\\" + e.name
+        console.log(this.clickedFile)
         this.$router.pass('MonacoEditor', { key: this.clickedFile })
       }
     },

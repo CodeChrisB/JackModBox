@@ -1,7 +1,7 @@
 <template lang="pug">
 v-row
   v-col.col-8
-    v-card
+    v-card.ma-1
       v-row
         v-col.col-4.ma-2
           v-card.mb-3
@@ -21,9 +21,20 @@ v-row
             v-divider
             v-row.ma-4
               span.text-caption {{ audioReplacer.hint }}
-      div
-        v-divider
-        span {{ game.content }}
+              v-row
+      v-divider
+      span.ma-3 Fast Acess
+      v-row
+        v-col.col-2.ma-2(
+          v-for="folder in fastFolders"
+        )
+          v-card.mb-3
+            v-row.d-flex.justify-center.ma-4
+              v-icon(@click="onFastAcessClick(folder)").mt-5(style="transform:scale(2)") {{ folder.isFolder ? 'mdi-folder' : 'mdi-file-document' }}
+            v-divider
+            v-row.ma-4
+              span.text-caption {{folder.name}}
+
   v-col.col-4
     v-card.pa-4
       v-card
@@ -72,6 +83,9 @@ export default {
     audioReplacerList(){
       return (this.game?.content?.audioReplacer) ?? []
     },
+    fastFolders(){
+      return (this.game?.content?.fastFolders) ?? []
+    },
     modabilityScore() {
       return (this.game?.content?.modability?.score) ?? 0
     }
@@ -99,6 +113,15 @@ export default {
       this.$router.pass('fileviewer', {
         key: [this.steamPath, e].join('\\')
       })
+    },
+    onFastAcessClick(folder){
+      if(folder.isFolder){
+        //fileviewer
+        this.toFileViewer([this.game.id,folder.path].join('\\'))
+      }else {
+        //monaco editor
+        this.$router.pass('MonacoEditor', { key: [this.steamPath,folder.path].join('\\') })
+      }
     }
   },
   watch: {

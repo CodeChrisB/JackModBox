@@ -273,6 +273,18 @@ export const GameIds = Object.freeze({
             fastEditFields:[
                 //e.g Main Menu or really important stuff . not sure atm...
             ],
+            fastFolders:[
+                {
+                    name:'Poster Folder',
+                    path:"content\\ApplyYourselfPosterPhoto",
+                    isFolder:true
+                },
+                {
+                    name:'Game Prompts',
+                    path:'content\\en\\ApplyYourselfInterviewQuestion.jet',
+                    isFolder:false
+                }
+            ],  
             expandFiles:[
                 //e.g prompts seperated by id folders maybe adding them  together in a single editor then redistribute them idk
                 //or just create 1 arrry out of it and then give every id field one elemnt from the array
