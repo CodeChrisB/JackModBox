@@ -97,11 +97,10 @@ export default {
       }
     },
     onFinishedLoading(){
-      console.log('onFinishedLoading',this.files)
+      
     },
     show(e,file) {
     e.preventDefault();
-    console.log(e)
       this.showMenu = false;
       this.position.x = e.clientX;
       this.position.y = e.clientY;

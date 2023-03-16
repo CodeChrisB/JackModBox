@@ -78,7 +78,12 @@ export default {
   methods: {
     back(){
       this.path = this.path.slice(0,this.path.length-1)
-      this.$router.pass('fileviewer',{key:this.path.join('\\')})
+      console.log("Go to home?",this.path.length === 0)
+      if(this.path.length === 0) {
+        this.$router.push({ name: 'home' })
+      }else{
+        this.$router.pass('fileviewer',{key:this.path.join('\\')})
+      }
     },
     toSettings(){
       this.$router.push("settings")

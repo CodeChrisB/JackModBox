@@ -230,7 +230,6 @@ export default {
     reloadSideView(){
       this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
       this.modPath = this.file.getSetting(SETTING.MODS_PATH)
-      console.log('reload')
       this.items.shift()
       this.panels.shift()
       this.loadPacks()

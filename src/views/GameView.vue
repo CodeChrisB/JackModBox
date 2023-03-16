@@ -78,15 +78,12 @@ export default {
   },
   methods: {
     onAudioReplacer(ar){
-      console.log(emptyOGG)
       let folder = [this.gamePath,ar.path].join('\\')
 
       window.file.openExpandFolder(folder).then(x=>{
         x = x.filter(path=>path.includes(ar.originalFilename))
         x.forEach(audioFile=>{
-          console.log('Overwriting '+audioFile)
           window.file.replaceFileWithBase64(audioFile,emptyOGG,(err)=>{
-            console.log(err)
           })  
         })
 
@@ -99,8 +96,6 @@ export default {
       return 'mdi-checkbox-blank-outline'
     },
     toFileViewer(e) {
-      console.log(e)
-      console.log('route0', [this.steamPath, e].join('\\'))
       this.$router.pass('fileviewer', {
         key: [this.steamPath, e].join('\\')
       })
@@ -117,11 +112,9 @@ export default {
     }
   },
   created() {
-    console.log('Bus',this.bus)
     this.MOD = Mod
     this.steamPath = window.file.getSetting(SETTING.STEAM_PATH)
     this.gamePath = [this.steamPath,this.game.id].join("\\")
-    console.log(this.steamPath)
   }
 }
 </script>
