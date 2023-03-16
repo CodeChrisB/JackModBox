@@ -119,6 +119,15 @@ contextBridge.exposeInMainWorld("file", {
       // Write the decoded audio file to the specified path
       fs.writeFile(path, decodedAudio,(err)=>{return cb(err)})
   },
+  overwriteFile: async (fileToReplacePath, replacerFilePath) => {
+    try {
+      let data = await fs.promises.readFile(replacerFilePath);
+      await fs.promises.writeFile(fileToReplacePath, data);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  },
   loadImage: async(imagePath)=>{
     try {
       // Read the file as a buffer

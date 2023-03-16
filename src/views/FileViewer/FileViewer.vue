@@ -6,7 +6,7 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
       @click="onFileClick(fileContent)"
       @contextmenu="show($event,fileContent)"
     )
-      div(v-if="['jpg','png'].includes(fileContent.suffix)")
+      div(v-if="fileType(fileContent) === State.IMAGE")
         ViewerImage(:path="fileContent.fullPath")
         span {{ fileContent.name }}
       div(v-else)
@@ -47,8 +47,8 @@ export default {
       menu:[
         {
           title:'Open',
-          func: (game) => this.onFileClick(game)
-
+          func: (game) => this.onFileClick(game),
+          visible:[State.FOLDER,State.JSON]
         }
       ],
       files: [],
@@ -60,12 +60,19 @@ export default {
   created() {
     this.file = window.file
     this.SETTING = SETTING
+    this.State = State
     this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
     this.folderPath = this.$route.params.key
 
     this.loadFiles()
   },
   methods: {
+    fileType(fileContent){
+      if(fileContent.isFolder === 1) return State.FOLDER
+      if(['jet','json'].includes(fileContent.suffix)) return State.JSON
+      if(['jpg','png'].includes(fileContent.suffix)) return State.IMAGE
+      if(['swf'].includes(fileContent.suffix)) return State.SWF
+    },
     loadFiles() {
       window.file.fs.readdir(this.folderPath, (error, files) => {
         let id =0
