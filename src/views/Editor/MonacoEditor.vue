@@ -5,7 +5,7 @@ div(style="overflow-y:scroll").mt-1
     v-card(style="width:100%;padding:3px;background-color:#0078d7")
       v-btn.ml-4(
           icon
-          @click="$router.go(-1)"
+          @click="backToFileviewer()"
         )
         v-icon mdi-arrow-left
       v-icon(
@@ -89,6 +89,9 @@ export default {
     }
   },
   methods: {
+    backToFileviewer(){
+      this.$router.pass('fileviewer',{key:this.key.split('\\').slice(0,-1).join('\\')})
+    },
     editorMounted(value){
       this.editor = value
     },

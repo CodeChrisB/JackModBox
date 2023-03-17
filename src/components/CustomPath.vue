@@ -35,9 +35,9 @@ export default {
   name: 'CustomPath',
   data: () => ({
     path: [],
-    backTo:{
-      name:null,
-      key:null
+    backTo: {
+      name: null,
+      key: null
     }
   }),
   computed: {
@@ -47,50 +47,50 @@ export default {
 
       let currentPath = ""
 
-      let fullNew =  this.path.map(element => {
-        currentPath += currentPath === "" ? element : "\\"+element
+      let fullNew = this.path.map(element => {
+        currentPath += currentPath === "" ? element : "\\" + element
         return {
           text: element,
           disabled: false,
-          fullPath:currentPath
+          fullPath: currentPath
 
         }
       });
-      fullNew = fullNew.filter(x=>x.text!== "")
+      fullNew = fullNew.filter(x => x.text !== "")
       return fullNew
     }
   },
-  created(){
-    let self =this
-    this.$listen('setCustomPath-BackTo',(e)=>self.backTo=e)
+  created() {
+    let self = this
+    this.$listen('setCustomPath-BackTo', (e) => self.backTo = e)
   },
   watch: {
     "$route.params.key": {
       handler(newVal) {
-        if(!newVal)return
-        this.path = newVal?.split('\\').filter(x=>x !== "")
+        if (!newVal) return
+        this.path = newVal?.split('\\').filter(x => x !== "")
       },
       immediate: true
     }
   },
   methods: {
-    back(){
-      console.log(this.backTo.name,this.path.slice(-1)[0])
-      if(this.backTo.name === this.path.slice(-1)[0]){
+    back() {
+      console.log(this.backTo.name, this.path.slice(-1)[0])
+      if (this.backTo.name === this.path.slice(-1)[0]) {
         this.$router.pass('gameview', {
           key: this.backTo.key
         })
         return
       }
 
-      this.path = this.path.slice(0,this.path.length-1)
-      if(this.path.length === 0) {
+      this.path = this.path.slice(0, this.path.length - 1)
+      if (this.path.length === 0) {
         this.$router.push({ name: 'home' })
-      }else{
-        this.$router.pass('fileviewer',{key:this.path.join('\\')})
+      } else {
+        this.$router.pass('fileviewer', { key: this.path.join('\\') })
       }
     },
-    toSettings(){
+    toSettings() {
       this.$router.replace("/settings")
     }
   }

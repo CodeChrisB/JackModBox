@@ -218,13 +218,11 @@ export default {
               })
             }
         break
-      }
-      if (item.id === 0) {
-        //Copy to mod folder
-
-        //this.file.copyFolder
-      } else if (item.id === 1) {
-
+        case 2:
+          this.$router.pass('gameview', {
+            key: game.key
+          })
+          break;
       }
     },
     reloadSideView(){

@@ -75,7 +75,6 @@ contextBridge.exposeInMainWorld("file", {
   fs: fs,
   request:request,
   downloadImageAsBase64: async (url)=> {
-    console.log('inside',url)
     const response = await https.get(url);
     if (response.statusCode !== 200) throw new Error(`Failed to download image: ${response.statusMessage}`);
     const chunks = [];
@@ -94,7 +93,6 @@ contextBridge.exposeInMainWorld("file", {
     }
   },
   openInFileExplorer(e) {
-    console.log(e)
     let explorer;
     switch (os.platform()) {
       case "win32": explorer = "explorer"; break;
