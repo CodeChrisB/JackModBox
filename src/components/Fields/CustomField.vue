@@ -2,7 +2,7 @@
 v-card(:flat="flat").form.mt-1
   div(
     v-for="key in Object.keys(templateJson)" 
-    v-if="!['id','modded'].includes(key)"
+    v-if="!['modded'].includes(key) && canShow(key)"
   )
     v-col
       v-text-field(
@@ -31,86 +31,80 @@ v-card(:flat="flat").form.mt-1
 </template>
   
 <script>
+import { CCState } from '@/assets/data/CustomCheckBoxData'
 import ArrayField from './ArrayField.vue'
-  export default {
-    name: 'CustomField',
-    components:{
-      ArrayField
+export default {
+  name: 'CustomField',
+  components: {
+    ArrayField
+  },
+  props: {
+    flat: {
+      type: Boolean,
     },
-    props:{
-      flat:{
-        type:Boolean,
-      },
-      index:{
-        type:Number
-      },
-      obj:{
-        type:Object
-      },
-      showModded:{
-        type:Boolean,
-        default:false
-      }
+    index: {
+      type: Number
     },
-    created() {
-      //type
-      //typeof obj[key]
-      Object.keys(this.obj).forEach(x=>{
-        this.templateJson[x]=this.obj[x]
-      })
-      /*
-      todo create an anyfield that can work with all sorts of types
-      ArrayField gets an array as input
-      *creates the input fields for the elements
-      *add/delete button's for entries
-      */
+    obj: {
+      type: Object
+    },
+    showModded: {
+      type: Boolean,
+      default: false
+    }
+  },
+  created() {
+    //type
+    //typeof obj[key]
+    Object.keys(this.obj).forEach(x => {
+      this.templateJson[x] = this.obj[x]
+    })
+    let self =this
+    this.$listen('filter',(filter) => {
+      self.$set(self,'filter',filter) .interalFilter = filter
+      console.log(filter)
+    })
+    /*
+    todo create an anyfield that can work with all sorts of types
+    ArrayField gets an array as input
+    *creates the input fields for the elements
+    *add/delete button's for entries
+    */
 
 
+  },
+  data() {
+
+    return {
+      filter:[],
+      templateJson: {}
+    }
+  },
+  methods: {
+    canShow(key){
+      if(this.filter[key] ===CCState.IGNORE) return false
+      return true
     },
-    data() {
-  
-      return {
-        levelColor:[
-          '#ffffff',
-          '#f5f5f5',
-          '#fff2cc',
-          '#ffe6cc',
-          '#f8cecc',
-          '#e1d5e7',
-          '#e6d0de', //nothing should be longer than 6 nestings if so idc anymore
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de',
-          '#e6d0de', //if we ever reach this point god lord what monster of json are we looking at??
-        ],
-        templateJson:{}
-      }
+    emit() {
+      this.$emit('update', { content: this.templateJson, index: this.index })
     },
-    methods: {
-      emit(){
-        this.$emit('update',{content:this.templateJson,index:this.index})
-      },
-      firstLetterUp(str){
-        return str.charAt(0).toUpperCase() + str.slice(1);
-      },
-      onUpdate(e,key){
-        this.templateJson[key] = e
-        this.emit()
-      },  
-    }, 
-  }
-  </script>
+    firstLetterUp(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+    onUpdate(e, key) {
+      this.templateJson[key] = e
+      this.emit()
+    },
+  },
+}
+</script>
   
-  <style scoped>
-.form{
+<style scoped>
+.form {
   max-width: fit-content;
 }
-.col{
+
+.col {
   padding: 0px;
 }
-  </style>
+</style>

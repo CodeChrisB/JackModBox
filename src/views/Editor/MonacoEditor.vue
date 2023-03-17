@@ -3,24 +3,47 @@ div(style="overflow-y:scroll").mt-1
 
   v-row.mt-1.pl-2
     v-card(style="width:100%;padding:3px;background-color:#0078d7")
-      v-btn.ml-4(
-          icon
-          @click="backToFileviewer()"
-        )
-        v-icon mdi-arrow-left
-      v-icon(
-        v-if="!mode"
-        @click="showModded=!showModded"
-      ) {{ showModded ? 'mdi-check-all' : 'mdi-card-remove' }}
-      v-icon(medium).mr-2(@click="onSwitchModes") {{ mode ? 'mdi-form-select' : 'mdi-book-open'}}
-      v-btn.mr-1(
-          icon
-          medium
-          :disabled="!isDirty"
-          @click="onSave"
-        )
-        v-icon(medium) mdi-content-save 
-      span {{ fileName }}
+      div(style="max-width:95%;display: flex; align-items: center;")
+        v-btn.ml-4(
+            icon
+            @click="backToFileviewer()"
+          )
+          v-icon mdi-arrow-left
+        v-icon(
+          v-if="!mode"
+          @click="showModded=!showModded"
+        ) {{ showModded ? 'mdi-check-all' : 'mdi-card-remove' }}
+        v-icon(medium).mr-2(@click="onSwitchModes") {{ mode ? 'mdi-form-select' : 'mdi-book-open'}}
+        v-btn.mr-1(
+            icon
+            medium
+            :disabled="!isDirty"
+            @click="onSave"
+          )
+          v-icon(medium) mdi-content-save 
+        span {{ fileName }}
+        v-spacer
+        span {{ searchInput }}
+        v-menu(offset-y='',:close-on-content-click="false")
+          template(v-slot:activator='{ on, attrs }')
+            v-btn(icon=''  v-bind='attrs' v-on='on')
+              v-icon mdi-magnify
+          v-card.rounded-0(style="max-width:30vw;min-width:30vw;")
+            v-row.pa-5
+              v-text-field(
+                v-model="searchInput"
+                append-icon="mdi-magnify"
+                label="Search String"
+              )
+            div(v-if="!mode")
+              v-divider   
+              div(v-for="prop in props")
+                CustomCheckbox(
+                  :label="prop"
+                  @update="setFilter(prop,$event)"
+                )
+            div(style="min-height:50px")
+            
 
   v-row
     div(
@@ -40,6 +63,7 @@ div(style="overflow-y:scroll").mt-1
       CustomEditor(
         v-show="!mode"
         :jsonFile="jsonFile"
+        :filter="filter"
         @error="onCustomEditorError"
         @changed="onCustomEditorChanged"
       )
@@ -50,11 +74,13 @@ import MonacoEditor from 'monaco-editor-vue';
 import CustomEditor from './CustomEditor.vue';
 import Dialog from '@/components/CustomDialog.vue'
 import CustomPath from '@/components/CustomPath.vue';
-
+import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
+import { CCState } from '@/assets/data/CustomCheckBoxData';
 
 export default {
   name: "App",
   components: {
+    CustomCheckbox,
     CustomPath,
     CustomEditor,
     MonacoEditor,
@@ -75,12 +101,16 @@ export default {
   },
   data() {
     return {
-      answer:'no',
+      test:0,
       isDirty:false,
       mode:true,
+      showMenu:false,
       showModded:true,
       customEditorValue:[],
       jsonFile:{},
+      searchInput:'',
+      props:[],
+      filter:[],
       options: {
         editor:null,
         value:"Loading File..."
@@ -103,6 +133,10 @@ export default {
     loadFile(){
       this.file.fs.readFile(this.key, (error, text) => {
         this.editor.getModel().setValue(new TextDecoder().decode(text));
+        let json = JSON.parse(this.editor.getModel().getValue())
+        if(json &&json.content){
+          this.props =Object.keys(json.content[0])
+        }
       })
     },  
     onChange(value) {
@@ -139,6 +173,7 @@ export default {
         //curently in monacoEditor
         //get json object from editor
         this.jsonFile = JSON.parse(this.editor.getValue())
+        this.props = Object.keys((this.jsonFile?.content?.[0] ?? []))
         this.mode =false
       
       }else{
@@ -148,6 +183,10 @@ export default {
 
       }
      
+    },
+    setFilter(prop,state){
+      this.$set(this.filter,prop,state)
+      this.$broadcast('filter',this.filter)
     }
   }
 };
