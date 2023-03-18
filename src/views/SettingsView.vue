@@ -43,7 +43,7 @@ export default {
             this.settings[SETTING.SHOW_ALL_NO_PACKS] = this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)
         },
         toDocumenation(){
-            this.$broadcast("sideview-documenation",true)
+            this.$broadcast("documentation-state",true)
             this.$router.replace('/Documenation')
         }
     },

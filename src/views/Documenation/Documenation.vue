@@ -1,27 +1,21 @@
 <template lang="pug">
 div
-  <div v-html="markdownToHtml"></div>
-  v-divider
-
-
+  vue-markdown.vuemarkdown(:source="this.markdown")
+  
 </template>
   
 <script>
-import { marked } from "marked";
+import VueMarkdown from 'vue-markdown-render';
 import Welcome from '@/assets/documentation/docs/Welcome.md'
 export default {
   name: 'DocumenationView',
-  components: {
-  
+  components:{
+    VueMarkdown
   },
   data() {
     return {
-      markdown: ''
-    }
-  },
-  computed:{
-    markdownToHtml(){
-      return marked(this.markdown);
+      dialog: true,
+      markdown: '#fuck'
     }
   },
   created() {
@@ -31,7 +25,6 @@ export default {
 
   },
   methods: {
-    
     changeDocumentation(filename) {
       this.markdown = require(`@/assets/documentation/docs/${filename}`).default
       if(!this.markdown){
@@ -49,3 +42,4 @@ export default {
 }
 </script>
   
+<style></style>

@@ -1,27 +1,41 @@
 <template lang="pug">
 div
-  v-row.pa-0.ml-2.mt-1
-    v-icon.mb-3(
-      small 
-      @click="toSettings"
-    ) mdi-cog
+  div(v-if="isDocumenation === false")
+    v-row.pa-0.ml-2.mt-1
+      v-icon.mb-3(
+        v-if="isDocumenation === false"
+        small 
+        @click="toSettings"
+      ) mdi-cog
 
-    v-btn.mb-3(
-      text
-      icon
-      @click="back()",
-      small
-    ) 
-      v-icon(small) mdi-arrow-left
-    v-breadcrumbs.pa-0.mb-3(:items="computedCrumbs",divider="/").p0.pl-1
-      v-breadcrumbs-item.pa-0(
-        v-for="(item,index) in computedCrumbs"
-        @click="$router.pass('fileviewer',{key:item.fullPath})"
-      )
-        span {{ item.text }}
-        span(v-if="index !== computedCrumbs.length-1") /
-  v-row.ma-0.pa-0
-    v-divider.mb-2
+      v-btn.mb-3(
+        v-if="isDocumenation === false"
+        text
+        icon
+        @click="back()",
+        small
+      ) 
+        v-icon(small) mdi-arrow-left
+
+      v-breadcrumbs.pa-0.mb-3(:items="computedCrumbs",divider="/").p0.pl-1
+        v-breadcrumbs-item.pa-0(
+          v-for="(item,index) in computedCrumbs"
+          @click="$router.pass('fileviewer',{key:item.fullPath})"
+        )
+          span {{ item.text }}
+          span(v-if="index !== computedCrumbs.length-1") /
+    v-row.ma-0.pa-0
+      v-divider.mb-4
+  div(
+    v-else
+    style="max-width:100%"
+    )
+      v-spacer
+      v-icon(
+          v-if="isDocumenation"
+          @click="closeDocumentation()"
+        ) mdi-close
+
 
         
 
@@ -34,6 +48,7 @@ div
 export default {
   name: 'CustomPath',
   data: () => ({
+    isDocumenation:false,
     path: [],
     backTo: {
       name: null,
@@ -63,6 +78,7 @@ export default {
   created() {
     let self = this
     this.$listen('setCustomPath-BackTo', (e) => self.backTo = e)
+    this.$listen("documentation-state", (e)=>self.isDocumenation =!!e);
   },
   watch: {
     "$route.params.key": {
@@ -89,9 +105,13 @@ export default {
         this.$router.pass('fileviewer', { key: this.path.join('\\') })
       }
     },
+    closeDocumentation(){
+      this.$broadcast("documentation-state",false);
+      this.$router.push({ name: 'home' })
+    },
     toSettings() {
-      this.$router.replace("/settings")
-    }
+      this.$router.push({ name: 'settings' })
+    },
   }
 };
 </script>

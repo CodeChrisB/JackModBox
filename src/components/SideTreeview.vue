@@ -79,7 +79,7 @@ export default {
 
     let self=this
     this.$listen("reloadSideview", self.reloadSideView);
-    this.$listen("sideview-documenation", (e)=>self.isDocumenation =!!e);
+    this.$listen("documentation-state", (e)=>self.isDocumenation =!!e);
   },
   data() {
 
