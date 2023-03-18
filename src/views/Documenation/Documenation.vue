@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  vue-markdown.vuemarkdown(:source="this.markdown")
+  vue-markdown.ml-2(:source="this.markdown")
   
 </template>
   
@@ -36,7 +36,6 @@ export default {
         3. Reinstall or download the software again.
         `
       }
-      console.log(this.markdown)
     }
   }
 }
