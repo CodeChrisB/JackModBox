@@ -3,7 +3,6 @@ v-card.form.mt-1(
   v-if="showPrompt"
   :flat="flat"
 )
-  span {{ propsToIgnore }}
   div(
     v-for="key in Object.keys(templateJson)" 
     v-if="!['modded'].includes(key) && canShow(key)"
@@ -56,6 +55,9 @@ export default {
     obj: {
       type: Object
     },
+    searchInput:{
+      type: String
+    },  
     showModded: {
       type: Boolean,
       default: false
@@ -82,7 +84,8 @@ export default {
 
     return {
       templateJson: {},
-      internalFilter: []
+      internalFilter: [],
+      internalSearch:''
     }
   },
   computed:{
@@ -90,7 +93,8 @@ export default {
       return Object.values(this.internalFilter).some(value => value === 1);
     },
     propsToIgnore(){
-      if(!this.internalFilter) return []
+      if(!this.internalFilter || this.internalFilter.length === 0) return []
+
       return this.internalFilter.filter(elem=>elem[Object.keys(elem)[0]] === CCState.IGNORE)
       .map(elem=>Object.keys(elem)[0])
     },  
@@ -100,13 +104,16 @@ export default {
       .map(elem=>Object.keys(elem)[0])
     },  
     showPrompt(){
+      if(this.propsToSearch.length>0){
+        for(let i =0;i<this.propsToSearch.length;i++){
+          if((this.templateJson[this.propsToSearch[i]]+"").toLowerCase().includes(this.searchInput.toLowerCase())) return true
+        }
+        return false
+      }
+
+
       return true
-      //the filter does not even try to search for text just skip
 
-      //if(this.filterTriesToSearch === false) return true
-
-      //let xxx = Object.values(this.propsToFilter).some(val=> (this.templateJson[val]+"").includes(this.searchInput))
-      //return xxx
     },
   },
   methods: {
@@ -133,6 +140,11 @@ export default {
         this.internalFilter = newVal
       },
       immediate: true
+    },
+    searchInput:{
+      handler(newVal){
+        this.internalSearch = newVal
+      }
     }
   }
 }

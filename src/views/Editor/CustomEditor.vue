@@ -1,12 +1,11 @@
 <template lang="pug">
 v-row.ma-1
-
-  span {{ internalFilter }}
   CustomField.container(
     v-for="(obj,index) in internalValue.content"
     :obj="obj" 
     :index="index"
     :filter="internalFilter"
+    :searchInput="internalSearch"
     show-modded
     v-on:update="onUpdate"
   )
@@ -25,12 +24,16 @@ export default {
   data() {
     return {
       internalValue: [],
-      internalFilter: []
+      internalFilter: [],
+      internalSearch:''
     }
   },
   props: {
     filter:{
-      type:Object,
+      type:Array,
+    },
+    searchInput:{
+      type:String
     },
     jsonFile: {
       type: Object
@@ -46,6 +49,11 @@ export default {
     filter: {
       handler(newVal) {
         this.internalFilter = newVal
+      }
+    },
+    searchInput: {
+      handler(newVal) {
+        this.internalSearch = newVal
       }
     },
     jsonFile: {

@@ -22,15 +22,15 @@ div(style="overflow-y:scroll").mt-1
           v-icon(medium) mdi-content-save 
         span {{ fileName }}
         v-spacer
-        span {{ filter.searchInput }}
+        span {{ searchInput }}
         v-menu(offset-y='',:close-on-content-click="false")
           template(v-slot:activator='{ on, attrs }')
             v-btn(icon=''  v-bind='attrs' v-on='on')
               v-icon mdi-magnify
-          v-card.rounded-0(style="max-width:30vw;min-width:30vw;")
+          v-card(style="max-width:30vw;min-width:30vw;overflow:hidden")
             v-row.pa-5
               v-text-field(
-                v-model="filter.searchInput"
+                v-model="searchInput"
                 append-icon="mdi-magnify"
                 label="Search String" 
               )
@@ -41,8 +41,7 @@ div(style="overflow-y:scroll").mt-1
                   :label="prop"
                   @update="setFilter(prop,index,$event)"
                 )
-            div(style="min-height:50px")
-      span {{ filter }}
+
             
 
   v-row
@@ -64,6 +63,7 @@ div(style="overflow-y:scroll").mt-1
         v-show="!mode"
         :jsonFile="jsonFile"
         :filter="filter"
+        :searchInput="searchInput"
         @error="onCustomEditorError"
         @changed="onCustomEditorChanged"
       )
@@ -107,6 +107,7 @@ export default {
       customEditorValue:[],
       jsonFile:{},
       props:[],
+      searchInput:'',
       filter:[],
       options: {
         editor:null,
