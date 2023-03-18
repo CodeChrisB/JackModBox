@@ -8,5 +8,15 @@ module.exports = defineConfig({
       preload: 'src/preload.js',
       mainProcessWatch:['src/background.js','src/main.js']
     }
-  }
+  },
+  configureWebpack: {
+    module: {
+      rules: [
+        {
+          test: /\.md$/i,
+          loader: "raw-loader",
+        },
+      ],
+    },
+  },
 })

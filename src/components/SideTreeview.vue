@@ -1,53 +1,56 @@
 <template lang="pug">
 div
-  CustomDialog
-  v-card(
-    v-for="(item,index) in items"
-  ).ma-0.rounded-0.elevation-1
-    v-row.ma-0(
-      style="min-height:10px"
-      )
-        span.text-body-2.hover(@click="toggle(index)").ml-6 {{ item.name }}
-        v-spacer.hover(@click="toggle(index)")
-        v-menu(offset-y='')
-          template(v-slot:activator='{ on, attrs }')
-            v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
-          v-list
-            span.ml-2 {{ item.name }}
-            v-divider
-            v-list-item(
-              v-for='(item, itemIndex) in menu.pack' :key='itemIndex' @click="itemClick(item,index)"
-            )
-              v-list-item-title {{ item.title }}
-
-    v-col.panel.pa-0(
-      v-if="panels[index]"
-      :style="panelHeight"
-      )
-        v-row.ma-0.pa-0(v-for="game in item.children")
-          v-btn.flex-grow-1.flex-shrink-0.pa-0.pl-4(
-            text
-            @click="onClick(game)"
-            )
-            span.text-caption.text-truncate {{ game.name }}
-          v-menu.ma-0(offset-y='')
+  div(v-if="!isDocumenation")
+    CustomDialog
+    v-card(
+      v-for="(item,index) in items"
+    ).ma-0.rounded-0.elevation-1
+      v-row.ma-0(
+        style="min-height:10px"
+        )
+          span.text-body-2.hover(@click="toggle(index)").ml-6 {{ item.name }}
+          v-spacer.hover(@click="toggle(index)")
+          v-menu(offset-y='')
             template(v-slot:activator='{ on, attrs }')
               v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
             v-list
-              span.px-2 {{ `${item.name} - ${game.name}` }}
+              span.ml-2 {{ item.name }}
               v-divider
               v-list-item(
-                v-for='(item, itemIndex) in menu.game' :key='itemIndex' @click="gameClick(item,game)"
-                v-if="game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly"
+                v-for='(item, itemIndex) in menu.pack' :key='itemIndex' @click="itemClick(item,index)"
               )
                 v-list-item-title {{ item.title }}
+
+      v-col.panel.pa-0(
+        v-if="panels[index]"
+        :style="panelHeight"
+        )
+          v-row.ma-0.pa-0(v-for="game in item.children")
+            v-btn.flex-grow-1.flex-shrink-0.pa-0.pl-4(
+              text
+              @click="onClick(game)"
+              )
+              span.text-caption.text-truncate {{ game.name }}
+            v-menu.ma-0(offset-y='')
+              template(v-slot:activator='{ on, attrs }')
+                v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
+              v-list
+                span.px-2 {{ `${item.name} - ${game.name}` }}
+                v-divider
+                v-list-item(
+                  v-for='(item, itemIndex) in menu.game' :key='itemIndex' @click="gameClick(item,game)"
+                  v-if="game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly"
+                )
+                  v-list-item-title {{ item.title }}
+  div(v-else)
+    DocumenationSideView
 
 </template> 
 
 <script>
 import { SETTING } from '@/assets/data/SettingData'
 import { JackBoxTreeData,AllGames } from '@/assets/data/JackBoxTreeData'
-
+import DocumenationSideView from '@/views/Documenation/DocumenationSideView.vue'
 import CustomDialog from './CustomDialog.vue'
 import dialog from './dialog'
 const State = Object.freeze({
@@ -57,7 +60,10 @@ const State = Object.freeze({
 })
 export default {
   name: 'SettingsView',
-  components: { CustomDialog },
+  components: { 
+    CustomDialog,
+    DocumenationSideView
+  },
   created() {
     this.file = window.file
     this.SETTING = SETTING
@@ -73,11 +79,13 @@ export default {
 
     let self=this
     this.$listen("reloadSideview", self.reloadSideView);
+    this.$listen("sideview-documenation", (e)=>self.isDocumenation =!!e);
   },
   data() {
 
     return {
       active: null,
+      isDocumenation:false,
       menu: {
 
         pack: [

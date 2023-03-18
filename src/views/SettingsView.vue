@@ -20,6 +20,9 @@ div
                 label="Show all Games without Packs"
                 @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>$broadcast('reloadSideview',true))"
             )
+            v-btn(
+                @click="toDocumenation()"
+            )| To Documenation
 
 </template>
 
@@ -32,13 +35,16 @@ export default {
         this.file = window.file
         this.SETTING = SETTING
         this.getData()
-        this.$broadcast('onSteamPathChange',this.settings[SETTING.STEAM_PATH])
     },  
     methods:{
         getData(){
             this.settings[SETTING.MODS_PATH] = this.file.getSetting(SETTING.MODS_PATH)
             this.settings[SETTING.STEAM_PATH] = this.file.getSetting(SETTING.STEAM_PATH)
             this.settings[SETTING.SHOW_ALL_NO_PACKS] = this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)
+        },
+        toDocumenation(){
+            this.$broadcast("sideview-documenation",true)
+            this.$router.replace('/Documenation')
         }
     },
     data() {

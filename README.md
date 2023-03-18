@@ -1,4 +1,4 @@
-# jack-mod-box
+# JackModBox
 
 ## Project setup
 ```

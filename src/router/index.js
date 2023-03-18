@@ -4,7 +4,9 @@ import HomeView from '../views/HomeView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import FileViewer from '@/views/FileViewer/FileViewer.vue'
 import MonacoEditor from '@/views/Editor/MonacoEditor.vue'
+import Documenation from '@/views/Documenation/Documenation.vue'
 import GameView from '@/views/GameView.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -32,6 +34,11 @@ const routes = [
     path:'/monaco/:key',
     name:'MonacoEditor',
     component: MonacoEditor
+  },
+  {
+    path:'/Documenation',
+    name:'Documenation',
+    component: Documenation
   },
 ]
 
