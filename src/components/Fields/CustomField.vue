@@ -1,5 +1,9 @@
 <template lang="pug">
-v-card(:flat="flat").form.mt-1
+v-card.form.mt-1(
+  v-if="showPrompt"
+  :flat="flat"
+)
+  span {{ propsToIgnore }}
   div(
     v-for="key in Object.keys(templateJson)" 
     v-if="!['modded'].includes(key) && canShow(key)"
@@ -45,6 +49,10 @@ export default {
     index: {
       type: Number
     },
+    filter:{
+      type:[Object,Array],
+      default: ()=>[]
+    },
     obj: {
       type: Object
     },
@@ -59,11 +67,8 @@ export default {
     Object.keys(this.obj).forEach(x => {
       this.templateJson[x] = this.obj[x]
     })
-    let self =this
-    this.$listen('filter',(filter) => {
-      self.$set(self,'filter',filter) .interalFilter = filter
-      console.log(filter)
-    })
+
+    
     /*
     todo create an anyfield that can work with all sorts of types
     ArrayField gets an array as input
@@ -72,17 +77,43 @@ export default {
     */
 
 
-  },
+  }, 
   data() {
 
     return {
-      filter:[],
-      templateJson: {}
+      templateJson: {},
+      internalFilter: []
     }
+  },
+  computed:{
+    filterTriesToSearch(){
+      return Object.values(this.internalFilter).some(value => value === 1);
+    },
+    propsToIgnore(){
+      if(!this.internalFilter) return []
+      return this.internalFilter.filter(elem=>elem[Object.keys(elem)[0]] === CCState.IGNORE)
+      .map(elem=>Object.keys(elem)[0])
+    },  
+    propsToSearch(){
+      if(!this.internalFilter) return []
+      return this.internalFilter.filter(elem=>elem[Object.keys(elem)[0]] === CCState.ON)
+      .map(elem=>Object.keys(elem)[0])
+    },  
+    showPrompt(){
+      return true
+      //the filter does not even try to search for text just skip
+
+      //if(this.filterTriesToSearch === false) return true
+
+      //let xxx = Object.values(this.propsToFilter).some(val=> (this.templateJson[val]+"").includes(this.searchInput))
+      //return xxx
+    },
   },
   methods: {
     canShow(key){
-      if(this.filter[key] ===CCState.IGNORE) return false
+      //no filter set => everything can be shown
+      if(!this.internalFilter) return true 
+      if((this.propsToIgnore??[]).includes(key)) return false
       return true
     },
     emit() {
@@ -96,6 +127,14 @@ export default {
       this.emit()
     },
   },
+  watch: {
+    filter: {
+      handler(newVal) {
+        this.internalFilter = newVal
+      },
+      immediate: true
+    }
+  }
 }
 </script>
   

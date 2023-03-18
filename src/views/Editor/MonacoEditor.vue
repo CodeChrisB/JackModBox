@@ -1,6 +1,5 @@
 <template lang="pug">
 div(style="overflow-y:scroll").mt-1
-
   v-row.mt-1.pl-2
     v-card(style="width:100%;padding:3px;background-color:#0078d7")
       div(style="max-width:95%;display: flex; align-items: center;")
@@ -23,7 +22,7 @@ div(style="overflow-y:scroll").mt-1
           v-icon(medium) mdi-content-save 
         span {{ fileName }}
         v-spacer
-        span {{ searchInput }}
+        span {{ filter.searchInput }}
         v-menu(offset-y='',:close-on-content-click="false")
           template(v-slot:activator='{ on, attrs }')
             v-btn(icon=''  v-bind='attrs' v-on='on')
@@ -31,18 +30,19 @@ div(style="overflow-y:scroll").mt-1
           v-card.rounded-0(style="max-width:30vw;min-width:30vw;")
             v-row.pa-5
               v-text-field(
-                v-model="searchInput"
+                v-model="filter.searchInput"
                 append-icon="mdi-magnify"
-                label="Search String"
+                label="Search String" 
               )
             div(v-if="!mode")
               v-divider   
-              div(v-for="prop in props")
+              div(v-for="(prop,index) in props")
                 CustomCheckbox(
                   :label="prop"
-                  @update="setFilter(prop,$event)"
+                  @update="setFilter(prop,index,$event)"
                 )
             div(style="min-height:50px")
+      span {{ filter }}
             
 
   v-row
@@ -75,7 +75,6 @@ import CustomEditor from './CustomEditor.vue';
 import Dialog from '@/components/CustomDialog.vue'
 import CustomPath from '@/components/CustomPath.vue';
 import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
-import { CCState } from '@/assets/data/CustomCheckBoxData';
 
 export default {
   name: "App",
@@ -101,14 +100,12 @@ export default {
   },
   data() {
     return {
-      test:0,
       isDirty:false,
       mode:true,
       showMenu:false,
       showModded:true,
       customEditorValue:[],
       jsonFile:{},
-      searchInput:'',
       props:[],
       filter:[],
       options: {
@@ -184,11 +181,10 @@ export default {
       }
      
     },
-    setFilter(prop,state){
-      this.$set(this.filter,prop,state)
-      this.$broadcast('filter',this.filter)
+    setFilter(prop,index,val){
+      this.$set(this.filter,index,{[prop]:val})
     }
-  }
+  },
 };
 </script>
 

@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     back() {
-      console.log(this.backTo.name, this.path.slice(-1)[0])
       if (this.backTo.name === this.path.slice(-1)[0]) {
         this.$router.pass('gameview', {
           key: this.backTo.key

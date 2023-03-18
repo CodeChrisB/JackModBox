@@ -110,7 +110,6 @@
         return 'mdi-checkbox-blank-outline'
       },
       toFileViewer(e,sendBackTo) {
-        console.log()
         if(sendBackTo){
           this.$broadcast('setCustomPath-BackTo',{
             name:e.split('\\').slice(-1)[0],

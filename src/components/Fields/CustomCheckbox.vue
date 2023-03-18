@@ -3,6 +3,7 @@ v-row.ma-0.pa-0
   v-btn(icon)
     v-icon(
       @click="onClick()"
+      @contextmenu="onRightClick()"
       :color="computedColor"
     ) {{computedIcon}}
   span(
@@ -35,9 +36,6 @@ export default {
       return null
     }
   },
-  created() {
-    console.log(this.label )
-  },
   data() {
     return {
       //In this component we can assume that CCState's max value is 2
@@ -60,7 +58,10 @@ export default {
     onClick(){
       if(this.innerValue>=2) this.innerValue=0;
       else {this.innerValue++}
-
+      this.$emit('update',this.innerValue)
+    },
+    onRightClick(){
+      this.innerValue = CCState.OFF
       this.$emit('update',this.innerValue)
     }
   },

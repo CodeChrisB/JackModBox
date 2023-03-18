@@ -45,13 +45,10 @@ export default {
     async onDrop(e) {
       this.dragover = false;
       if (e.dataTransfer.files.length > 0) {
-        console.log('local')
-        console.log(e.dataTransfer)
         window.file.overwriteFile(this.path, e.dataTransfer.files[0].path).then(suceed => {
           this.getImage()
         })
       } else {
-        console.log('online')
         const html = e.dataTransfer.getData('text/html');
         const regexBase64 = /data:image\/\w+;base64,([\s\S]+)/;
         const regexUrl = /https?:\/\/[^\s<>"]+|www\.[^\s<>"]+/gi;
@@ -75,16 +72,13 @@ export default {
     getImage() {
       const fs = window.file.fs;
       const imageData = fs.readFileSync(this.innerPath);
-      console.log(imageData)
       if (!imageData) return
       this.imageUrl = URL.createObjectURL(new Blob([imageData], { type: "image/png" }));
     },
     saveBas64Image(image) {
-      console.log('saveBas64Image', image)
       window.file.replaceFileWithBase64(this.path, image, (err) => { this.getImage() })
     },
     saveUrl(url) {
-      console.log('saveUrl', url)
       window.file.downloadImageAsBase64(url).then(base64 => {
         this.saveBas64Image(base64)
       })
