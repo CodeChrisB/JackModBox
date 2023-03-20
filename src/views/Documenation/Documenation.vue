@@ -1,6 +1,6 @@
 <template lang="pug">
 div(style="overflow: auto;max-height:calc(100vh - 26px)")
-  vue-markdown.overflow-auto.ml-2(:source="this.markdown")
+  vue-markdown.ml-2.imgContainer(:source="this.markdown")
 </template>
   
 <script>
@@ -71,8 +71,10 @@ export default {
 </script>
   
 <style scoped>
-img {
-  max-width: 10px;
-  height: auto;
+.imgContainer >>> img {
+  width: 100%!important;
+  height: auto!important;
+  /* Magic! */
+  max-width: 50vw!important;
 }
 </style>

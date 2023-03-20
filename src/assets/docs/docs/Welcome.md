@@ -1,18 +1,16 @@
 # Welcome to JackModBox
 
-Here's an image of a drag racer in action:
+Welcome to the documentation for the modding tool for Jack Box Party Games!
 
+This documentation aims to provide all the necessary information and instructions on how to use the modding tool to create and customize your own game content.
 
+With the modding tool, you can create your own trivia questions, prompts, and even entire game modes. Our goal is to give you the freedom and flexibility to create unique and exciting experiences for your friends and family to enjoy.
 
-![img](waterdrop1.png)
+Whether you're an experienced modder or new to the world of game customization, this documentation will guide you through the process step-by-step. We've included examples, explanations, and tips to help you along the way, so you can create the best possible content for your Jack Box Party Games.
 
-## Text between image
-
-![img](waterdrop1.png)
-
-### Text between image #2 
+So let's dive in and get started!
 
 ![img](waterdrop1.png)
 
 
-# yyyy
+# This Tool was created by CCB

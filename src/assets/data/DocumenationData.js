@@ -4,6 +4,10 @@ export const Documenation = Object.freeze([
     filename:'Welcome.md'
   },
   {
+    title:'Get Started',
+    filename:'GetStarted.md'
+  },
+  {
     title:'Modding',
     filename:'Modding.md'
   },
