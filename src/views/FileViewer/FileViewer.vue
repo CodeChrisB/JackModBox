@@ -96,9 +96,7 @@ export default {
       })
       this.onFinishedLoading()
     },
-    async loadImageWhenReady(path) {
-      return window.file.loadImage(path)
-    },
+
     onFileClick(e) {
       if(e.isFolder === 1){
         this.clickedFile = this.folderPath + "\\" + e.name

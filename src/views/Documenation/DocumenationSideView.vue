@@ -4,7 +4,6 @@ div
     v-btn.px-6(
       @click="$broadcast('documentation-data',doc.filename)"
       block
-      flat
       text
     )
       |{{ doc.title }}

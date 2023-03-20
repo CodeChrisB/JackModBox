@@ -6,6 +6,7 @@ import os from "os"
 import { request } from "https";
 import https from "https"
 import { spawn } from "child_process";
+import electron from "electron"
 const deepReadDir = async (dirPath) => await Promise.all(
   (await fs.readdir(dirPath, { withFileTypes: true })).map(async (dirent) => {
     const path = path.join(dirPath, dirent.name)
@@ -40,6 +41,7 @@ function noDotFiles(x) {
 }
 
 const settingsPath = 'settings.json'
+
 contextBridge.exposeInMainWorld("file", {
   setSetting: async (setting, val) => {
     const dir = path.dirname(settingsPath);
@@ -162,11 +164,18 @@ contextBridge.exposeInMainWorld("file", {
       return false;
     }
   },
+  loadAssetImage: (file)=>{
+
+    console.log('filePath',path.join(__dirname,'bundled',file))
+    const data = fs.readFileSync(path.join(__dirname,file));
+    console.log('data',data)
+    const base64 = Buffer.from(data).toString('base64');
+    return base64;
+  },
   loadImage: async(imagePath)=>{
     try {
       // Read the file as a buffer
       const buffer = await fs.promises.readFile(imagePath);
-  
       // Convert the buffer to a base64 string
       const base64Image = buffer.toString('base64');
   

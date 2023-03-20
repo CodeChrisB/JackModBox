@@ -54,7 +54,7 @@ export const GameIds = Object.freeze({
         key:"lieswatter",
         pack:1,
         name: "Lieswatter", 
-        id: '\\The Jackbox Party Pack\\games\\Quiplash' 
+        id: '\\The Jackbox Party Pack\\games\\LieSwatterParty' 
     },
     //pack 2
     bidiots: {
@@ -134,7 +134,7 @@ export const GameIds = Object.freeze({
     monstermingle: {
         key:"monstermingle",
         pack:4,
-        name: "Monster Mingle", 
+        name: "Monsters Seeking Monsters", 
         id: '\\The Jackbox Party Pack 4\\games\\MonsterMingle' 
     },
     civic: {
