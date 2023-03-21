@@ -1,14 +1,20 @@
 <template lang="pug">
 v-row.ma-1
-  CustomField.container(
-    v-for="(obj,index) in internalValue.content"
-    :obj="obj" 
-    :index="index"
-    :filter="internalFilter"
-    :searchInput="internalSearch"
-    show-modded
-    v-on:update="onUpdate"
-  )
+  div(v-if="ceMode === '' || ceMode === null")
+    CustomField.container(
+      v-for="(obj,index) in internalValue.content"
+      :obj="obj" 
+      :index="index"
+      :filter="internalFilter"
+      :searchInput="internalSearch"
+      show-modded
+      v-on:update="onUpdate"
+    )
+  v-row.ml-5(v-if="ceMode==='FastPrompt'")
+    v-textarea(
+      v-model="fastPrompt.value",
+      :rows="fastPrompt.rows",
+    )
 
 </template>
     
@@ -23,12 +29,20 @@ export default {
 
   data() {
     return {
+      internalCeMode:'',
       internalValue: [],
       internalFilter: [],
-      internalSearch:''
+      internalSearch:'',
+      fastPrompt:{
+        value:'',
+        rows:1
+      }
     }
   },
   props: {
+    ceMode:{
+      type:String
+    },
     filter:{
       type:Array,
     },
@@ -39,6 +53,15 @@ export default {
       type: Object
     }
   },
+  created(){
+    console.log('internalCeMode',this.internalCeMode)
+    if(this.ceMode ==='FastPrompt'){
+      console.log(this.internalValue)
+      this.fastPrompt.value = this.internalValue.content.map(x=>x['question']).join('\n')
+      this.fastPrompt.rows = this.fastPrompt.value.length
+      
+    }
+  },
   methods: {
     onUpdate(e) {
       this.internalValue.content[e.index] = e.content
@@ -46,6 +69,11 @@ export default {
     },
   },
   watch: {
+    ceMode: {
+      handler(newVal) {
+        this.internalCeMode = newVal
+      }
+    },
     filter: {
       handler(newVal) {
         this.internalFilter = newVal
