@@ -16,7 +16,7 @@ export default {
   name: 'HomeView',
   data(){
     return {
-      maxWaterDropIndex:1,
+      maxWaterDropIndex:5,
       slogans:[
         "Drawful - Artistic deception at its finest",
         "Fibbage XL - Can you spot the lies?",
@@ -62,7 +62,8 @@ export default {
         "Quixort - Puzzles that are out of this world",
         "Junktopia - Who can make the best junk?",
         "Nonsensory - A game that defies logic",
-        "Roomerang - The game that comes back to you"
+        "Roomerang - The game that comes back to you",
+        "There is a 2.17% chance to see this prompt!"
       ]
     }
   },

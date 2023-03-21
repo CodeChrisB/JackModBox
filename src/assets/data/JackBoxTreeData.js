@@ -285,10 +285,17 @@ export const GameIds = Object.freeze({
                     isFolder:false
                 }
             ],  
+            fastPrompts:[
+                {   
+                    key:'question',
+                    name:'Fast Edit Prompts',
+                    path:'\\content\\en\\ApplyYourselfInterviewQuestion.jet'
+                }
+            ],
             expandFiles:[
                 //e.g prompts seperated by id folders maybe adding them  together in a single editor then redistribute them idk
                 //or just create 1 arrry out of it and then give every id field one elemnt from the array
-            ],  
+            ],
             expandFolders:[],
             modability:{
                 score:100,

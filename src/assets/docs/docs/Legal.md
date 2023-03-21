@@ -1,8 +1,17 @@
-### JackModBox 
-
+# JackModBox 
+## IF YOU PAID FOR THIS TOOL YOU WERE SCAMMED
 Copyright (C) Buchberger Christopher - All Rights Reserved  
-Unauthorized copying of this software via any medium is strictly prohibited
-Proprietary and confidential. Written by Christopher Buchberger.
+THIS APPLICATION  IS OPEN SOURCE AND IS DOWNLOADABLE WITH THE FOLLOWING URL  
+
+https://github.com/CodeChrisB/Jack-Mod-Box
+
+
+YOU MAY USE THIS SOURCE CODE FOR YOUR OWN PROJECT BUT USING THIS ANY OF
+THIS SOURCE CODE WILL REQUIRE YOUR PROJECT TO ALSO BE OPEN SOURCE
+
+
+TRY TO GET BACK YOUR MONEY AND GET THE REAL TOOL WITHOUT ANY VIRUSES HERE
+https://github.com/CodeChrisB/Jack-Mod-Box/releases
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR   
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS  

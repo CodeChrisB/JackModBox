@@ -9,10 +9,10 @@ div(style="overflow-y:scroll").mt-1
           )
           v-icon mdi-arrow-left
         v-icon(
-          v-if="!mode"
+          v-if="!isCustomEditor"
           @click="showModded=!showModded"
         ) {{ showModded ? 'mdi-check-all' : 'mdi-card-remove' }}
-        v-icon(medium).mr-2(@click="onSwitchModes") {{ mode ? 'mdi-form-select' : 'mdi-book-open'}}
+        v-icon(medium).mr-2(@click="onSwitchModes") {{ isCustomEditor ? 'mdi-form-select' : 'mdi-book-open'}}
         v-btn.mr-1(
             icon
             medium
@@ -34,7 +34,7 @@ div(style="overflow-y:scroll").mt-1
                 append-icon="mdi-magnify"
                 label="Search String" 
               )
-            div(v-if="!mode")
+            div(v-if="!isCustomEditor")
               v-divider   
               div(v-for="(prop,index) in props")
                 CustomCheckbox(
@@ -51,7 +51,7 @@ div(style="overflow-y:scroll").mt-1
     )
       Dialog
       MonacoEditor.me(
-        v-show="mode"
+        v-show="isCustomEditor"
         theme="vs-dark"
         language="json"
         automaticLayout: true
@@ -60,7 +60,7 @@ div(style="overflow-y:scroll").mt-1
         :editorMounted="editorMounted"
       )
       CustomEditor(
-        v-show="!mode"
+        v-show="!isCustomEditor"
         :jsonFile="jsonFile"
         :filter="filter"
         :searchInput="searchInput"
@@ -89,7 +89,8 @@ export default {
     this.file = window.file
     this.key =this.$route.params.key
     this.fileName = this.key.split('\\').slice(-1).join('')
-    this.loadFile()
+    this.checkMode()
+    this.loadFile() 
   },
   async mounted() {
     document.addEventListener("keydown", this.doSave);
@@ -100,8 +101,9 @@ export default {
   },
   data() {
     return {
+      fileContent:'',
       isDirty:false,
-      mode:true,
+      isCustomEditor:true,
       showMenu:false,
       showModded:true,
       customEditorValue:[],
@@ -120,6 +122,11 @@ export default {
     backToFileviewer(){
       this.$router.pass('fileviewer',{key:this.key.split('\\').slice(0,-1).join('\\')})
     },
+    checkMode(){
+      if(this.$route.params.customEditor) this.setCustomEditor()
+      console.log('isCustomEditor',this.$route.params.customEditor)
+      
+    },
     editorMounted(value){
       this.editor = value
     },
@@ -128,11 +135,12 @@ export default {
       base.content = this.customEditorValue
       return  JSON.stringify(base, null, 2)
     },
-    loadFile(){
+    loadFile(cb){
       this.file.fs.readFile(this.key, (error, text) => {
-        this.editor.getModel().setValue(new TextDecoder().decode(text));
+        this.fileContent =new TextDecoder().decode(text)
+        
         let json = JSON.parse(this.editor.getModel().getValue())
-        if(json &&json.content){
+        if(json && json.content){
           this.props =Object.keys(json.content[0])
         }
       })
@@ -159,33 +167,43 @@ export default {
       this.onSwitchModes()
     },
     onSave(){ 
-      if(!this.mode && !!this.customEditorValue  && this.customEditorValue.lengthy<0) return
-      this.file.fs.writeFile(this.key,this.mode ? this.editor.getValue() : this.genContent(), error => {
+      if(!this.isCustomEditor && !!this.customEditorValue  && this.customEditorValue.lengthy<0) return
+      this.file.fs.writeFile(this.key,this.isCustomEditor ? this.editor.getValue() : this.genContent(), error => {
         if(!error) this.isDirty = false
         
       })
     },
     onSwitchModes(){
       this.onSave()
-      if(this.mode){
-        //curently in monacoEditor
-        //get json object from editor
-        this.jsonFile = JSON.parse(this.editor.getValue())
-        this.props = Object.keys((this.jsonFile?.content?.[0] ?? []))
-        this.mode =false
-      
+      if(this.isCustomEditor){
+        this.setMonacoEditor()
       }else{
-        //currently in custom editor
-        this.mode =true
-        this.loadFile()
-
+        this.setCustomEditor()
       }
-     
+    },
+    setCustomEditor(){
+      this.jsonFile = JSON.parse(this.editor.getValue())
+      this.props = Object.keys((this.jsonFile?.content?.[0] ?? []))
+      this.isCustomEditor =true
+    },
+    setMonacoEditor(){
+      this.isCustomEditor=false
+      this.loadFile()
+      this.editor.getModel().setValue(this.fileContent);
     },
     setFilter(prop,index,val){
       this.$set(this.filter,index,{[prop]:val})
     }
   },
+  watch:{
+    fileContent:{
+      handler(newVal){
+        if(!this.isCustomEditor){
+          this.editor.getModel().setValue(newVal);
+        }
+      }
+    }
+  }
 };
 </script>
 
