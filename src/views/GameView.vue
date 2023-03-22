@@ -71,6 +71,7 @@ v-row(style="max-height:90vh").overflow-y-auto
 import HelloWorld from '@/components/HelloWorld.vue'
 import { GameIds, Mod } from '@/assets/data/JackBoxTreeData'
 import { SETTING } from '@/assets/data/SettingData'
+import { EditorMode } from '@/assets/data/Editor'
 const emptyOGG = require('@/assets/audioFile/empty.ogg')
 export default {
   name: 'HomeView',
@@ -134,7 +135,10 @@ export default {
       } else {
         //monaco editor
         console.log(this.game)
-        this.$router.pass('MonacoEditor', { key: [this.steamPath+this.game.id, folder.path].join('\\') })
+        this.$router.pass('Editor', { 
+          key: [this.steamPath+this.game.id, folder.path].join('\\'),
+          editor: EditorMode.MonacoEditor
+        })
       }
     },
     onFastPrompts(prompt){
@@ -142,10 +146,9 @@ export default {
       let filePath= [this.steamPath+this.game.id, prompt.path].join('\\')
       console.log('filePath',filePath)
       //open monaco editor
-      this.$router.pass('MonacoEditor', { 
+      this.$router.pass('Editor', { 
         key: filePath,
-        customEditor:true,
-        ceMode:'FastPrompt'
+        editor: EditorMode.FastPromptEditor
       })
       //custom editor mode
       // fast prompt mode

@@ -32,6 +32,7 @@ const State = Object.freeze({
   SWF:3
 })
 import { SETTING } from '@/assets/data/SettingData'
+import { EditorMode } from '@/assets/data/Editor'
 import ViewerImage from './ViewerImage.vue'
 export default {
   name: 'FileViewer',
@@ -103,7 +104,10 @@ export default {
         this.$router.pass('fileviewer',{key:this.clickedFile})
       }else{
         this.clickedFile = this.folderPath + "\\" + e.name
-        this.$router.pass('MonacoEditor', { key: this.clickedFile })
+        this.$router.pass('Editor', { 
+          key: this.clickedFile,
+          editor: EditorMode.MonacoEditor
+        })
       }
     },
     onFinishedLoading(){
