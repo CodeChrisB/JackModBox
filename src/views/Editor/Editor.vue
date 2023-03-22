@@ -18,8 +18,13 @@ div(style="overflow-y:scroll").mt-1
               v-icon mdi-magnify
           v-card(style="max-width:30vw;min-width:30vw;overflow:hidden")
             v-row.pa-5
-              v-text-field(v-model="searchInput" append-icon="mdi-magnify" label="Search String") 
-            div(v-if="!isCustomEditor")
+              v-text-field(
+                v-model="searchInput" 
+                append-icon="mdi-magnify" 
+                label="Search String"
+                disabled
+              ) 
+            div(v-if="EditorMode.CustomEditor === editorMode")
               v-divider   
               div(v-for="(prop,index) in props")
                 CustomCheckbox(:label="prop" @update="setFilter(prop,index,$event)")
@@ -28,14 +33,13 @@ div(style="overflow-y:scroll").mt-1
     div(style="height:100vh;width:100%;" v-resize="onResize")
         monaco-editor-wrapper(
           :fileContent="fileContent"
+          @update="onSaveMonacoEditor"
         )
   v-row(v-else-if="EditorMode.CustomEditor === editorMode")
-    div(style="height:100vh;width:100%;" v-resize="onResize")
       custom-editor(
         :jsonContent="jsonContent" 
         :filter="filter"
         :searchInput="searchInput" 
-        @error="onCustomEditorError" 
         @changed="onCustomEditorChanged"
       )
 </template>
@@ -67,6 +71,7 @@ export default {
       fileContent: '',
       jsonContent: {},
 
+      updatedFileContent:'',
 
       //Check if needed after rework
       isDirty: false,
@@ -155,15 +160,16 @@ export default {
 
       this.onSave()
     }, 
-    onCustomEditorError(e){
-      this.onSwitchModes()
-    },
+    onSaveMonacoEditor(content){
+      this.updatedFileContent = content
+      this.isDirty =true
+    },  
     onSave(){
       //WIP 
       const resetDirty = (err)=> {if(!err) this.isDirty = false}
       switch(this.editorMode){
         case EditorMode.MonacoEditor:
-          window.file.fs.writeFile(this.key,this.editor.getValue(),err=>resetDirty(err))
+          window.file.fs.writeFile(this.key,this.updatedFileContent,err=>resetDirty(err))
           break
         case EditorMode.CustomEditor:
           window.file.fs.writeFile(this.key,this.genContent(),err=>resetDirty(err))

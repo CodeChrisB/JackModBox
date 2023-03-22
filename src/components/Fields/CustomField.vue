@@ -1,6 +1,5 @@
 <template lang="pug">
 v-card.form.mt-1(
-  v-if="showPrompt"
   :flat="flat"
 )
   div(
@@ -99,23 +98,6 @@ export default {
 
       return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.IGNORE)
         .map(elem => Object.keys(elem)[0])
-    },
-    propsToSearch() {
-      if (!this.internalFilter) return []
-      return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.ON)
-        .map(elem => Object.keys(elem)[0])
-    },
-    showPrompt() {
-      if (this.propsToSearch.length > 0) {
-        for (let i = 0; i < this.propsToSearch.length; i++) {
-          if ((this.templateJson[this.propsToSearch[i]] + "").toLowerCase().includes(this.searchInput.toLowerCase())) return true
-        }
-        return false
-      }
-
-
-      return true
-
     },
   },
   methods: {

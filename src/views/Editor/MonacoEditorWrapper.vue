@@ -57,6 +57,7 @@ export default {
     },
     onChange(value) {
       this.isDirty = true
+      this.$emit('update',this.editor.getValue())
     },
     onResize(value) {
       this.editor?.layout()

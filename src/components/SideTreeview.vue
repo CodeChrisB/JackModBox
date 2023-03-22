@@ -25,23 +25,23 @@ div
         v-if="panels[index]"
         :style="panelHeight"
         )
-          v-row.ma-0.pa-0(v-for="game in item.children")
-            v-btn.flex-grow-1.flex-shrink-0.pa-0.pl-4(
-              text
-              @click="onClick(game)"
-              )
-              span.text-caption.text-truncate {{ game.name }}
-            v-menu.ma-0(offset-y='')
-              template(v-slot:activator='{ on, attrs }')
-                v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
-              v-list
-                span.px-2 {{ `${item.name} - ${game.name}` }}
-                v-divider
-                v-list-item(
-                  v-for='(item, itemIndex) in menu.game' :key='itemIndex' @click="gameClick(item,game)"
-                  v-if="game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly"
-                )
-                  v-list-item-title {{ item.title }}
+          v-row.pl-2.ma-0.pa-0(v-for="game in item.children")
+            div(style="max-width:85%;min-width:85%")
+              v-btn(style="max-width:85%;min-width:85%").maxButton.pa-0.pl-4(text block, @click="onClick(game)", class="text-truncate")
+                span.text-caption.text-truncate.text-left {{ game.name }}
+            v-spacer
+            div
+              v-menu.ma-0(offset-y='')
+                template(v-slot:activator='{ on, attrs }')
+                  v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
+                v-list
+                  span.px-2 {{ `${item.name} - ${game.name}` }}
+                  v-divider
+                  v-list-item(
+                    v-for='(item, itemIndex) in menu.game' :key='itemIndex' @click="gameClick(item,game)"
+                    v-if="game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly"
+                  )
+                    v-list-item-title {{ item.title }}
   div(v-else)
     DocumenationSideView
 
@@ -249,6 +249,10 @@ export default {
 <style>
 a {
   text-decoration: none;
+}
+
+.maxButton{
+  min-width: 100%;
 }
 
 * .panel {

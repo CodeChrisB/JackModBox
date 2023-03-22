@@ -16,23 +16,22 @@
     v-col.col-2
       span {{ pageText }}
   v-divider.mb-4
-  v-row
-    div
-    CustomField.container(
-      v-for="(obj,i) in pageContent"
-      :obj="obj" 
-      :key="index"
-      :index="getIndex(i)"
-      :filter="internalFilter"
-      :searchInput="internalSearch"
-      show-modded
-      v-on:update="onUpdate"
-    )
+  v-row.view.overflow-y-auto
+      CustomField.container(
+        v-for="(obj,i) in pageContent"
+        :obj="obj"  
+        :index="getIndex(i)"
+        :filter="internalFilter"
+        :searchInput="internalSearch"
+        show-modded
+        v-on:update="onUpdate"
+      )
   
   </template>
       
   <script>
   import { CEErrors } from '@/assets/data/EditorValues'
+  import { CCState } from '@/assets/data/CustomCheckBoxData'
   import CustomField from '@/components/Fields/CustomField.vue'
   export default {
     name: 'CustomEditor',
@@ -62,14 +61,21 @@
     },
     computed:{
       pageContent(){
-        return this.internalValue.content.slice(
+        return this.items.slice(
           this.pageSize*this.index,
           this.pageSize*(this.index+1)
         )
-        
+      },
+      propsToSearch() {
+        if (!this.internalFilter) return []
+        return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.ON)
+          .map(elem => Object.keys(elem)[0])
+      },
+      items() {
+       return this.internalValue.content
       },
       totalItems(){
-        return this.internalValue.content.length
+        return this.items.length
       },
       totalPages(){
         return Math.floor(this.totalItems/this.pageSize)
@@ -96,6 +102,7 @@
     watch: {
       filter: {
         handler(newVal) {
+          console.log(this.filter)
           this.internalFilter = newVal
         }
       },
@@ -123,6 +130,9 @@
   }
   </script>
   <style scoped>
+  .view{
+    max-height: 84vh;
+  }
   .customEditor{
     min-width: 100%;
   }

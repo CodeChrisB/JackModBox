@@ -2,30 +2,32 @@
 div
   div(v-if="isDocumenation === false")
     v-row.pa-0.ml-2.mt-1
-      v-icon.mb-3(
-        v-if="isDocumenation === false"
-        small 
-        @click="toSettings"
-      ) mdi-cog
+        v-icon.mb-3(
+          v-if="isDocumenation === false"
+          small 
+          @click="toSettings"
+        ) mdi-cog
 
-      v-btn.mb-3(
-        v-if="isDocumenation === false"
-        text
-        icon
-        @click="back()",
-        small
-      ) 
-        v-icon(small) mdi-arrow-left
+        v-btn.mb-3(
+          v-if="isDocumenation === false"
+          text
+          icon
+          @click="back()",
+          small
+        ) 
+          v-icon(small) mdi-arrow-left
+        v-breadcrumbs(
+          v-if="false"
+          :items='computedCrumbs'
+          )
+          v-breadcrumbs-item(v-for='(item,index) in computedCrumbs' :key='index' @click="$router.pass('fileviewer',{key:item.fullPath})")
+            span {{ item.text }}
+            span(v-if='index !== computedCrumbs.length-1') /
+        span(style="max-width:65vw").text-truncate {{  computedText  }}
 
-      v-breadcrumbs.pa-0.mb-3(:items="computedCrumbs",divider="/").p0.pl-1
-        v-breadcrumbs-item.pa-0(
-          v-for="(item,index) in computedCrumbs"
-          @click="$router.pass('fileviewer',{key:item.fullPath})"
-        )
-          span {{ item.text }}
-          span(v-if="index !== computedCrumbs.length-1") /
+
     v-row.ma-0.pa-0
-      v-divider.mb-4
+      v-divider
   div(
     v-else
     style="max-width:100%"
@@ -73,6 +75,9 @@ export default {
       });
       fullNew = fullNew.filter(x => x.text !== "")
       return fullNew
+    },
+    computedText(){
+      return this.computedCrumbs.map(x=>x.text).join('/')
     }
   },
   created() {
@@ -116,3 +121,10 @@ export default {
 };
 </script>
   
+<style>
+.container {
+  white-space: nowrap;
+  overflow-x: auto;
+  min-width: 80vw
+}
+</style>
