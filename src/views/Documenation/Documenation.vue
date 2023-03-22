@@ -36,7 +36,6 @@ export default {
         3. Reinstall or download the software again.
         `
       }
-      console.log('finished')
     },
     async replaceImgTags(str) {
       const regex = /!\[img\]\((.*?)\)/g;

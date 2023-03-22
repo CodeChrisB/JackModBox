@@ -134,7 +134,6 @@ export default {
         this.toFileViewer([this.game.id, folder.path].join('\\'))
       } else {
         //monaco editor
-        console.log(this.game)
         this.$router.pass('Editor', { 
           key: [this.steamPath+this.game.id, folder.path].join('\\'),
           editor: EditorMode.MonacoEditor
@@ -142,9 +141,7 @@ export default {
       }
     },
     onFastPrompts(prompt){
-      console.log(prompt)
       let filePath= [this.steamPath+this.game.id, prompt.path].join('\\')
-      console.log('filePath',filePath)
       //open monaco editor
       this.$router.pass('Editor', { 
         key: filePath,

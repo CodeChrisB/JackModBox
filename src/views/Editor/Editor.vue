@@ -26,17 +26,12 @@ div(style="overflow-y:scroll").mt-1
   Dialog
   v-row(v-if="EditorMode.MonacoEditor === editorMode")
     div(style="height:100vh;width:100%;" v-resize="onResize")
-        MonacoEditor(
-          theme="vs-dark",
-          language="json",
-          automaticLayout: true,
-          :options="options",
-          :editorMounted="editorMounted",
-          @change="onChange" 
+        monaco-editor-wrapper(
+          :fileContent="fileContent"
         )
   v-row(v-else-if="EditorMode.CustomEditor === editorMode")
     div(style="height:100vh;width:100%;" v-resize="onResize")
-      CustomEditor(
+      custom-editor(
         :jsonContent="jsonContent" 
         :filter="filter"
         :searchInput="searchInput" 
@@ -46,6 +41,7 @@ div(style="overflow-y:scroll").mt-1
 </template>
 <script>
 import MonacoEditor from 'monaco-editor-vue';
+import MonacoEditorWrapper from './MonacoEditorWrapper.vue';
 import CustomEditor from './CustomEditor.vue';
 import Dialog from '@/components/CustomDialog.vue';
 import CustomPath from '@/components/CustomPath.vue';
@@ -54,7 +50,14 @@ import { EditorMode } from '@/assets/data/Editor';
 
 export default {
   name: "App",
-  components: { CustomCheckbox, CustomPath, CustomEditor, MonacoEditor, Dialog },
+  components: { 
+    CustomCheckbox, 
+    CustomPath, 
+    CustomEditor, 
+    MonacoEditor,
+    MonacoEditorWrapper,
+    Dialog 
+  },
   data() {
     return {
       //Editor
@@ -74,11 +77,6 @@ export default {
       props: [],
       searchInput: '',
       filter: [],
-      options: {
-        editor: null,
-        value: "Loading File..."
-        //Monaco Editor Options
-      }
     };
   },
   beforeCreate(){
@@ -93,13 +91,10 @@ export default {
     this.key = this.$route.params.key;
     this.fileName = this.key.split('\\').slice(-1).join('');
     this.editorMode = this.$route.params.editor
-    console.log(this.editor)
 
 
     await this.loadFile()
-    if(this.editorMode === EditorMode.MonacoEditor){
-      this.editor.getModel().setValue(this.fileContent);
-    }
+
 
 
     //todo make the top bar own component
@@ -126,8 +121,9 @@ export default {
     loadFile() {
       const rawRead = window.file.fs.readFileSync(this.key)
       this.fileContent = new TextDecoder().decode(rawRead);
-      console.log(this.fileContent)
+      //todo show error that the file is malformatted
       this.jsonContent = JSON.parse(this.fileContent);
+      console.log(this.fileContent)
       if (this.jsonContent && this.jsonContent.content) {
         this.props = Object.keys(this.jsonContent.content[0]);
       }
@@ -164,7 +160,6 @@ export default {
     },
     onSave(){
       //WIP 
-      console.log(window.file)
       const resetDirty = (err)=> {if(!err) this.isDirty = false}
       switch(this.editorMode){
         case EditorMode.MonacoEditor:
@@ -173,7 +168,6 @@ export default {
         case EditorMode.CustomEditor:
           window.file.fs.writeFile(this.key,this.genContent(),err=>resetDirty(err))
           this.genContent()
-          console.log('todo custom editor save')
           break
       }
     },        

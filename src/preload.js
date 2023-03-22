@@ -165,10 +165,7 @@ contextBridge.exposeInMainWorld("file", {
     }
   },
   loadAssetImage: (file)=>{
-
-    console.log('filePath',path.join(__dirname,'bundled',file))
     const data = fs.readFileSync(path.join(__dirname,file));
-    console.log('data',data)
     const base64 = Buffer.from(data).toString('base64');
     return base64;
   },

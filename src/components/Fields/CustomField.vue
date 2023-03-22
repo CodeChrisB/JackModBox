@@ -126,7 +126,6 @@ export default {
       return true
     },
     emit() {
-      console.log('emit',this.internalIndex)
       this.$emit('update', { content: this.templateJson, index: this.internalIndex })
     },
     firstLetterUp(str) {
@@ -147,7 +146,6 @@ export default {
     index:{
       handler(newVal){
         this.internalIndex=newVal
-        console.log('index change')
       },
     },
     searchInput: {
@@ -157,7 +155,6 @@ export default {
     },
     obj: {
       handler(newVal) {
-        console.log('yo change')
         Object.keys(newVal).forEach(x => {
           this.templateJson[x] = this.obj[x]
         })

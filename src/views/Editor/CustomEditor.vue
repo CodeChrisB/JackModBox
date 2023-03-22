@@ -80,7 +80,6 @@
     },
     methods: {
       getIndex(i){
-        console.log(this.pageSize*this.index+i)
         return this.pageSize*this.index+i
       },
       onUpdate(e) {
