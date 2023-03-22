@@ -48,16 +48,16 @@ export default {
     index: {
       type: Number
     },
-    filter:{
-      type:[Object,Array],
-      default: ()=>[]
+    filter: {
+      type: [Object, Array],
+      default: () => []
     },
     obj: {
       type: Object
     },
-    searchInput:{
+    searchInput: {
       type: String
-    },  
+    },
     showModded: {
       type: Boolean,
       default: false
@@ -69,8 +69,9 @@ export default {
     Object.keys(this.obj).forEach(x => {
       this.templateJson[x] = this.obj[x]
     })
+    this.internalIndex=this.index
 
-    
+
     /*
     todo create an anyfield that can work with all sorts of types
     ArrayField gets an array as input
@@ -79,34 +80,35 @@ export default {
     */
 
 
-  }, 
+  },
   data() {
 
     return {
       templateJson: {},
       internalFilter: [],
-      internalSearch:''
+      internalSearch: '',
+      internalIndex:-1
     }
   },
-  computed:{
-    filterTriesToSearch(){
+  computed: {
+    filterTriesToSearch() {
       return Object.values(this.internalFilter).some(value => value === 1);
     },
-    propsToIgnore(){
-      if(!this.internalFilter || this.internalFilter.length === 0) return []
+    propsToIgnore() {
+      if (!this.internalFilter || this.internalFilter.length === 0) return []
 
-      return this.internalFilter.filter(elem=>elem[Object.keys(elem)[0]] === CCState.IGNORE)
-      .map(elem=>Object.keys(elem)[0])
-    },  
-    propsToSearch(){
-      if(!this.internalFilter) return []
-      return this.internalFilter.filter(elem=>elem[Object.keys(elem)[0]] === CCState.ON)
-      .map(elem=>Object.keys(elem)[0])
-    },  
-    showPrompt(){
-      if(this.propsToSearch.length>0){
-        for(let i =0;i<this.propsToSearch.length;i++){
-          if((this.templateJson[this.propsToSearch[i]]+"").toLowerCase().includes(this.searchInput.toLowerCase())) return true
+      return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.IGNORE)
+        .map(elem => Object.keys(elem)[0])
+    },
+    propsToSearch() {
+      if (!this.internalFilter) return []
+      return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.ON)
+        .map(elem => Object.keys(elem)[0])
+    },
+    showPrompt() {
+      if (this.propsToSearch.length > 0) {
+        for (let i = 0; i < this.propsToSearch.length; i++) {
+          if ((this.templateJson[this.propsToSearch[i]] + "").toLowerCase().includes(this.searchInput.toLowerCase())) return true
         }
         return false
       }
@@ -117,14 +119,15 @@ export default {
     },
   },
   methods: {
-    canShow(key){
+    canShow(key) {
       //no filter set => everything can be shown
-      if(!this.internalFilter) return true 
-      if((this.propsToIgnore??[]).includes(key)) return false
+      if (!this.internalFilter) return true
+      if ((this.propsToIgnore ?? []).includes(key)) return false
       return true
     },
     emit() {
-      this.$emit('update', { content: this.templateJson, index: this.index })
+      console.log('emit',this.internalIndex)
+      this.$emit('update', { content: this.templateJson, index: this.internalIndex })
     },
     firstLetterUp(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -141,11 +144,28 @@ export default {
       },
       immediate: true
     },
-    searchInput:{
+    index:{
       handler(newVal){
+        this.internalIndex=newVal
+        console.log('index change')
+      },
+    },
+    searchInput: {
+      handler(newVal) {
         this.internalSearch = newVal
       }
-    }
+    },
+    obj: {
+      handler(newVal) {
+        console.log('yo change')
+        Object.keys(newVal).forEach(x => {
+          this.templateJson[x] = this.obj[x]
+        })
+        this.$forceUpdate()
+      },
+      deep: true
+    },
+
   }
 }
 </script>

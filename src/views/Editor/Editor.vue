@@ -126,6 +126,7 @@ export default {
     loadFile() {
       const rawRead = window.file.fs.readFileSync(this.key)
       this.fileContent = new TextDecoder().decode(rawRead);
+      console.log(this.fileContent)
       this.jsonContent = JSON.parse(this.fileContent);
       if (this.jsonContent && this.jsonContent.content) {
         this.props = Object.keys(this.jsonContent.content[0]);
@@ -162,12 +163,16 @@ export default {
       this.onSwitchModes()
     },
     onSave(){
+      //WIP 
+      console.log(window.file)
       const resetDirty = (err)=> {if(!err) this.isDirty = false}
       switch(this.editorMode){
         case EditorMode.MonacoEditor:
-          window.file.fs(this.key,this.editor.getValue(),err=>resetDirty(err))
+          window.file.fs.writeFile(this.key,this.editor.getValue(),err=>resetDirty(err))
           break
         case EditorMode.CustomEditor:
+          window.file.fs.writeFile(this.key,this.genContent(),err=>resetDirty(err))
+          this.genContent()
           console.log('todo custom editor save')
           break
       }
