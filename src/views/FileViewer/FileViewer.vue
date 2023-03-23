@@ -52,8 +52,12 @@ export default {
           visible:[State.FOLDER,State.JSON]
         },
         {
-          title:'Open',
-          func: (game) => window.file.openInFileExplorer(game.fullPath),
+          title:'Open In File Explorer',
+          func: (game) => {
+            let arr = game.fullPath.split('\\')
+            arr.pop()
+            window.file.openInFileExplorer(arr.join('\\'))
+          },
           visible:[State.FOLDER,State.JSON]
         }
       ],

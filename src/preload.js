@@ -89,6 +89,7 @@ contextBridge.exposeInMainWorld("file", {
     }
   },
   openInFileExplorer(e) {
+    console.log(e)
     let explorer;
     switch (os.platform()) {
       case "win32": explorer = "explorer"; break;
