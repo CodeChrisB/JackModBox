@@ -6,7 +6,7 @@ import os from "os"
 import { request } from "https";
 import https from "https"
 import { spawn } from "child_process";
-import electron from "electron"
+
 const deepReadDir = async (dirPath) => await Promise.all(
   (await fs.readdir(dirPath, { withFileTypes: true })).map(async (dirent) => {
     const path = path.join(dirPath, dirent.name)
@@ -14,30 +14,24 @@ const deepReadDir = async (dirPath) => await Promise.all(
   })
 )
 
-
-function read(root, filter, files, prefix) {
-  prefix = prefix || ''
-  files = files || []
-  filter = filter || noDotFiles
-
-  var dir = path.join(root, prefix)
-  if (!fs.existsSync(dir)) return files
-  if (fs.statSync(dir).isDirectory())
-    fs.readdirSync(dir)
-      .filter(function (name, index) {
-        return filter(name, index, dir)
-      })
-      .forEach(function (name) {
-        read(root, filter, files, path.join(prefix, name))
-      })
-  else
-    files.push(prefix)
-
-  return files
-}
-
-function noDotFiles(x) {
-  return x[0] !== '.'
+function deleteFolderRecursive(folderPath) {
+  if(!folderPath) return false
+  console.log('path exists?',fs.existsSync(folderPath))
+  if (fs.existsSync(folderPath)) {
+    fs.readdirSync(folderPath).forEach((file) => {
+      const curPath = path.join(folderPath, file);
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    // delete folder
+    fs.rmdirSync(folderPath);
+  }
+  return true
 }
 
 const settingsPath = 'settings.json'
@@ -182,10 +176,10 @@ contextBridge.exposeInMainWorld("file", {
       throw err;
     }
   },
+  deleteFolder:(imagePath) => deleteFolderRecursive(imagePath),
   join: (arr) => path.join(arr),
   isFile: (path) => !fs.lstatSync(path).isDirectory() ? 1 : -1,
   isFolder: (path) => fs.lstatSync(path).isDirectory() ? 1 : -1,
-  deepReadDir: read,
   dirname: __dirname
 });
 

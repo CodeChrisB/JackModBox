@@ -73,9 +73,6 @@ export default {
     if (this.steamPath) {
       this.loadPacks()
     }
-    if (this.modPath) {
-      this.loadModPacks()
-    }
 
     let self=this
     this.$listen("documentation-state", (e)=>self.isDocumenation =!!e);
@@ -96,7 +93,8 @@ export default {
         game: [
           { title: 'Export Content', id: 0, visiblity: State.GameOnly },
           { title: 'Rename', id: 1, mod: true, visiblity: State.ModOnly },
-          { title: 'Open Game', id: 2, mod: true, visiblity: State.Both }
+          { title: 'Open Game', id: 2, mod: true, visiblity: State.Both },
+          { title: 'Delete Mod', id: 3, mod: true, visiblity: State.ModOnly }
         ]
       },
       panels: [],
@@ -139,11 +137,11 @@ export default {
           this.items = JackBoxTreeData.filter((x)=>this.panels.includes(x.id))
           this.panels = this.panels.map(x=>false)
         }
+        this.loadModPacks()
       })
-
-
     },
     loadModPacks() {
+      if(!this.modPath) return
       this.file.fs.readdir(this.modPath, (error, files) => {
         let modPanel = {
           name: 'Mods',
@@ -159,6 +157,8 @@ export default {
             })
           ]
         }
+        console.log()
+        if(modPanel.children.length === 0) return
         this.items.unshift(modPanel)
         this.panels.unshift(false)
       })
@@ -207,8 +207,8 @@ export default {
               [this.steamPath, game.id,].join('\\'),
               [this.modPath, this.answer].join('\\')
             )
-            self.reloadSideView()
           }
+          this.reloadSideView()
           break;
         case 1:
           this.answer = await dialog
@@ -231,15 +231,21 @@ export default {
             key: game.key
           })
           break;
-      }
+        case 3:
+          console.log(game)
+          tmp = window.file.deleteFolder(game.id)
+          if(tmp) {
+            this.reloadSideView()
+          }
+          break;
+       }
     },
     reloadSideView(){
       this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
       this.modPath = this.file.getSetting(SETTING.MODS_PATH)
-      this.items.shift()
-      this.panels.shift()
+      this.items = []
+      this.panels = []
       this.loadPacks()
-      this.loadModPacks()
     }
   }
 
