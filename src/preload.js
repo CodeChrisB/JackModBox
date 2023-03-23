@@ -15,7 +15,7 @@ const deepReadDir = async (dirPath) => await Promise.all(
 )
 
 function deleteFolderRecursive(folderPath) {
-  if(!folderPath) return false
+  if(!folderPath) return 
   console.log('path exists?',fs.existsSync(folderPath))
   if (fs.existsSync(folderPath)) {
     fs.readdirSync(folderPath).forEach((file) => {

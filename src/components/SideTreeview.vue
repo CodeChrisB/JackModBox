@@ -25,23 +25,23 @@ div
         v-if="panels[index]"
         :style="panelHeight"
         )
-          v-row.pl-2.ma-0.pa-0(v-for="game in item.children")
-            div(style="max-width:85%;min-width:85%")
-              v-btn(style="max-width:85%;min-width:85%").maxButton.pa-0.pl-4(text block, @click="onClick(game)", class="text-truncate")
-                span.text-caption.text-truncate.text-left {{ game.name }}
-            v-spacer
-            div
-              v-menu.ma-0(offset-y='')
-                template(v-slot:activator='{ on, attrs }')
-                  v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
-                v-list
-                  span.px-2 {{ `${item.name} - ${game.name}` }}
-                  v-divider
-                  v-list-item(
-                    v-for='(item, itemIndex) in menu.game' :key='itemIndex' @click="gameClick(item,game)"
-                    v-if="game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly"
-                  )
-                    v-list-item-title {{ item.title }}
+          v-row.pl-2.ma-0.pa-0(v-for='game in item.children')
+            v-btn.pa-0.pl-4(style="text-align:left",block='' @click='onClick(game)')
+              div.d-flex(style="max-width:80%").overflow-x-hidden.col-10.pa-0
+                span().text-truncate.text-caption {{ game.name }}
+
+              div
+                .d-flex.align-items-center
+                  v-menu(offset-y='')
+                    template(v-slot:activator='{ on, attrs }')
+                      v-icon(color='primary' v-bind='attrs' v-on='on') mdi-dots-vertical
+                    v-list
+                      span.px-2 {{ &grave;${item.name} - ${game.name}&grave; }}
+                      v-divider
+                      v-list-item(v-for='(item, itemIndex) in menu.game' :key='itemIndex' v-if='game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly' @click='gameClick(item,game)')
+                        v-list-item-title {{ item.title }}
+
+
   div(v-else)
     DocumenationSideView
 
@@ -112,8 +112,8 @@ export default {
       //return "min-height:3000px!important;background-color:red;"
       //max-height:calc((100vh - ${this.panels.length*30}px) / ${count});
       return false ? '' : `
-      min-height:calc((100vh - ${this.panels.length * 24}px) /${count});
-      max-height:calc((100vh - ${this.panels.length * 24}px) /${count});
+      min-height:calc((100vh - ${this.panels.length * 22}px) /${count});
+      max-height:calc((100vh - ${this.panels.length * 22}px) /${count});
       overflow: auto;
       `
     }
