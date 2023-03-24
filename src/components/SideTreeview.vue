@@ -12,7 +12,7 @@ div
           v-spacer.hover(@click="toggle(index)")
           v-menu(offset-y='')
             template(v-slot:activator='{ on, attrs }')
-              v-icon(v-bind='attrs' v-on='on') mdi-dots-vertical
+              v-icon(color="grey" v-bind='attrs' v-on='on') mdi-dots-vertical
             v-list
               span.ml-2 {{ item.name }}
               v-divider
@@ -20,23 +20,24 @@ div
                 v-for='(item, itemIndex) in menu.pack' :key='itemIndex' @click="itemClick(item,index)"
               )
                 v-list-item-title {{ item.title }}
-
+      v-divider(v-if="!panels[index]")
       v-col.panel.pa-0(
-        v-if="panels[index]"
+        v-else
         :style="panelHeight"
         )
           v-row.pl-2.ma-0.pa-0(v-for='game in item.children')
-            v-btn.pa-0.pl-4(style="text-align:left",block='' @click='onClick(game)')
-              div.d-flex(style="max-width:80%").overflow-x-hidden.col-10.pa-0
-                span().text-truncate.text-caption {{ game.name }}
-
-              div
+            v-col.col-10.overflow-hidden.pa-0
+              v-btn(style="text-align:left", text block='' @click='onClick(game)').d-flex
+                div
+                  span.justify-start.text-truncate.spanContainer {{ game.name }}
+            v-col.col-2.pa-0
+              div.iconContainer 
                 .d-flex.align-items-center
                   v-menu(offset-y='')
                     template(v-slot:activator='{ on, attrs }')
-                      v-icon(color='primary' v-bind='attrs' v-on='on') mdi-dots-vertical
+                      v-icon(color='grey' v-bind='attrs' v-on='on') mdi-dots-vertical
                     v-list
-                      span.px-2 {{ &grave;${item.name} - ${game.name}&grave; }}
+                      span.px-2 {{item.name}} - {{game.name}}
                       v-divider
                       v-list-item(v-for='(item, itemIndex) in menu.game' :key='itemIndex' v-if='game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly' @click='gameClick(item,game)')
                         v-list-item-title {{ item.title }}
@@ -273,4 +274,6 @@ a {
   cursor: pointer;
   margin: 0px;
 }
+
+
 </style>
