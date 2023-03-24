@@ -17,8 +17,10 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
           
     v-menu(v-model="showMenu" :position-x="position.x" :position-y="position.y" absolute offset-y)
       v-list
+        
         v-list-item(
           v-for="prop in menu"
+          v-if="prop.visible.includes(fileType(clickedFile)) || prop.visible[0] === State.ALLFILES"
           @click="prop.func(clickedFile)"
         )
           span {{ prop.title }}
@@ -29,7 +31,9 @@ const State = Object.freeze({
   FOLDER:0,
   JSON:1,
   IMAGE:2,
-  SWF:3
+  TEXTFILE:3,
+  SWF:4,
+  ALLFILES:5
 })
 import { SETTING } from '@/assets/data/SettingData'
 import { EditorMode } from '@/assets/data/Editor'
@@ -41,6 +45,7 @@ export default {
   },  
   data() {
     return {
+      clickedFile:{},
       position:{
         x:0,
         y:0
@@ -49,17 +54,31 @@ export default {
         {
           title:'Open',
           func: (game) => this.onFileClick(game),
-          visible:[State.FOLDER,State.JSON]
+          visible:[State.JSON]
         },
         {
-          title:'Open In File Explorer',
+          title:'Open Folder',
+          func: (game) => this.onFileClick(game),
+          visible:[State.FOLDER]
+        },
+        {
+          title:'Open Expand Folder',
+          func: (folder) => {
+            folder.expand = true
+            this.onFileClick(folder)
+          },
+          visible:[State.FOLDER]
+        },
+        {
+          title:'Open In Explorer',
           func: (game) => {
             let arr = game.fullPath.split('\\')
             arr.pop()
             window.file.openInFileExplorer(arr.join('\\'))
           },
-          visible:[State.FOLDER,State.JSON]
-        }
+          visible:[State.ALLFILES]
+        },
+
       ],
       files: [],
       images:{},
@@ -73,6 +92,8 @@ export default {
     this.State = State
     this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
     this.folderPath = this.$route.params.key
+    this.expand = this.$route.params.expand
+    
 
     this.loadFiles()
   },
@@ -80,11 +101,30 @@ export default {
     fileType(fileContent){
       if(fileContent.isFolder === 1) return State.FOLDER
       if(['jet','json'].includes(fileContent.suffix)) return State.JSON
+      if(['txt','html'].includes(fileContent.suffix)) return State.TEXTFILE
       if(['jpg','png'].includes(fileContent.suffix)) return State.IMAGE
       if(['swf'].includes(fileContent.suffix)) return State.SWF
+      return State.ALLFILES
     },
     loadFiles() {
-      window.file.fs.readdir(this.folderPath, (error, files) => {
+      if(this.expand){
+        window.file.openExpandFolder(this.folderPath).then(files=>{
+          console.log('yo',files)
+          let id =0
+          files = files.map(x=>{
+            id++
+            return {
+              name: x.split('\\').slice(-1)[0],
+              isFolder: this.file.isFolder(x),
+              suffix:x.split('.').slice(-1)[0],
+              fullPath:x,
+              id:id,
+            }
+          }).sort(({isFolder:a}, {isFolder:b}) =>b-a)
+          this.files = files
+        })
+      }else{
+        window.file.fs.readdir(this.folderPath, (error, files) => {
         let id =0
         files = files.map(x => {
           id++
@@ -99,13 +139,17 @@ export default {
         ).sort(({isFolder:a}, {isFolder:b}) =>b-a)
         this.files = files
       })
-      this.onFinishedLoading()
+      }
     },
 
     onFileClick(e) {
       if(e.isFolder === 1){
+        console.log(e)
         this.clickedFile = this.folderPath + "\\" + e.name
-        this.$router.pass('fileviewer',{key:this.clickedFile})
+        this.$router.pass('fileviewer',{
+          expand:e.expand,
+          key:this.clickedFile
+        })
       }else{
         this.clickedFile = this.folderPath + "\\" + e.name
         this.$router.pass('Editor', { 
@@ -113,9 +157,6 @@ export default {
           editor: EditorMode.MonacoEditor
         })
       }
-    },
-    onFinishedLoading(){
-      
     },
     show(e,file) {
     e.preventDefault();
@@ -133,7 +174,18 @@ export default {
       handler(newVal) {
         if (!newVal) return
         this.folderPath = newVal
-        this.loadFiles()
+        console.log('')
+        this.$nextTick(()=>{
+          console.log('expand in key',this.expand)
+          this.loadFiles()
+        })
+      },
+      immediate: true
+    },
+    "$route.params.expand": {
+      handler(newVal) {
+        this.expand = newVal
+        console.log('expand',this.expand)
       },
       immediate: true
     }
