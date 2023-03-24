@@ -25,23 +25,22 @@ div
         v-else
         :style="panelHeight"
         )
-          v-row.pl-2.ma-0.pa-0(v-for='game in item.children')
-            v-col.col-10.overflow-hidden.pa-0
+          v-row.pl-2.ma-0.pa-0(v-for='game in item.children').d-flex
+            v-col.col-11.overflow-hidden.pa-0
               v-btn(style="text-align:left", text block='' @click='onClick(game)').d-flex
                 div
                   span.justify-start.text-truncate.spanContainer {{ game.name }}
-            v-col.col-2.pa-0
-              div.iconContainer 
-                .d-flex.align-items-center
-                  v-menu(offset-y='')
-                    template(v-slot:activator='{ on, attrs }')
-                      v-icon(color='grey' v-bind='attrs' v-on='on') mdi-dots-vertical
-                    v-list
-                      span.px-2 {{item.name}} - {{game.name}}
-                      v-divider
-                      v-list-item(v-for='(item, itemIndex) in menu.game' :key='itemIndex' v-if='game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly' @click='gameClick(item,game)')
-                        v-list-item-title {{ item.title }}
-
+                v-spacer
+            v-col.col-1.pa-0.justify-end.d-flex.justify-end
+              v-menu(offset-y='')
+                template(v-slot:activator='{ on, attrs }')
+                  div.mr-2.flex
+                    v-icon.menuIcon(color='grey' v-bind='attrs' v-on='on') mdi-dots-vertical
+                v-list
+                  span.px-2 {{item.name}} - {{game.name}}
+                  v-divider
+                  v-list-item(v-for='(item, itemIndex) in menu.game' :key='itemIndex' v-if='game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly' @click='gameClick(item,game)')
+                    v-list-item-title {{ item.title }}
 
   div(v-else)
     DocumenationSideView
