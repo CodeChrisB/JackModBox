@@ -1,5 +1,5 @@
 <template lang="pug">
-div(style="overflow-y:scroll").mt-1
+div.overflow-y-hidden.overflow-x-hidden
   v-row.mt-1.pl-2
     v-card(style="width:100%;padding:3px;background-color:#0078d7")
       div(style="max-width:95%;display: flex; align-items: center;")
@@ -29,13 +29,16 @@ div(style="overflow-y:scroll").mt-1
               div(v-for="(prop,index) in props")
                 CustomCheckbox(:label="prop" @update="setFilter(prop,index,$event)")
   Dialog
-  v-row(v-if="EditorMode.MonacoEditor === editorMode")
-    div(style="height:100vh;width:100%;" v-resize="onResize")
+  v-row(v-if="EditorMode.MonacoEditor === editorMode").parent
+    div.editor.overflow-y-hidden
         monaco-editor-wrapper(
           :fileContent="fileContent"
           @update="onSaveMonacoEditor"
         )
-  v-row(v-else-if="EditorMode.CustomEditor === editorMode")
+  v-row(
+    v-else-if="EditorMode.CustomEditor === editorMode"
+    style="min-width:100%"
+    ).parent
       custom-editor(
         :jsonContent="jsonContent" 
         :filter="filter"
@@ -128,7 +131,6 @@ export default {
       this.fileContent = new TextDecoder().decode(rawRead);
       //todo show error that the file is malformatted
       this.jsonContent = JSON.parse(this.fileContent);
-      console.log(this.fileContent)
       if (this.jsonContent && this.jsonContent.content) {
         this.props = Object.keys(this.jsonContent.content[0]);
       }
@@ -149,9 +151,6 @@ export default {
       this.isDirty=true
       this.customEditorValue=val
     },  
-    onResize(value){
-      this.editor.layout()
-    },
     doSave(e) {
       //Todo rework the save system there are to many save methods here
       if (!(e.keyCode === 83 && e.ctrlKey)) {
@@ -190,5 +189,16 @@ export default {
     width:100%; height:100%; max-height:100% !important;
     margin:0; padding:0;
     overflow:hidden;
+}
+.parent {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.editor {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

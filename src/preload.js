@@ -16,7 +16,6 @@ const deepReadDir = async (dirPath) => await Promise.all(
 
 function deleteFolderRecursive(folderPath) {
   if(!folderPath) return 
-  console.log('path exists?',fs.existsSync(folderPath))
   if (fs.existsSync(folderPath)) {
     fs.readdirSync(folderPath).forEach((file) => {
       const curPath = path.join(folderPath, file);
@@ -80,16 +79,15 @@ contextBridge.exposeInMainWorld("file", {
     const base64 = data.toString('base64');
     return `data:${response.headers['content-type']};base64,${base64}`;
   },
-  copyFolder: (srcDir, destDir, overwrite) => {
+  copyFolder: async(srcDir, destDir, overwrite) => {
     try {
-      fse.copySync(srcDir, destDir, { overwrite: true | false })
+      await fse.copy(srcDir, destDir, { overwrite: true | false })
       return true
     } catch (err) {
       return false
     }
   },
   openInFileExplorer(e) {
-    console.log(e)
     let explorer;
     switch (os.platform()) {
       case "win32": explorer = "explorer"; break;

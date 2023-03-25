@@ -109,7 +109,6 @@ export default {
     loadFiles() {
       if(this.expand){
         window.file.openExpandFolder(this.folderPath).then(files=>{
-          console.log('yo',files)
           let id =0
           files = files.map(x=>{
             id++
@@ -144,7 +143,6 @@ export default {
 
     onFileClick(e) {
       if(e.isFolder === 1){
-        console.log(e)
         this.clickedFile = this.folderPath + "\\" + e.name
         this.$router.pass('fileviewer',{
           expand:e.expand,
@@ -174,9 +172,7 @@ export default {
       handler(newVal) {
         if (!newVal) return
         this.folderPath = newVal
-        console.log('')
         this.$nextTick(()=>{
-          console.log('expand in key',this.expand)
           this.loadFiles()
         })
       },
@@ -185,7 +181,6 @@ export default {
     "$route.params.expand": {
       handler(newVal) {
         this.expand = newVal
-        console.log('expand',this.expand)
       },
       immediate: true
     }

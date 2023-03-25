@@ -15,9 +15,8 @@ div
     div(
       v-if="['object'].includes(typeof elem)"
     )
-      span IM A OBJECT CHECK IF I WORK GUD PLS
-      CustomField(
-        :obj="obj" 
+      custom-field(
+        :obj="elem" 
         :index="index"
         :flat="true"
         v-on:update="onUpdate"
@@ -36,7 +35,7 @@ div
 </template>
     
 <script>
-import CustomField from '../Fields/CustomField.vue'
+import CustomField from '@/components/Fields/CustomField.vue'
 export default {
   name: 'ArrayField',
   components: {

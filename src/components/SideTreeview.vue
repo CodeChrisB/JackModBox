@@ -49,10 +49,11 @@ div
 
 <script>
 import { SETTING } from '@/assets/data/SettingData'
-import { JackBoxTreeData,AllGames } from '@/assets/data/JackBoxTreeData'
+import { JackBoxTreeData, AllGames } from '@/assets/data/JackBoxTreeData'
 import DocumenationSideView from '@/views/Documenation/DocumenationSideView.vue'
 import CustomDialog from './CustomDialog.vue'
 import dialog from './dialog'
+
 const State = Object.freeze({
   GameOnly: 1,
   ModOnly: 2,
@@ -60,7 +61,7 @@ const State = Object.freeze({
 })
 export default {
   name: 'SettingsView',
-  components: { 
+  components: {
     CustomDialog,
     DocumenationSideView
   },
@@ -74,27 +75,28 @@ export default {
       this.loadPacks()
     }
 
-    let self=this
-    this.$listen("documentation-state", (e)=>self.isDocumenation =!!e);
+    let self = this
+    this.$listen("documentation-state", (e) => self.isDocumenation = !!e);
     this.$listen("reloadSideview", self.reloadSideView);
   },
   data() {
 
     return {
       active: null,
-      isDocumenation:false,
+      isDocumenation: false,
       menu: {
 
         pack: [
           { title: 'Open', id: 0 },
-          {title:'Open in Explorer', id:1},
+          { title: 'Open in Explorer', id: 1 },
           { title: 'Close others', id: 2 },
         ],
         game: [
           { title: 'Export Content', id: 0, visiblity: State.GameOnly },
           { title: 'Rename', id: 1, mod: true, visiblity: State.ModOnly },
           { title: 'Open Game', id: 2, mod: true, visiblity: State.Both },
-          { title: 'Delete Mod', id: 3, mod: true, visiblity: State.ModOnly }
+          { title: 'Delete Mod', id: 3, mod: true, visiblity: State.ModOnly },
+          { title: 'Open In File Explorer', id: 4, mod: true, visiblity: State.Both }
         ]
       },
       panels: [],
@@ -125,27 +127,27 @@ export default {
           .map(x => x.replace('The Jackbox Party Pack', '').replace(' ', ''))
           .map(x => x === '' ? '1' : x)
           .map(x => parseInt(x))
-        
-        if(this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)){
-        //   name: name,
-        // id: id ?? name,
-        // children: children,
-        // disabled: disabled,
+
+        if (this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)) {
+          //   name: name,
+          // id: id ?? name,
+          // children: children,
+          // disabled: disabled,
           this.items = [...AllGames]
-          this.panels=[true]
-        }else {
-          this.items = JackBoxTreeData.filter((x)=>this.panels.includes(x.id))
-          this.panels = this.panels.map(x=>false)
+          this.panels = [true]
+        } else {
+          this.items = JackBoxTreeData.filter((x) => this.panels.includes(x.id))
+          this.panels = this.panels.map(x => false)
         }
         this.loadModPacks()
       })
     },
     loadModPacks() {
-      if(!this.modPath) return
+      if (!this.modPath) return
       this.file.fs.readdir(this.modPath, (error, files) => {
         let modPanel = {
           name: 'Mods',
-          isMod:true,
+          isMod: true,
           children: [
             ...files.map(x => {
               return {
@@ -157,16 +159,26 @@ export default {
             })
           ]
         }
-        console.log()
-        if(modPanel.children.length === 0) return
+        if (modPanel.children.length === 0) return
         this.items.unshift(modPanel)
         this.panels.unshift(false)
       })
     },
+    getKeyFromModPath(path) {
+      const filePath = [path, 'modSettings.json'].join('\\');
+      const fileContent = window.file.fs.readFileSync(filePath);
+      const decodedContent = new TextDecoder().decode(fileContent);
+      const cleanedContent = decodedContent.replace(/'/g, '"');
+      const json = JSON.parse(cleanedContent);
+
+      return json.key;
+    },
     onClick(e) {
-      this.$router.pass('gameview', {
-        key: e.key
+      if (e.isMod) {
+        e.key = this.getKeyFromModPath(e.id)
       }
+      //todo if not able to get key just forward to file viewer
+      this.$router.pass('gameview', { key: e.key }
       )
     },
     toggle(index) {
@@ -178,16 +190,16 @@ export default {
     itemClick(item, index) {
       if (item.id === 0) {
         this.toggle(index)
-      } else if(item.id ===1) {
-        if(this.items[index].isMod){
+      } else if (item.id === 1) {
+        if (this.items[index].isMod) {
           this.file.openInFileExplorer(this.modPath)
         } else {
-          this.file.openInFileExplorer([this.steamPath,'The Jackbox Party Pack'+(this.items[index].id>1 ? ' '+this.items[index].id :'')].join('\\'))
+          this.file.openInFileExplorer([this.steamPath, 'The Jackbox Party Pack' + (this.items[index].id > 1 ? ' ' + this.items[index].id : '')].join('\\'))
         }
       } else if (item.id === 2) {
         this.panels = this.panels.map((x, i) => index === i)
 
-      } 
+      }
     },
     async gameClick(item, game) {
       let tmp = null
@@ -206,41 +218,56 @@ export default {
             this.file.copyFolder(
               [this.steamPath, game.id,].join('\\'),
               [this.modPath, this.answer].join('\\')
-            )
+            ).then((success) => {
+              if (success) {
+                let json = { key: game.key }
+                window.file.fs.writeFileSync([this.modPath, this.answer, "modSettings.json"].join('\\'), JSON.stringify(json));
+                this.reloadSideView()
+              }
+            })
           }
-          this.reloadSideView()
           break;
         case 1:
           this.answer = await dialog
-              .title(`Rename [${game.name}]`)
-              .inputType('string')
-              .cancelText('Close')
-              .okText('Rename')
-              .html()
-              .prompt('Change the Name of your Mod')
-            if (this.answer) {
-              tmp = game.id.split('\\')
-              tmp[tmp.length-1] = this.answer
-              this.file.fs.rename(game.id,tmp.join('\\'),function(err){
-                self.reloadSideView()
-              })
-            }
-        break
+            .title(`Rename [${game.name}]`)
+            .inputType('string')
+            .cancelText('Close')
+            .okText('Rename')
+            .html()
+            .prompt('Change the Name of your Mod')
+          if (this.answer) {
+            tmp = game.id.split('\\')
+            tmp[tmp.length - 1] = this.answer
+            this.file.fs.rename(game.id, tmp.join('\\'), function (err) {
+              self.reloadSideView()
+            })
+          }
+          break
         case 2:
+        if (game.isMod) {
+          game.key = this.getKeyFromModPath(game.id)
+        }
+          if(game.isMod)
           this.$router.pass('gameview', {
             key: game.key
           })
           break;
         case 3:
-          console.log(game)
           tmp = window.file.deleteFolder(game.id)
-          if(tmp) {
+          if (tmp) {
             this.reloadSideView()
           }
           break;
-       }
+        case 4:
+          if (game.isMod) {
+            window.file.openInFileExplorer(game.id)
+          } else {
+            window.file.openInFileExplorer(this.steamPath + game.id)
+          }
+          break;
+      }
     },
-    reloadSideView(){
+    reloadSideView() {
       this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
       this.modPath = this.file.getSetting(SETTING.MODS_PATH)
       this.items = []
@@ -257,7 +284,7 @@ a {
   text-decoration: none;
 }
 
-.maxButton{
+.maxButton {
   min-width: 100%;
 }
 
@@ -273,6 +300,4 @@ a {
   cursor: pointer;
   margin: 0px;
 }
-
-
 </style>

@@ -1,5 +1,6 @@
 <template lang="pug">
 MonacoEditor(
+  v-resize="onResize"
   theme="vs-dark",
   language="json",
   automaticLayout: true,
@@ -59,14 +60,13 @@ export default {
       this.isDirty = true
       this.$emit('update',this.editor.getValue())
     },
-    onResize(value) {
+    onResize() {
       this.editor?.layout()
     },
   },
   watch:{
     fileContent:{
       handler(newVal){
-        console.log('xxxx',newVal)
         this.internalValue = newVal
         if(this.editor){
           this.editor.getModel().setValue(newVal);

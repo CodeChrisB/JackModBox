@@ -68,6 +68,7 @@ export default {
     Object.keys(this.obj).forEach(x => {
       this.templateJson[x] = this.obj[x]
     })
+
     this.internalIndex=this.index
 
 

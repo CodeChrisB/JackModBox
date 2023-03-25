@@ -1,5 +1,5 @@
 <template lang="pug">
-v-row(style="max-height:90vh").overflow-y-auto
+v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
   v-col.col-8
     v-row
       v-col.col-4.ma-2

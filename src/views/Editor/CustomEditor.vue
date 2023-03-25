@@ -1,22 +1,25 @@
 <template lang="pug">
-.customEditor
-  v-row.ma-1
-    v-col.col-2
-      v-btn(@click="page(-1)") 
+div
+  v-row.ma-0
+    v-col.pa-0.pt-2.pl-3
+      v-btn(icon @click="page(-1)") 
         | <
-      v-btn(@click="page(1)")
+      span {{ pageText }}
+      v-btn(icon @click="page(1)")
         | >
-    v-col.col-2
-      v-select(
+    v-col.pa-0
+      v-select.mt-5(
         v-model="pageSize"
+        dense
         label="PageSize"
         :items="[1,2,4,8,16,totalItems]"
+        hide-details
       )
     v-spacer
-    v-col.col-2
-      span {{ pageText }}
+    span.pt-3 {{ pageShowingText }}
+    v-col.col-2.pa-0
   v-divider.mb-4
-  v-row.view.overflow-y-auto
+  v-row.yo(style="max-height:85vh;min-width:100%").overflow-y-auto
       CustomField.container(
         v-for="(obj,i) in pageContent"
         :obj="obj"  
@@ -26,6 +29,7 @@
         show-modded
         v-on:update="onUpdate"
       )
+    
   
   </template>
       
@@ -81,7 +85,10 @@
         return Math.floor(this.totalItems/this.pageSize)
       },
       pageText(){
-        return `Page ${this.index+1} of ${this.totalPages+1}`
+        return `${ this.index+1}/${this.totalPages+1}`
+      },
+      pageShowingText(){
+        return `Showing Items ${this.index*this.pageSize+1} - ${(this.index+1)*this.pageSize}`
       }
     },
     methods: {
@@ -102,7 +109,6 @@
     watch: {
       filter: {
         handler(newVal) {
-          console.log(this.filter)
           this.internalFilter = newVal
         }
       },
@@ -130,11 +136,10 @@
   }
   </script>
   <style scoped>
-  .view{
-    max-height: 84vh;
-  }
+
   .customEditor{
     min-width: 100%;
+    min-height:80vh
   }
   .container {
     min-width: 40%;
