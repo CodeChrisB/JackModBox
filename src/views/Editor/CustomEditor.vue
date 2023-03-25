@@ -88,7 +88,8 @@ div
         return `${ this.index+1}/${this.totalPages+1}`
       },
       pageShowingText(){
-        return `Showing Items ${this.index*this.pageSize+1} - ${(this.index+1)*this.pageSize}`
+        let max = Math.min((this.index+1)*this.pageSize,this.totalItems)
+        return `Showing Items ${this.index*this.pageSize+1} - ${max}`
       }
     },
     methods: {
