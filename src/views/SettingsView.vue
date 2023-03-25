@@ -1,28 +1,61 @@
 <template lang="pug">
 div 
-    v-col.col-6
-            v-text-field(
-                v-model="settings[SETTING.STEAM_PATH]"
-                label="SteamApps Folder"
-                hint=`SteamLibrary  >  steamapps  >  common`
-                append-outer-icon="mdi-content-save"
-                @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH]).then(()=>$broadcast('reloadSideview',true))"
-            )
-            v-text-field(
-                v-model="settings[SETTING.MODS_PATH]"
-                label="Mods Folder"
-                hint=`A folder to save & load your mods from`
-                append-outer-icon="mdi-content-save"
-                @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH]).then(()=>$broadcast('reloadSideview',true))"
-            )
-            v-checkbox(
-                v-model="settings[SETTING.SHOW_ALL_NO_PACKS]"
-                label="Show all Games without Packs"
-                @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>$broadcast('reloadSideview',true))"
-            )
-            v-btn(
-                @click="toDocumenation()"
-            )| To Documenation
+    v-card
+        v-tabs(v-model='tab' background-color='primary')
+            v-tab(key="setting")
+                | Settings
+            v-tab(key="update")
+                | Updates
+            v-tab(key="about")
+                | About
+        v-tabs-items(v-model='tab')
+            v-tab-item(key="setting")
+                v-card(flat='')
+                    v-card-text 
+                        v-col.col-6
+                            v-text-field(
+                                v-model="settings[SETTING.STEAM_PATH]"
+                                label="SteamApps Folder"
+                                hint=`SteamLibrary  >  steamapps  >  common`
+                                append-outer-icon="mdi-content-save"
+                                @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH]).then(()=>$broadcast('reloadSideview',true))"
+                            )
+                            v-text-field(
+                                v-model="settings[SETTING.MODS_PATH]"
+                                label="Mods Folder"
+                                hint=`A folder to save & load your mods from`
+                                append-outer-icon="mdi-content-save"
+                                @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH]).then(()=>$broadcast('reloadSideview',true))"
+                            )
+                            v-checkbox(
+                                v-model="settings[SETTING.SHOW_ALL_NO_PACKS]"
+                                label="Show all Games without Packs"
+                                @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>$broadcast('reloadSideview',true))"
+                            )
+
+            v-tab-item(key="update")
+                v-card(flat='')
+                    v-card-text 
+                        v-row
+                            span Current Version v0.1.1
+                        v-row
+                            v-btn() Check For Update
+            v-tab-item(key="about")
+                v-card(flat='')
+                        v-card-text 
+                            span.text-h4 About this tool
+                            v-col.col-8
+                                span {{aboutText}}
+                            v-divider
+                            span.text-h4 Documentation
+                            v-col.col.col-8 
+                                span {{ docText }}
+                            v-btn(
+                                @click="toDocumenation()"
+                            )| View Documenation
+            
+
+        
 
 </template>
 
@@ -49,7 +82,10 @@ export default {
     },
     data() {
         return {
-            settings:{}
+            aboutText:'This is an open-source modding tool designed for modifying Jackbox games. Please note that this tool is not an official Jackbox tool and is not affiliated with the developers of Jackbox in any way. This third-party tool has been created to allow users to mod Jackbox games according to their preferences. Its intuitive interface makes it easy to use and enables users to access advanced modding features with ease. We believe that this modding tool will enable users to customize their Jackbox game experience and make it even more enjoyable. We hope that you find this tool useful and that it enhances your Jackbox game experience.',
+            docText:'For further questions regarding JackModBox, please consult the documentation for detailed information on the tools features and functionalities. If you still have questions or concerns after reviewing the documentation, feel free to open an Issue on Gihub.',
+            settings:{},
+            tab:null,
         }
     },
 
