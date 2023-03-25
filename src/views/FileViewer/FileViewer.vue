@@ -1,8 +1,30 @@
 <template lang="pug">
 div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
+  v-row.ma-0
+    v-col.pa-0.pt-2.pl-3
+      v-btn(icon @click="page(-1)") 
+        | <
+      span {{ pageText }}
+      v-btn(icon @click="page(1)")
+        | >
+    v-col.pa-0
+      v-select.mt-5(
+        v-model="pageSize"
+        dense
+        label="PageSize"
+        :items="pageSizeStates"
+        hide-details
+      )
+    
+    v-spacer
+
+    span.pt-3 {{ pageShowingText }}
+
   v-row().overflow-auto
+  v-divider 
+  v-row.mt-3
     v-card.mb-3.container(
-      v-for="(fileContent) in files"
+      v-for="(fileContent) in pageContent"
       @click="onFileClick(fileContent)"
       @contextmenu="show($event,fileContent)"
     )
@@ -46,6 +68,8 @@ export default {
   data() {
     return {
       clickedFile:{},
+      index:0,
+      pageSize:32,
       position:{
         x:0,
         y:0
@@ -85,7 +109,34 @@ export default {
       showMenu:false
     }
   },
-
+  computed:{
+    pageContent(){
+        return this.items.slice(
+          this.pageSize*this.index,
+          this.pageSize*(this.index+1)
+        )
+      },
+      items() {
+        return this.files
+      },
+      totalItems(){
+        return this.items.length
+      },
+      totalPages(){
+        return Math.floor(this.totalItems/this.pageSize)
+      },
+      pageText(){
+        if(this.totalItems === this.pageSize) return '1/1'
+        return `${ this.index+1}/${this.totalPages+1}`
+      },
+      pageShowingText(){
+        let max = Math.min((this.index+1)*this.pageSize,this.totalItems)
+        return `Showing Items ${this.index*this.pageSize+1} - ${max}`
+      },
+      pageSizeStates(){
+        return [8,16,32,128,256,this.totalItems].filter(x=>x<=this.totalItems)
+      }
+  },  
   created() {
     this.file = window.file
     this.SETTING = SETTING
@@ -140,7 +191,6 @@ export default {
       })
       }
     },
-
     onFileClick(e) {
       if(e.isFolder === 1){
         this.clickedFile = this.folderPath + "\\" + e.name
@@ -165,6 +215,11 @@ export default {
       this.$nextTick(() => {
         this.showMenu = true;
       });
+    },
+    page(indexChange){
+        this.index +=indexChange
+        if(this.index<0) this.index=this.totalPages;
+        else if(this.index>this.totalPages)this.index=0
     },
   },
   watch: {

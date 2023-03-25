@@ -85,6 +85,7 @@ div
         return Math.floor(this.totalItems/this.pageSize)
       },
       pageText(){
+        if(this.totalItems === this.pageSize) return '1/1'
         return `${ this.index+1}/${this.totalPages+1}`
       },
       pageShowingText(){
@@ -101,7 +102,6 @@ div
         this.$emit('changed', this.internalValue.content)
       },
       page(indexChange){
-        //todo check for impossible states
         this.index +=indexChange
         if(this.index<0) this.index=this.totalPages;
         else if(this.index>this.totalPages)this.index=0
