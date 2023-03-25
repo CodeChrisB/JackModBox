@@ -212,6 +212,7 @@ export default {
             .cancelText('Close')
             .okText('Create Mod')
             .html()
+            .label("Mod Name")
             .prompt('Enter a Name for your Mod')
 
           if (this.answer) {

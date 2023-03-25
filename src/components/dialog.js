@@ -1,13 +1,15 @@
 import Vue from 'vue'
 const state = Vue.observable({
-    type: 'alert',
     active: false,
-    message: '',
-    title: '',
-    okText: 'Ok',
     cancelText: 'Cancel',
-    inputType: 'text',
     html: false,
+    inputRequired:true,
+    inputType: 'text',
+    label: '',
+    message: '',
+    okText: 'Ok',
+    title: '',
+    type: 'alert',
 })
 
 // -----------------------------------
@@ -22,11 +24,13 @@ const open = (message) => {
 }
 const reset = () => {
     state.active = false
+    state.cancelText = 'Cancel'
+    state.html = false
+    state.inputRequired = true
+    state.inputType = 'text'
+    state.label = ''
     state.message = ''
     state.okText = 'Ok'
-    state.cancelText = 'Cancel'
-    state.inputType = 'text'
-    state.html = false
     state.title = ''
     state.type = 'alert'
 }
@@ -47,13 +51,20 @@ const dialog = {
         state.okText = text
         return this
     },
-    
+    label(text){
+        state.label = text
+        return this
+    },
     cancelText(text) {
         state.cancelText = text
         return this
     },
     inputType(type) {
         state.inputType = type
+        return this
+    },
+    inputRequired(required){
+        state.inputRequired = required
         return this
     },
     html(enabled = true) {

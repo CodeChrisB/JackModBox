@@ -1,14 +1,34 @@
 <template lang="pug">
-v-card(v-if='dialog.state.active')
-  .dialog-inner
-    h3(v-if='dialog.state.title') {{dialog.state.title}}
-    p(v-if='dialog.state.html' v-html='dialog.state.message')
-    p(v-else='') {{ dialog.state.message }}
-    input(v-if="dialog.state.type === 'prompt'" :type='dialog.state.inputType' v-model='userInput')
-    div
-      v-btn(v-if="dialog.state.type !== 'alert'" @click='dialog.cancel()') {{dialog.state.cancelText}}
-      v-btn(@click='dialog.ok(userInput)') {{dialog.state.okText}}
-  .dialog-bg(@click='dialog.cancel()')
+v-card(v-if='dialog.state.active').rounded-lg
+    .dialog-inner
+      v-app-bar.pa-0.ma-0(
+        v-if='dialog.state.title'
+        color='primary'
+      )
+        span.text-h5(style="color:white") {{dialog.state.title}}
+      .pa-6   
+        p(v-if='dialog.state.html' v-html='dialog.state.message')
+        p(v-else='') {{ dialog.state.message }}
+        v-text-field(
+          v-model='userInput'
+          :label="dialog.state.label"
+          v-if="dialog.state.type === 'prompt'" 
+          :type='dialog.state.inputType' 
+          )
+        div
+          v-btn(
+            v-if="dialog.state.type !== 'alert'" 
+            @click='dialog.cancel()'
+            color="warning"
+            
+          ).ma-2 {{dialog.state.cancelText}}
+          v-btn(
+            @click='dialog.ok(userInput)'
+            color="primary"
+            :disabled="dialog.state.inputRequired && userInput.length<1",
+          ).ma-2 {{dialog.state.okText}}
+
+    .dialog-bg(@click='dialog.cancel()')
 </template>
 
 <script>
@@ -36,7 +56,6 @@ export default{
 .dialog-inner{
   background:white;
   z-index: 11;
-  padding:20px;
   position:fixed;
   top:200px;
   left: 50%;
