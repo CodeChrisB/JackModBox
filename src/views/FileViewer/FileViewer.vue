@@ -22,7 +22,7 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
 
   v-row().overflow-auto
   v-divider 
-  v-row.mt-3.pr-3
+  v-row.mt-3.pr-3.ml-2
     v-card.mb-3.ma-1(
       v-for="(fileContent) in pageContent"
       @click="onFileClick(fileContent)"
@@ -30,8 +30,15 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
       :style="viewMode[viewIndex].rule"
     )
       div(v-if="fileType(fileContent) === State.IMAGE")
-        ViewerImage(:path="fileContent.fullPath")
+        viewer-image(:path="fileContent.fullPath")
         span {{ fileContent.name }}
+      div(v-else-if="fileType(fileContent) === State.AUDIO")
+        file-viewer-audio-player(
+          :icon-scale="viewMode[viewIndex].scale",
+          :file-name="fileContent.name"
+          :path="fileContent.fullPath"
+        )
+
       div(v-else)
         v-row.d-flex.justify-center.ma-4
           v-icon( :style="genTransformScale(viewMode[viewIndex].scale)") {{fileContent.isFolder=== 1 ?  'mdi-folder': 'mdi-file-document-outline'}}
@@ -47,6 +54,16 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
           @click="prop.func(clickedFile)"
         )
           span {{ prop.title }}
+
+  v-dialog(v-model='dialog.open' width='auto')
+    v-card
+      v-card-text.pa-0.ma-0.overflow-hidden
+        audio-player-dialog(
+          :data="dialog.data"
+        )
+
+      
+
 </template>
 
 <script>
@@ -56,28 +73,36 @@ const State = Object.freeze({
   IMAGE: 2,
   TEXTFILE: 3,
   SWF: 4,
-  ALLFILES: 5
+  AUDIO: 5,
+  ALLFILES: 6
+})
+const Dialog = Object.freeze({
+  AudioViewer: 0
 })
 import { SETTING } from '@/assets/data/SettingData'
 import { EditorMode } from '@/assets/data/Editor'
 import ViewerImage from './ViewerImage.vue'
+import FileViewerAudioPlayer from './FileViewerAudioPlayer.vue'
+import AudioPlayerDialog from '../Dialogs/AudioPlayerDialog.vue'
 
 export default {
   name: 'FileViewer',
   components: {
-    ViewerImage
+    ViewerImage,
+    FileViewerAudioPlayer,
+    AudioPlayerDialog
   },
   data() {
     return {
-      isWheeling: false,
       clickedFile: {},
-      index: 0,
-      pageSize: 32,
-      possiblePageSize: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
-      position: {
-        x: 0,
-        y: 0
+      dialog: {
+        open: false,
+        component: null,
+        data:{}
       },
+      files: [],
+      index: 0,
+      isWheeling: false,
       menu: [
         {
           title: 'Open',
@@ -108,32 +133,35 @@ export default {
         },
 
       ],
-
-      files: [],
-      images: {},
+      pageSize: 32,
+      position: {
+        x: 0,
+        y: 0
+      },
+      possiblePageSize: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
       showMenu: false,
-      viewIndex:3,
-      viewMode:[
+      viewIndex: 3,
+      viewMode: [
         {
-          rule:'min-width:10%;max-width:10%',
-          scale:1.2
+          rule: 'min-width:100px;max-width:10%',
+          scale: 1.2
         },
         {
-          rule:'min-width:15%;max-width:15%',
-          scale:1.3
+          rule: 'min-width:130px;max-width:15%',
+          scale: 1.3
         },
         {
-          rule:'min-width:23%;max-width:23%',
-          scale:1.4
+          rule: 'min-width:160px;max-width:23%',
+          scale: 1.4
         },
         {
-          rule:'min-width:30%;max-width:30%',
-          scale:1.5
-        
+          rule: 'min-width:240px;max-width:30%',
+          scale: 1.5
+
         },
         {
-          rule:'min-width:48%;max-width:48%',
-          scale:1.7
+          rule: 'min-width:320px;max-width:48%',
+          scale: 1.7
         },
       ]
     }
@@ -194,9 +222,10 @@ export default {
       if (['txt', 'html'].includes(fileContent.suffix)) return State.TEXTFILE
       if (['jpg', 'png'].includes(fileContent.suffix)) return State.IMAGE
       if (['swf'].includes(fileContent.suffix)) return State.SWF
+      if (['ogg'].includes(fileContent.suffix)) return State.AUDIO
       return State.ALLFILES
     },
-    genTransformScale(scale){
+    genTransformScale(scale) {
       return `transform:scale(${scale})`
     },
     loadFiles() {
@@ -246,25 +275,34 @@ export default {
           key: this.clickedFile
         })
       } else {
-        this.clickedFile = this.folderPath + "\\" + e.name
-        this.$router.pass('Editor', {
-          key: this.clickedFile,
-          editor: EditorMode.MonacoEditor
-        })
+        console.log(e, this.fileType(e))
+        let fileType = this.fileType(e)
+        if ([State.JSON, State.TEXTFILE].includes(fileType)) {
+          this.clickedFile = this.folderPath + "\\" + e.name
+          this.$router.pass('Editor', {
+            key: this.clickedFile,
+            editor: EditorMode.MonacoEditor
+          })
+        } else if (State.AUDIO === fileType) {
+          this.dialog.open=true
+          this.dialog.component = Dialog.AudioViewer
+          this.dialog.data = e
+        }
+
       }
     },
     onKeyDown(e) {
       //checking for : ctrl | '+' key     & ctrl | 'mouse wheel up'
       if (e.ctrlKey && e.code === 'NumpadAdd') {
         this.viewIndexStep(1)
-      } else if(e.ctrlKey && e.code === 'NumpadSubtract'){
+      } else if (e.ctrlKey && e.code === 'NumpadSubtract') {
         this.viewIndexStep(-1)
       }
     },
     onWheel(e) {
-      if(!e.ctrlKey) return;
+      if (!e.ctrlKey) return;
 
-      if(!this.isWheeling) {
+      if (!this.isWheeling) {
         this.isWheeling = true;
 
         if (e.deltaY < 0) {
@@ -286,11 +324,11 @@ export default {
         this.showMenu = true;
       });
     },
-    viewIndexStep(step){
-      if(step === 1){
-        if(this.viewIndex+1<=this.viewMode.length) this.viewIndex++
-      } else if(step === -1) {
-        if(this.viewIndex-1>=0) this.viewIndex--
+    viewIndexStep(step) {
+      if (step === 1) {
+        if (this.viewIndex + 1 <= this.viewMode.length) this.viewIndex++
+      } else if (step === -1) {
+        if (this.viewIndex - 1 >= 0) this.viewIndex--
       }
     },
     page(indexChange) {
