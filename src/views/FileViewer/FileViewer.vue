@@ -15,31 +15,32 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
         :items="pageSizeStates"
         hide-details
       )
-    
+
     v-spacer
 
-    span.pt-3 {{ pageShowingText }}
+    span.pt-3.pr-3 {{ pageShowingText }}
 
   v-row().overflow-auto
   v-divider 
-  v-row.mt-3
-    v-card.mb-3.container(
+  v-row.mt-3.pr-3
+    v-card.mb-3.ma-1(
       v-for="(fileContent) in pageContent"
       @click="onFileClick(fileContent)"
       @contextmenu="show($event,fileContent)"
+      :style="viewMode[viewIndex].rule"
     )
       div(v-if="fileType(fileContent) === State.IMAGE")
         ViewerImage(:path="fileContent.fullPath")
         span {{ fileContent.name }}
       div(v-else)
         v-row.d-flex.justify-center.ma-4
-          v-icon(style="transform:scale(2)") {{fileContent.isFolder=== 1 ?  'mdi-folder': 'mdi-file-document-outline'}}
-        v-row.d-flex.justify-center
-          span.text-caption(style="word-break: break-word") {{fileContent.name}}
-          
+          v-icon( :style="genTransformScale(viewMode[viewIndex].scale)") {{fileContent.isFolder=== 1 ?  'mdi-folder': 'mdi-file-document-outline'}}
+        v-row.d-flex.justify-center.ma-0
+          span.text-truncate.text-caption(style="word-break: break-word") {{fileContent.name}}
+
     v-menu(v-model="showMenu" :position-x="position.x" :position-y="position.y" absolute offset-y)
       v-list
-        
+
         v-list-item(
           v-for="prop in menu"
           v-if="prop.visible.includes(fileType(clickedFile)) || prop.visible[0] === State.ALLFILES"
@@ -50,95 +51,131 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
 
 <script>
 const State = Object.freeze({
-  FOLDER:0,
-  JSON:1,
-  IMAGE:2,
-  TEXTFILE:3,
-  SWF:4,
-  ALLFILES:5
+  FOLDER: 0,
+  JSON: 1,
+  IMAGE: 2,
+  TEXTFILE: 3,
+  SWF: 4,
+  ALLFILES: 5
 })
 import { SETTING } from '@/assets/data/SettingData'
 import { EditorMode } from '@/assets/data/Editor'
 import ViewerImage from './ViewerImage.vue'
+
 export default {
   name: 'FileViewer',
-  components:{
+  components: {
     ViewerImage
-  },  
+  },
   data() {
     return {
-      clickedFile:{},
-      index:0,
-      pageSize:32,
-      possiblePageSize:[8,16,32,64,128,256,512,1024,2048,4096],
-      position:{
-        x:0,
-        y:0
+      isWheeling: false,
+      clickedFile: {},
+      index: 0,
+      pageSize: 32,
+      possiblePageSize: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
+      position: {
+        x: 0,
+        y: 0
       },
-      menu:[
+      menu: [
         {
-          title:'Open',
+          title: 'Open',
           func: (game) => this.onFileClick(game),
-          visible:[State.JSON]
+          visible: [State.JSON]
         },
         {
-          title:'Open Folder',
+          title: 'Open Folder',
           func: (game) => this.onFileClick(game),
-          visible:[State.FOLDER]
+          visible: [State.FOLDER]
         },
         {
-          title:'Open Expand Folder',
+          title: 'Open Expand Folder',
           func: (folder) => {
             folder.expand = true
             this.onFileClick(folder)
           },
-          visible:[State.FOLDER]
+          visible: [State.FOLDER]
         },
         {
-          title:'Open In Explorer',
+          title: 'Open In Explorer',
           func: (game) => {
             let arr = game.fullPath.split('\\')
             arr.pop()
             window.file.openInFileExplorer(arr.join('\\'))
           },
-          visible:[State.ALLFILES]
+          visible: [State.ALLFILES]
         },
 
       ],
-      
+
       files: [],
-      images:{},
-      showMenu:false
+      images: {},
+      showMenu: false,
+      viewIndex:3,
+      viewMode:[
+        {
+          rule:'min-width:10%;max-width:10%',
+          scale:1.2
+        },
+        {
+          rule:'min-width:15%;max-width:15%',
+          scale:1.3
+        },
+        {
+          rule:'min-width:23%;max-width:23%',
+          scale:1.4
+        },
+        {
+          rule:'min-width:30%;max-width:30%',
+          scale:1.5
+        
+        },
+        {
+          rule:'min-width:48%;max-width:48%',
+          scale:1.7
+        },
+      ]
     }
   },
-  computed:{
-    pageContent(){
-        return this.items.slice(
-          this.pageSize*this.index,
-          this.pageSize*(this.index+1)
-        )
-      },
-      items() {
-        return this.files
-      },
-      totalItems(){
-        return this.items.length
-      },
-      totalPages(){
-        return Math.floor(this.totalItems/this.pageSize)
-      },
-      pageText(){
-        if(this.totalItems === this.pageSize) return '1/1'
-        return `${ this.index+1}/${this.totalPages+1}`
-      },
-      pageShowingText(){
-        let max = Math.min((this.index+1)*this.pageSize,this.totalItems)
-        return `Showing Items ${this.index*this.pageSize+1} - ${max}`
-      },
-      pageSizeStates(){
-        return [...this.possiblePageSize,this.totalItems].filter(x=>x<=this.totalItems)
-      }
-  },  
+  /*  min-width: 23%;
+  max-width: 250px;*/
+  computed: {
+    pageContent() {
+      return this.items.slice(
+        this.pageSize * this.index,
+        this.pageSize * (this.index + 1)
+      )
+    },
+    items() {
+      return this.files
+    },
+    totalItems() {
+      return this.items.length
+    },
+    totalPages() {
+      return Math.floor(this.totalItems / this.pageSize)
+    },
+    pageText() {
+      if (this.totalItems === this.pageSize) return '1/1'
+      return `${this.index + 1}/${this.totalPages + 1}`
+    },
+    pageShowingText() {
+      let max = Math.min((this.index + 1) * this.pageSize, this.totalItems)
+      return `Showing Items ${this.index * this.pageSize + 1} - ${max}`
+    },
+    pageSizeStates() {
+      return [...this.possiblePageSize, this.totalItems].filter(x => x <= this.totalItems)
+    }
+  },
+  mounted() {
+    document.addEventListener("keydown", this.onKeyDown)
+    document.addEventListener("wheel", this.onWheel)
+  },
+  beforeDestroy() {
+    document.removeEventListener("keydown", this.onKeyDown)
+
+  },
   created() {
     this.file = window.file
     this.SETTING = SETTING
@@ -146,75 +183,101 @@ export default {
     this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
     this.folderPath = this.$route.params.key
     this.expand = this.$route.params.expand
-    
+
 
     this.loadFiles()
   },
   methods: {
-    fileType(fileContent){
-      if(fileContent.isFolder === 1) return State.FOLDER
-      if(['jet','json'].includes(fileContent.suffix)) return State.JSON
-      if(['txt','html'].includes(fileContent.suffix)) return State.TEXTFILE
-      if(['jpg','png'].includes(fileContent.suffix)) return State.IMAGE
-      if(['swf'].includes(fileContent.suffix)) return State.SWF
+    fileType(fileContent) {
+      if (fileContent.isFolder === 1) return State.FOLDER
+      if (['jet', 'json'].includes(fileContent.suffix)) return State.JSON
+      if (['txt', 'html'].includes(fileContent.suffix)) return State.TEXTFILE
+      if (['jpg', 'png'].includes(fileContent.suffix)) return State.IMAGE
+      if (['swf'].includes(fileContent.suffix)) return State.SWF
       return State.ALLFILES
     },
+    genTransformScale(scale){
+      return `transform:scale(${scale})`
+    },
     loadFiles() {
-      if(this.expand){
-        window.file.openExpandFolder(this.folderPath).then(files=>{
-          let id =0
-          files = files.map(x=>{
+      if (this.expand) {
+        window.file.openExpandFolder(this.folderPath).then(files => {
+          let id = 0
+          files = files.map(x => {
             id++
             return {
               name: x.split('\\').slice(-1)[0],
               isFolder: this.file.isFolder(x),
-              suffix:x.split('.').slice(-1)[0],
-              fullPath:x,
-              id:id,
+              suffix: x.split('.').slice(-1)[0],
+              fullPath: x,
+              id: id,
             }
-          }).sort(({isFolder:a}, {isFolder:b}) =>b-a)
+          }).sort(({ isFolder: a }, { isFolder: b }) => b - a)
           this.files = files
-          this.onRecalculatePageSize() 
+          this.onRecalculatePageSize()
         })
-      }else{
+      } else {
         window.file.fs.readdir(this.folderPath, (error, files) => {
-        let id =0
-        files = files.map(x => {
-          id++
-          return {
-            name: x,
-            isFolder: this.file.isFolder([this.folderPath, x].join('\\')),
-            suffix:x.split('.').slice(-1)[0],
-            fullPath:[this.folderPath,x].join('\\'),
-            id:id,
+          let id = 0
+          files = files.map(x => {
+            id++
+            return {
+              name: x,
+              isFolder: this.file.isFolder([this.folderPath, x].join('\\')),
+              suffix: x.split('.').slice(-1)[0],
+              fullPath: [this.folderPath, x].join('\\'),
+              id: id,
+            }
           }
-        }
-        ).sort(({isFolder:a}, {isFolder:b}) =>b-a)
-        this.files = files
-        this.onRecalculatePageSize() 
-      })
+          ).sort(({ isFolder: a }, { isFolder: b }) => b - a)
+          this.files = files
+          this.onRecalculatePageSize()
+        })
       }
     },
-    onRecalculatePageSize(){
-        this.pageSize = Math.min(this.files.length,32)
-    },  
+    onRecalculatePageSize() {
+      this.pageSize = Math.min(this.files.length, 32)
+    },
     onFileClick(e) {
-      if(e.isFolder === 1){
+      if (e.isFolder === 1) {
         this.clickedFile = this.folderPath + "\\" + e.name
-        this.$router.pass('fileviewer',{
-          expand:e.expand,
-          key:this.clickedFile
+        this.$router.pass('fileviewer', {
+          expand: e.expand,
+          key: this.clickedFile
         })
-      }else{
+      } else {
         this.clickedFile = this.folderPath + "\\" + e.name
-        this.$router.pass('Editor', { 
+        this.$router.pass('Editor', {
           key: this.clickedFile,
           editor: EditorMode.MonacoEditor
         })
       }
     },
-    show(e,file) {
-    e.preventDefault();
+    onKeyDown(e) {
+      //checking for : ctrl | '+' key     & ctrl | 'mouse wheel up'
+      if (e.ctrlKey && e.code === 'NumpadAdd') {
+        this.viewIndexStep(1)
+      } else if(e.ctrlKey && e.code === 'NumpadSubtract'){
+        this.viewIndexStep(-1)
+      }
+    },
+    onWheel(e) {
+      if(!e.ctrlKey) return;
+
+      if(!this.isWheeling) {
+        this.isWheeling = true;
+
+        if (e.deltaY < 0) {
+          this.viewIndexStep(1)
+        } else {
+          this.viewIndexStep(-1)
+
+        }
+        setTimeout(() => { this.isWheeling = false; }, 250);
+      }
+    },
+    show(e, file) {
+      e.preventDefault();
       this.showMenu = false;
       this.position.x = e.clientX;
       this.position.y = e.clientY;
@@ -223,10 +286,17 @@ export default {
         this.showMenu = true;
       });
     },
-    page(indexChange){
-        this.index +=indexChange
-        if(this.index<0) this.index=this.totalPages;
-        else if(this.index>this.totalPages)this.index=0
+    viewIndexStep(step){
+      if(step === 1){
+        if(this.viewIndex+1<=this.viewMode.length) this.viewIndex++
+      } else if(step === -1) {
+        if(this.viewIndex-1>=0) this.viewIndex--
+      }
+    },
+    page(indexChange) {
+      this.index += indexChange
+      if (this.index < 0) this.index = this.totalPages;
+      else if (this.index > this.totalPages) this.index = 0
     },
   },
   watch: {
@@ -234,7 +304,7 @@ export default {
       handler(newVal) {
         if (!newVal) return
         this.folderPath = newVal
-        this.$nextTick(()=>{
+        this.$nextTick(() => {
           this.loadFiles()
         })
       },
@@ -246,7 +316,7 @@ export default {
       },
       immediate: true
     }
-    
+
   },
 
 }
@@ -256,7 +326,9 @@ export default {
   min-width: 23%;
   max-width: 250px;
 }
+
 .view:-webkit-scrollbar {
-  display: none!important;;
+  display: none !important;
+  ;
 }
 </style>

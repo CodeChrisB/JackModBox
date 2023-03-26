@@ -41,9 +41,6 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-
-  const iconPath = path.join(__dirname, 'favicon.ico')
-  win.setIcon(iconPath)
 }
 
 // Quit when all windows are closed.
