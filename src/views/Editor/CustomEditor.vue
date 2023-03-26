@@ -19,7 +19,7 @@ div
     span.pt-3 {{ pageShowingText }}
     v-col.col-2.pa-0
   v-divider.mb-4
-  v-row.yo(style="max-height:85vh;min-width:100%").overflow-y-auto
+  v-row.yo(style="max-height:85vh;min-width:100%").pa-1.overflow-y-auto
       CustomField.container(
         v-for="(obj,i) in pageContent"
         :obj="obj"  
@@ -85,7 +85,6 @@ div
         return Math.floor(this.totalItems/this.pageSize)
       },
       pageText(){
-        if(this.totalItems === this.pageSize) return '1/1'
         return `${ this.index+1}/${this.totalPages+1}`
       },
       pageShowingText(){

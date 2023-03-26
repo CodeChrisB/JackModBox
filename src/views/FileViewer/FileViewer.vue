@@ -70,6 +70,7 @@ export default {
       clickedFile:{},
       index:0,
       pageSize:32,
+      possiblePageSize:[8,16,32,64,128,256,512,1024,2048,4096],
       position:{
         x:0,
         y:0
@@ -104,6 +105,7 @@ export default {
         },
 
       ],
+      
       files: [],
       images:{},
       showMenu:false
@@ -134,7 +136,7 @@ export default {
         return `Showing Items ${this.index*this.pageSize+1} - ${max}`
       },
       pageSizeStates(){
-        return [8,16,32,128,256,this.totalItems].filter(x=>x<=this.totalItems)
+        return [...this.possiblePageSize,this.totalItems].filter(x=>x<=this.totalItems)
       }
   },  
   created() {
@@ -172,6 +174,7 @@ export default {
             }
           }).sort(({isFolder:a}, {isFolder:b}) =>b-a)
           this.files = files
+          this.onRecalculatePageSize() 
         })
       }else{
         window.file.fs.readdir(this.folderPath, (error, files) => {
@@ -188,9 +191,13 @@ export default {
         }
         ).sort(({isFolder:a}, {isFolder:b}) =>b-a)
         this.files = files
+        this.onRecalculatePageSize() 
       })
       }
     },
+    onRecalculatePageSize(){
+        this.pageSize = Math.min(this.files.length,32)
+    },  
     onFileClick(e) {
       if(e.isFolder === 1){
         this.clickedFile = this.folderPath + "\\" + e.name
@@ -239,6 +246,7 @@ export default {
       },
       immediate: true
     }
+    
   },
 
 }

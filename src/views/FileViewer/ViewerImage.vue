@@ -83,6 +83,15 @@ export default {
         this.saveBas64Image(base64)
       })
     }
+  },
+  watch:{
+    path:{
+      handler(newVal){
+        this.innerPath = newVal
+        this.getImage()
+      },
+      immediate:true  
+    }
   }
 }
 </script>
