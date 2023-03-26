@@ -2,17 +2,17 @@
 div
   v-row.ma-0
     v-col.pa-0.pt-2.pl-3
-      v-btn(icon @click="page(-1)") 
+      v-btn(:disabled="index === 0" icon @click="page(-1)") 
         | <
       span {{ pageText }}
-      v-btn(icon @click="page(1)")
+      v-btn(:disabled="index === totalPages || totalPages ===1" icon @click="page(1)")
         | >
     v-col.pa-0
       v-select.mt-5(
         v-model="pageSize"
         dense
         label="PageSize"
-        :items="[1,2,4,8,16,totalItems]"
+        :items="pageSizeStates"
         hide-details
       )
     v-spacer
@@ -60,6 +60,7 @@ div
         internalSearch:'',
         //pagination
         pageSize:8,
+        possiblePageSize: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
         index:0,
       }
     },
@@ -76,7 +77,7 @@ div
           .map(elem => Object.keys(elem)[0])
       },
       items() {
-       return this.internalValue.content
+        return this.internalValue.content
       },
       totalItems(){
         return this.items.length
@@ -90,6 +91,9 @@ div
       pageShowingText(){
         let max = Math.min((this.index+1)*this.pageSize,this.totalItems)
         return `Showing Items ${this.index*this.pageSize+1} - ${max}`
+      },
+      pageSizeStates() {
+        return [...this.possiblePageSize, this.totalItems].filter(x => x <= this.totalItems)
       }
     },
     methods: {

@@ -132,9 +132,6 @@ contextBridge.exposeInMainWorld("file", {
   playSound(path){
     var player = require('play-sound')({})
     console.log(player,player.play)
-
-
-
     fs.readFile(path,(err,data)=>{
       const audio = new Audio(`data:audio/ogg;base64,${data.toString('base64')}`);
       audio.play();

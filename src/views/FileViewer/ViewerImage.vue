@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card(@drop.prevent='onDrop($event)' @dragover.prevent='dragover = true' @dragenter.prevent='dragover = true' @dragleave.prevent='dragover = false' :class="{ 'grey lighten-2': dragover }")
+v-card(@drop.prevent='onDrop($event)' @dragover='onDragOver' @dragenter.prevent='dragover = true' @dragleave.prevent='dragover = false' :class="{ 'grey lighten-2': dragover }")
   v-img(
     v-if="dragover === false"
     :src="imageUrl" alt="User Image"
@@ -15,6 +15,8 @@ v-card(@drop.prevent='onDrop($event)' @dragover.prevent='dragover = true' @drage
   </template>
   
 <script>
+import vClickOutside from 'v-click-outside'
+import Vue from "vue"
 export default {
   props: {
     path: {
@@ -27,6 +29,7 @@ export default {
       dragover: false,
       file: null,
       imageUrl: null,
+      internalIndex:-1,
       selectedFile: null,
       uploadedFiles: []
     }
@@ -34,6 +37,9 @@ export default {
   created() {
     this.innerPath = this.path
     this.getImage()
+    Vue.directive('click-outside', vClickOutside)
+    let self = this
+    this.$listen('imageDragOver',(index)=>{if(this.internalIndex !== index) this.dragover=false})
   },
   computed: {
 
@@ -75,6 +81,10 @@ export default {
       if (!imageData) return
       this.imageUrl = URL.createObjectURL(new Blob([imageData], { type: "image/png" }));
     },
+    onDragOver(){
+      this.dragover=true
+      this.$broadcast('imageDragOver',this.internalIndex)
+    },
     saveBas64Image(image) {
       window.file.replaceFileWithBase64(this.path, image, (err) => { this.getImage() })
     },
@@ -82,9 +92,14 @@ export default {
       window.file.downloadImageAsBase64(url).then(base64 => {
         this.saveBas64Image(base64)
       })
-    }
+    },
   },
   watch:{
+    index:{
+      handler(newVal){
+        this.internalIndex=newVal
+      }
+    },
     path:{
       handler(newVal){
         this.innerPath = newVal

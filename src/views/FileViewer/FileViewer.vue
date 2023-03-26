@@ -2,10 +2,10 @@
 div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
   v-row.ma-0
     v-col.pa-0.pt-2.pl-3
-      v-btn(icon @click="page(-1)") 
+      v-btn(:disabled="index === 0" icon @click="page(-1)") 
         | <
       span {{ pageText }}
-      v-btn(icon @click="page(1)")
+      v-btn(:disabled="index === totalPages || totalPages ===1" icon @click="page(1)")
         | >
     v-col.pa-0
       v-select.mt-5(
@@ -24,13 +24,16 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
   v-divider 
   v-row.mt-3.pr-3.ml-2
     v-card.mb-3.ma-1(
-      v-for="(fileContent) in pageContent"
+      v-for="(fileContent,index) in pageContent"
       @click="onFileClick(fileContent)"
       @contextmenu="show($event,fileContent)"
       :style="viewMode[viewIndex].rule"
     )
       div(v-if="fileType(fileContent) === State.IMAGE")
-        viewer-image(:path="fileContent.fullPath")
+        viewer-image(
+          :path="fileContent.fullPath"
+          :index="index"
+          )
         span {{ fileContent.name }}
       div(v-else-if="fileType(fileContent) === State.AUDIO")
         file-viewer-audio-player(
