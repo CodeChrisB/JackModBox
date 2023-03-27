@@ -231,6 +231,10 @@ export default {
     genTransformScale(scale) {
       return `transform:scale(${scale})`
     },
+    getEditorForFileType(state){
+      if ([State.JSON,State.TEXTFILE].includes(state)) return EditorMode.MonacoEditor
+      if ([State.SWF].includes(state)) return EditorMode.MonacoEditor
+    },
     loadFiles() {
       if (this.expand) {
         window.file.openExpandFolder(this.folderPath).then(files => {
@@ -279,26 +283,24 @@ export default {
         })
         return
       }
-
-
       let fileType = this.fileType(e)
-      this.clickedFile = this.folderPath + "\\" + e.name
-      if ([State.JSON, State.TEXTFILE].includes(fileType)) {
-        this.$router.pass('Editor', {
-          key: this.clickedFile,
-          editor: EditorMode.MonacoEditor
-        })
-      } else if (State.AUDIO === fileType) {
+
+      if (State.AUDIO === fileType) {
         this.dialog.open = true
         this.dialog.component = Dialog.AudioViewer
         this.dialog.data = e
-      } else if(State.SWF === fileType){
-        console.log(this.clickedFile)
-        this.$router.pass('Editor', {
-          key: this.clickedFile,
-          editor: EditorMode.SWFEditor
-        })
+        return
       }
+        
+      let editorForFile = this.getEditorForFileType(fileType)
+      this.clickedFile = this.folderPath + "\\" + e.name
+    
+      this.$router.pass('Editor', {
+        key: this.clickedFile,
+        editor: editorForFile
+      })
+      
+      
     },
     onKeyDown(e) {
       //checking for : ctrl | '+' key     & ctrl | 'mouse wheel up'

@@ -141,14 +141,18 @@ export default {
       }
     },
     onFastPrompts(prompt){
+      console.log(prompt)
       let filePath= [this.steamPath+this.game.id, prompt.path].join('\\')
-      //open monaco editor
+
       this.$router.pass('Editor', { 
         key: filePath,
-        editor: EditorMode.FastPromptEditor
+        editor: EditorMode.FastPromptEditor,
+        editorValues:{
+          //add all the custom data any editor needs 
+          key:prompt.key
+        }
       })
-      //custom editor mode
-      // fast prompt mode
+
     }
   },
   watch: {

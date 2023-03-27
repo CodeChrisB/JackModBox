@@ -45,6 +45,12 @@ div.overflow-y-hidden.overflow-x-hidden
         :searchInput="searchInput" 
         @changed="onCustomEditorChanged"
       )
+  v-row(v-else-if="EditorMode.FastPromptEditor === editorMode")
+    FastPromptEditor(
+      :jsonContent="jsonContent"
+      :jsonKey="editorValues.key"
+      @changed="onCustomEditorChanged"
+    )
   v-row(v-else-if="EditorMode.SWFEditor === editorMode")
     SWFEditor(
       :filePath="key"
@@ -56,6 +62,7 @@ import MonacoEditor from 'monaco-editor-vue';
 import MonacoEditorWrapper from './MonacoEditorWrapper.vue';
 import CustomEditor from './CustomEditor.vue';
 import SWFEditor from './SWFEditor.vue';
+import FastPromptEditor from './FastPromptEditor.vue';
 import Dialog from '@/components/CustomDialog.vue';
 import CustomPath from '@/components/CustomPath.vue';
 import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
@@ -68,9 +75,10 @@ export default {
     CustomEditor, 
     CustomPath, 
     Dialog,
+    FastPromptEditor,
     MonacoEditor,
     MonacoEditorWrapper,
-    SWFEditor
+    SWFEditor,
   },
   data() {
     return {
@@ -106,6 +114,7 @@ export default {
     this.key = this.$route.params.key;
     this.fileName = this.key.split('\\').slice(-1).join('');
     this.editorMode = this.$route.params.editor
+    this.editorValues = this.$route.params.editorValues
     console.log(this.$route.params)
 
     //SWF Editor loads the file itself
@@ -123,17 +132,20 @@ export default {
   beforeDestroy() {
     document.removeEventListener("keydown", this.doSave);
   },
+  computed:{
+    genContent(){
+      let base = JSON.parse(this.fileContent)
+      base.content = this.customEditorValue
+      console.log(base)
+      return  JSON.stringify(base, null, 2)
+    },
+  },
   methods: {
     backToFileviewer(){
       this.$router.pass('fileviewer',{key:this.key.split('\\').slice(0,-1).join('\\')})
     },
     editorMounted(value){
       this.editor = value
-    },
-    genContent(){
-      let base = JSON.parse(this.fileContent)
-      base.content = this.customEditorValue
-      return  JSON.stringify(base, null, 2)
     },
     loadFile() {
       const rawRead = window.file.fs.readFileSync(this.key)
@@ -159,6 +171,7 @@ export default {
     onCustomEditorChanged(val){
       this.isDirty=true
       this.customEditorValue=val
+      console.log('onCustomEditorChanged',this.customEditorValue)
     },  
     doSave(e) {
       //Todo rework the save system there are to many save methods here
@@ -175,13 +188,16 @@ export default {
     onSave(){
       //WIP 
       const resetDirty = (err)=> {if(!err) this.isDirty = false}
+      console.log(this.editorMode)
       switch(this.editorMode){
         case EditorMode.MonacoEditor:
           window.file.fs.writeFile(this.key,this.updatedFileContent,err=>resetDirty(err))
           break
         case EditorMode.CustomEditor:
-          window.file.fs.writeFile(this.key,this.genContent(),err=>resetDirty(err))
-          this.genContent()
+        case EditorMode.FastPromptEditor:
+          console.log(this.genContent)
+          window.file.fs.writeFile(this.key,this.genContent,err=>resetDirty(err))
+          console.log(window.file.fs.readFileSync(this.key,err=>resetDirty(err)))
           break
       }
     },        

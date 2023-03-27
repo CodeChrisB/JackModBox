@@ -1,88 +1,126 @@
 <template lang="pug">
-  v-row.ma-1
-    div(v-if="ceMode === '' || ceMode === null")
-      CustomField.container(
-        v-for="(obj,index) in internalValue.content"
-        :obj="obj" 
-        :index="index"
-        :filter="internalFilter"
-        :searchInput="internalSearch"
-        show-modded
-        v-on:update="onUpdate"
-      )
-    v-row.ml-5(v-if="ceMode==='FastPrompt'")
-      v-textarea(
-        v-model="fastPrompt.value",
-        :rows="fastPrompt.rows",
-      )
-  
+v-row.ma-1.mt-0
+  v-col.col-12.mt-0(
+    ref="promptContainer"
+  )
+    row-text-area.mx-4(
+      v-model="internalValue",
+      @keydown="onKeyDown",
+      flat
+      :rows="rows"
+      @input="onUpdate"
+    )
+    div(style="min-height:50px")
   </template>
       
-  <script>
-  import { CEErrors } from '@/assets/data/EditorValues'
-  import CustomField from '@/components/Fields/CustomField.vue'
-  export default {
-    name: 'CustomEditor',
-    components: {
-      CustomField
-    },
-  
-    data() {
-      return {
-        internalCeMode:'',
-        internalValue: [],
-        internalFilter: [],
-        internalSearch:'',
-        fastPrompt:{
-          value:'',
-          rows:1
-        }
-      }
-    },
-    props: {
-      ceMode:{
-        type:String
-      },
-      filter:{
-        type:Array,
-      },
-      searchInput:{
-        type:String
-      },
-      jsonFile: {
-        type: Object
-      }
-    },
-    created(){
-        this.fastPrompt.value = this.internalValue.content.map(x=>x['question']).join('\n')
-        this.fastPrompt.rows = this.fastPrompt.value.length
-    },
-    methods: {
-      onUpdate(e) {
-        //
-        this.internalValue.content[e.index] = e.content
-        this.$emit('changed', this.internalValue.content)
-      },
-    },
-    watch: {
-      jsonFile: {
-        handler(newVal) {
-  
-          this.internalValue = newVal
-          if (!newVal.content) { this.$emit('error', CEErrors.NoContent); return; }
-          if (!Array.isArray(newVal.content)) { this.$emit('error', CEErrors.ContentNotArray); return; }
-          if (Object.keys(newVal.content[0])[0] === 'id' && Object.keys(newVal.content[0]).length === 1) { this.$emit('error', CEErrors.OnlyIdContent); return; }
-          this.internalValue = newVal
-        },
-        immediate: true
-      }
+<script>
+import { CEErrors } from '@/assets/data/EditorValues'
+import CustomField from '@/components/Fields/CustomField.vue'
+import RowTextArea from '@/components/Fields/RowTextArea.vue'
+
+export default {
+  name: 'FastPromptEditor',
+  components: {
+    CustomField,
+    RowTextArea
+  },
+
+  data() {
+    return {
+      rows: 1,
+      internalJsonContent: '',
+      internalValue: ''
     }
-  
+  },
+  props: {
+    jsonContent: {
+      type: Object
+    },
+    jsonKey: {
+      type: String,
+    }
+  },
+  computed: {
+    lines() {
+      return this.internalValue.split("\n");
+    }
+  },
+  created() {
+    this.key = this.$route.params.key
+  },
+  mounted() {
+    this.$nextTick(() => {
+      const height = this.$refs.promptContainer.clientHeight;
+      this.rows = Math.floor(height / 28)
+      console.log(height, Math.floor(this.rows))
+
+    })
+  },
+  methods: {
+    onUpdate(e) {
+      //
+      //this.internalValue.content[e.index] = e.content
+      let cleanUp = this.internalValue.split('\n')
+      cleanUp = cleanUp.map(x => x.replaceAll('/n', '\n').substring(4))
+
+
+      for (let i = 0; i < this.internalJsonContent.content.length - 1; i++) {
+        console.log(i, this.jsonKey, this.internalValue.length)
+        this.internalJsonContent.content[i][this.jsonKey] = cleanUp[i]
+      }
+
+      this.$emit('changed', this.internalJsonContent.content)
+    },
+    onKeyDown(event) {
+  // Get the current cursor position and text content
+  const startPos = event.target.selectionStart;
+  const endPos = event.target.selectionEnd;
+  const currentValue = this.internalValue;
+
+  // Check if the user is trying to delete a line or at the end of a line
+  if (event.keyCode === 8 || event.keyCode === 46) {
+    const beforeValue = currentValue.substring(0, startPos);
+    const afterValue = currentValue.substring(endPos);
+    const beforeLines = beforeValue.split("\n");
+    const currentLine = beforeLines[beforeLines.length - 1];
+    const nextLine = currentValue.substring(0, endPos).split("\n").pop();
+    console.log(endPos, currentLine.length)
+
+    console.log(startPos)
+    if (startPos <= 4 || currentLine.length <= 4 || nextLine === undefined || (endPos === currentLine.length && event.keyCode === 46)) {
+      // Prevent deleting the line if it's empty, at the end of the text, or at the end of a line
+      event.preventDefault();
+      return false;
+    }
   }
-  </script>
-  <style scoped>
-  .container {
-    min-width: 40%;
-    max-width: 100px;
+}
+  },
+  watch: {
+    jsonContent: {
+      handler(newVal) {
+        if (this.jsonKey && newVal) {
+          this.internalJsonContent = newVal
+          let data = newVal.content.map((elem, index) => `[${index + 1}] ` + elem[this.jsonKey].replaceAll('\n', '/n'))
+          this.rows = data.length
+          console.log(data.join('\n'))
+          this.internalValue = data.join('\n')
+        }
+
+
+      },
+      immediate: true
+    }
   }
-  </style>
+
+}
+</script>
+<style scoped>
+.container {
+  min-width: 40%;
+  max-width: 100px;
+}
+
+::v-deep .v-text-field__slot {
+  max-height: 90vh;
+}
+</style>
