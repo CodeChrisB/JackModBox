@@ -7,6 +7,7 @@ import https from "https"
 import os from "os"
 import path from "path";
 
+
 const deepReadDir = async (dirPath) => await Promise.all(
   (await fs.readdir(dirPath, { withFileTypes: true })).map(async (dirent) => {
     const path = path.join(dirPath, dirent.name)
@@ -183,6 +184,17 @@ contextBridge.exposeInMainWorld("file", {
     settings[setting] = val
     fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
   },
+  swf:{
+    readSwf: async (path)=>{
+      const buffer = await fs.readFile(path,(err,data)=>{
+        return data
+      })
+      return buffer
+    },
+    save:(path,data)=>{
+
+    }
+  }
 });
 
 // setSetting:(setting,val) => {

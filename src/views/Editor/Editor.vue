@@ -45,11 +45,17 @@ div.overflow-y-hidden.overflow-x-hidden
         :searchInput="searchInput" 
         @changed="onCustomEditorChanged"
       )
+  v-row(v-else-if="EditorMode.SWFEditor === editorMode")
+    SWFEditor(
+      :filePath="key"
+    )
+
 </template>
 <script>
 import MonacoEditor from 'monaco-editor-vue';
 import MonacoEditorWrapper from './MonacoEditorWrapper.vue';
 import CustomEditor from './CustomEditor.vue';
+import SWFEditor from './SWFEditor.vue';
 import Dialog from '@/components/CustomDialog.vue';
 import CustomPath from '@/components/CustomPath.vue';
 import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
@@ -59,11 +65,12 @@ export default {
   name: "App",
   components: { 
     CustomCheckbox, 
-    CustomPath, 
     CustomEditor, 
+    CustomPath, 
+    Dialog,
     MonacoEditor,
     MonacoEditorWrapper,
-    Dialog 
+    SWFEditor
   },
   data() {
     return {
@@ -99,8 +106,10 @@ export default {
     this.key = this.$route.params.key;
     this.fileName = this.key.split('\\').slice(-1).join('');
     this.editorMode = this.$route.params.editor
+    console.log(this.$route.params)
 
-
+    //SWF Editor loads the file itself
+    if(this.editorMode === EditorMode.SWFEditor) return
     await this.loadFile()
 
 
