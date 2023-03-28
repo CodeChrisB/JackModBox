@@ -18,6 +18,8 @@ div(@drop.prevent='onDrop($event)' @dragover.prevent='dragover = true' @dragente
     </template>
     
 <script>
+import { SETTING } from '@/assets/data/SettingData';
+
 export default {
   name: 'FileViewerAudioPlayer',
   props: {
@@ -59,6 +61,11 @@ export default {
       return `transform:scale(${scale})`
     },
     onDrop(files) {
+      let ffmpeg = window.file.getSetting(SETTING.FFMPEG_PATH)
+      if(!ffmpeg){
+        alert('Please set your ffmpeg path in the settings')
+        return
+      }
       const file = files.dataTransfer.files[0];
       console.log(file)
       if (file.type.includes("audio") ||file.type.includes('video') ) {
