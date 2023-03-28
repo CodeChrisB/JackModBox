@@ -17,75 +17,86 @@ div(@drop.prevent='onDrop($event)' @dragover.prevent='dragover = true' @dragente
     
     </template>
     
-  <script>
-  export default {
-    name:'FileViewerAudioPlayer',
-    props: {
-      fileName:{
-        type:String,
-        required:true
-      },
-      iconScale:{
-        type:Number,
-        default:1.3
-      },  
-      path: {
-        type: String,
-        required: true
-      },
+<script>
+export default {
+  name: 'FileViewerAudioPlayer',
+  props: {
+    fileName: {
+      type: String,
+      required: true
     },
-    data() {
-      return {
-        innerIconScale:1.3,
-        innerFileName:'',
-        dragover: false,
-        file: null,
-        imageUrl: null,
-        uploadedFiles: []
+    iconScale: {
+      type: Number,
+      default: 1.3
+    },
+    path: {
+      type: String,
+      required: true
+    },
+  },
+  data() {
+    return {
+      innerIconScale: 1.3,
+      innerFileName: '',
+      dragover: false,
+      file: null,
+      imageUrl: null,
+      uploadedFiles: []
+    }
+  },
+  created() {
+    this.innerPath = this.path
+  },
+  computed: {
+
+  },
+  methods: {
+    closeDialog() {
+      this.$emit("update:dialog", false);
+    },
+
+    genTransformScale(scale) {
+      return `transform:scale(${scale})`
+    },
+    onDrop(files) {
+      const file = files.dataTransfer.files[0];
+      console.log(file)
+      if (file.type.includes("audio") ||file.type.includes('video') ) {
+        const inputFilePath = file.path;
+        const outputFilePath = inputFilePath.split('.').slice(0,-1).join('.')+".ogg"
+        console.log(outputFilePath)
+        const ffmpegPath = window.file.path.join(window.file.cwd, 'ffmpeg.exe');
+        const ffmpegCommand = `${ffmpegPath} -y -i "${inputFilePath}" -codec:a libvorbis -q:a 5 "${this.path}"`;
+        window.file.exec(ffmpegCommand, (error, stdout, stderr) => {
+          if (error) {
+           //todo add
+          } else {
+            console.log(`File ${inputFilePath} converted to ${this.path}`);
+          }
+        });
       }
     },
-    created() {
-      this.innerPath = this.path
+  },
+  watch: {
+    fileName: {
+      handler(newVal) {
+        this.innerFileName = newVal
+      },
+      immediate: true
     },
-    computed: {
-  
+    iconScale: {
+      handler(newVal) {
+        this.innerIconScale = newVal
+      },
+      immediate: true
     },
-    methods: {
-      closeDialog() {
-        this.$emit("update:dialog", false);
+    path: {
+      handler(newVal) {
+        this.innerPath = newVal
       },
-      genTransformScale(scale){
-        return `transform:scale(${scale})`
-      },
-      async onDrop(e) {
-        this.dragover = false;
-        if (e.dataTransfer.files.length > 0) {
-          // window.file.overwriteFile(this.path, e.dataTransfer.files[0].path).then(suceed => {
-          //   this.getImage()
-          // })
-        }
-      },
-    },
-    watch:{
-      fileName:{
-        handler(newVal){
-          this.innerFileName = newVal
-        },
-        immediate:true
-      },
-      iconScale:{
-        handler(newVal){
-          this.innerIconScale = newVal
-        },      
-        immediate:true  
-      },  
-      path:{
-        handler(newVal){
-          this.innerPath = newVal
-        },
-        immediate:true  
-      }
+      immediate: true
     }
   }
-  </script>
+}
+</script>
     

@@ -1,7 +1,8 @@
 import { contextBridge } from "electron";
 import { request } from "https";
-import { spawn } from "child_process";
+import { exec, spawn } from "child_process";
 import fs from "fs";
+import process from "process"; 
 import fse from "fs-extra"
 import https from "https"
 import os from "os"
@@ -36,6 +37,7 @@ function deleteFolderRecursive(folderPath) {
 
 const settingsPath = 'settings.json'
 contextBridge.exposeInMainWorld("file", {
+  spawn:spawn,
   copyFolder: async(srcDir, destDir, overwrite) => {
     try {
       await fse.copy(srcDir, destDir, { overwrite: true | false })
@@ -44,6 +46,7 @@ contextBridge.exposeInMainWorld("file", {
       return false
     }
   },
+  cwd: process.cwd(),
   deleteFolder:(imagePath) => deleteFolderRecursive(imagePath),
 
   downloadImageAsBase64: async (url)=> {
@@ -56,6 +59,7 @@ contextBridge.exposeInMainWorld("file", {
     const base64 = data.toString('base64');
     return `data:${response.headers['content-type']};base64,${base64}`;
   },
+  exec:exec,
   fs: fs,
   getSetting: (setting) => {
     let settings = {}
@@ -130,6 +134,7 @@ contextBridge.exposeInMainWorld("file", {
       return false;
     }
   },
+  path:path,
   playSound(path){
     var player = require('play-sound')({})
     fs.readFile(path,(err,data)=>{
@@ -196,4 +201,3 @@ contextBridge.exposeInMainWorld("file", {
   }
 });
 
-// setSetting:(setting,val) => {
