@@ -32,8 +32,10 @@ div
                                 label="Path to ffmpeg.exe"
                                 hint=`A folder to save & load your mods from`
                                 append-outer-icon="mdi-content-save"
+                                hide-details
                                 @click:append-outer="file.setSetting(SETTING.FFMPEG_PATH,settings[SETTING.FFMPEG_PATH])"
                             )
+                            a(@click="openPage()") Download the latest ffmpeg binary
                             v-checkbox(
                                 v-model="settings[SETTING.SHOW_ALL_NO_PACKS]"
                                 label="Show all Games without Packs"
@@ -83,6 +85,9 @@ export default {
             this.settings[SETTING.FFMPEG_PATH] = this.file.getSetting(SETTING.FFMPEG_PATH)
             this.settings[SETTING.SHOW_ALL_NO_PACKS] = this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)
         },
+        openPage(){
+            window.file.openInBrowser('https://ffbinaries.com/downloads')
+        },  
         toDocumenation(){
             this.$broadcast("documentation-state",true)
             this.$router.replace('/Documenation')

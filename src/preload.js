@@ -7,7 +7,7 @@ import fse from "fs-extra"
 import https from "https"
 import os from "os"
 import path from "path";
-
+import electron from 'electron';
 
 const deepReadDir = async (dirPath) => await Promise.all(
   (await fs.readdir(dirPath, { withFileTypes: true })).map(async (dirent) => {
@@ -115,6 +115,9 @@ contextBridge.exposeInMainWorld("file", {
   openFolder: async (path,folderOnly=false) => {
     const files = await fs.readdir(path, { withFileTypes: true });
     return files.map(x=>!folderOnly || x.isDirectory())
+  },
+  openInBrowser(url){
+    electron.shell.openExternal("https://ffbinaries.com/downloads")
   },
   openInFileExplorer(e) {
     let explorer;
