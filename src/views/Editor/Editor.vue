@@ -115,7 +115,6 @@ export default {
     this.fileName = this.key.split('\\').slice(-1).join('');
     this.editorMode = this.$route.params.editor
     this.editorValues = this.$route.params.editorValues
-    console.log(this.$route.params)
 
     //SWF Editor loads the file itself
     if(this.editorMode === EditorMode.SWFEditor) return
@@ -136,7 +135,6 @@ export default {
     genContent(){
       let base = JSON.parse(this.fileContent)
       base.content = this.customEditorValue
-      console.log(base)
       return  JSON.stringify(base, null, 2)
     },
   },
@@ -171,7 +169,6 @@ export default {
     onCustomEditorChanged(val){
       this.isDirty=true
       this.customEditorValue=val
-      console.log('onCustomEditorChanged',this.customEditorValue)
     },  
     doSave(e) {
       //Todo rework the save system there are to many save methods here
@@ -188,16 +185,13 @@ export default {
     onSave(){
       //WIP 
       const resetDirty = (err)=> {if(!err) this.isDirty = false}
-      console.log(this.editorMode)
       switch(this.editorMode){
         case EditorMode.MonacoEditor:
           window.file.fs.writeFile(this.key,this.updatedFileContent,err=>resetDirty(err))
           break
         case EditorMode.CustomEditor:
         case EditorMode.FastPromptEditor:
-          console.log(this.genContent)
           window.file.fs.writeFile(this.key,this.genContent,err=>resetDirty(err))
-          console.log(window.file.fs.readFileSync(this.key,err=>resetDirty(err)))
           break
       }
     },        

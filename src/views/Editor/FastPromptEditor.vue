@@ -52,8 +52,6 @@ export default {
     this.$nextTick(() => {
       const height = this.$refs.promptContainer.clientHeight;
       this.rows = Math.floor(height / 28)
-      console.log(height, Math.floor(this.rows))
-
     })
   },
   methods: {
@@ -65,7 +63,6 @@ export default {
 
 
       for (let i = 0; i < this.internalJsonContent.content.length - 1; i++) {
-        console.log(i, this.jsonKey, this.internalValue.length)
         this.internalJsonContent.content[i][this.jsonKey] = cleanUp[i]
       }
 
@@ -84,9 +81,7 @@ export default {
     const beforeLines = beforeValue.split("\n");
     const currentLine = beforeLines[beforeLines.length - 1];
     const nextLine = currentValue.substring(0, endPos).split("\n").pop();
-    console.log(endPos, currentLine.length)
 
-    console.log(startPos)
     if (startPos <= 4 || currentLine.length <= 4 || nextLine === undefined || (endPos === currentLine.length && event.keyCode === 46)) {
       // Prevent deleting the line if it's empty, at the end of the text, or at the end of a line
       event.preventDefault();
@@ -102,7 +97,6 @@ export default {
           this.internalJsonContent = newVal
           let data = newVal.content.map((elem, index) => `[${index + 1}] ` + elem[this.jsonKey].replaceAll('\n', '/n'))
           this.rows = data.length
-          console.log(data.join('\n'))
           this.internalValue = data.join('\n')
         }
 

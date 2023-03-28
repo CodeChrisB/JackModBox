@@ -141,7 +141,6 @@ export default {
       }
     },
     onFastPrompts(prompt){
-      console.log(prompt)
       let filePath= [this.steamPath+this.game.id, prompt.path].join('\\')
 
       this.$router.pass('Editor', { 
