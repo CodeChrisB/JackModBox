@@ -114,10 +114,6 @@ contextBridge.exposeInMainWorld("file", {
     return result;
   
   },
-  openFolder: async (path,folderOnly=false) => {
-    const files = await fs.readdir(path, { withFileTypes: true });
-    return files.map(x=>!folderOnly || x.isDirectory())
-  },
   openInBrowser(url){
     electron.shell.openExternal(url)
   },

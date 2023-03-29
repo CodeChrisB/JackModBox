@@ -5,10 +5,10 @@ div.overflow-y-hidden.overflow-x-hidden
       div(style="max-width:95%;display: flex; align-items: center;")
         v-btn.ml-4(icon @click="backToFileviewer")
           v-icon mdi-arrow-left
-        v-icon(v-if="!isCustomEditor" @click="showModded=!showModded") {{ showModded ? 'mdi-check-all' : 'mdi-card-remove' }}
-        v-icon(medium).mr-2(@click="setEditor(EditorMode.CustomEditor)") {{ isCustomEditor ? 'mdi-form-select' : 'mdi-book-open'}}
+        v-icon(v-if="!atomicEditor && !isCustomEditor" @click="showModded=!showModded") {{ showModded ? 'mdi-check-all' : 'mdi-card-remove' }}
+        v-icon(v-if="!atomicEditor" medium).mr-2(@click="setEditor(EditorMode.CustomEditor)") {{ isCustomEditor ? 'mdi-form-select' : 'mdi-book-open'}}
         v-btn.mr-1(icon medium :disabled="!isDirty" @click="onSave")
-          v-icon(medium) mdi-content-save 
+          v-icon(v-if="!atomicEditor" medium) mdi-content-save 
         span {{ fileName }}
         v-spacer
         span {{ searchInput }}
@@ -51,6 +51,10 @@ div.overflow-y-hidden.overflow-x-hidden
       :jsonKey="editorValues.key"
       @changed="onCustomEditorChanged"
     )
+  v-row(v-else-if="EditorMode.AudioPromptEditor === editorMode")
+    AudioPromptEditor(
+      :data="editorValues"
+    )
   v-row(v-else-if="EditorMode.SWFEditor === editorMode")
     SWFEditor(
       :filePath="key"
@@ -58,19 +62,21 @@ div.overflow-y-hidden.overflow-x-hidden
 
 </template>
 <script>
+import { EditorMode } from '@/assets/data/Editor';
+import AudioPromptEditor from './AudioPromptEditor.vue';
+import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
+import CustomEditor from './CustomEditor.vue';
+import CustomPath from '@/components/CustomPath.vue';
+import Dialog from '@/components/CustomDialog.vue';
+import FastPromptEditor from './FastPromptEditor.vue';
 import MonacoEditor from 'monaco-editor-vue';
 import MonacoEditorWrapper from './MonacoEditorWrapper.vue';
-import CustomEditor from './CustomEditor.vue';
 import SWFEditor from './SWFEditor.vue';
-import FastPromptEditor from './FastPromptEditor.vue';
-import Dialog from '@/components/CustomDialog.vue';
-import CustomPath from '@/components/CustomPath.vue';
-import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
-import { EditorMode } from '@/assets/data/Editor';
 
 export default {
   name: "App",
   components: { 
+    AudioPromptEditor,
     CustomCheckbox, 
     CustomEditor, 
     CustomPath, 
@@ -111,13 +117,17 @@ export default {
     find out which mode it is
     calculate the rights props for the choosen editor
     */
-    this.key = this.$route.params.key;
-    this.fileName = this.key.split('\\').slice(-1).join('');
+    if(this.key){
+      this.key = this.$route.params.key;
+      this.fileName = this.key.split('\\').slice(-1).join('');
+    }
     this.editorMode = this.$route.params.editor
     this.editorValues = this.$route.params.editorValues
-
-    //SWF Editor loads the file itself
-    if(this.editorMode === EditorMode.SWFEditor) return
+    console.log(this.editorValues)
+    console.log(this.editorMode === EditorMode.AudioPromptEditor)
+    //Editors that handle load and save action itself due to complications
+    this.atomicEditor = [EditorMode.SWFEditor,EditorMode.AudioPromptEditor].includes(this.editorMode) 
+    if(this.atomicEditor) return
     await this.loadFile()
 
 

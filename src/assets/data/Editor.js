@@ -3,5 +3,5 @@ export const EditorMode = Object.freeze({
   CustomEditor:1,
   FastPromptEditor:2,
   SWFEditor:3,
-  AudioTagReplaceEditor:4
+  AudioPromptEditor:4
 })

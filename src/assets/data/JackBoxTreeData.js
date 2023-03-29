@@ -42,7 +42,7 @@ export const GameIds = Object.freeze({
         key:"drawful",
         pack:1,
         name: "Drawful", 
-        id: '\\The Jackbox Party Pack\\games\\Earwax' 
+        id: '\\The Jackbox Party Pack\\games\\Earwax',
     },
     wordspud: {
         key:"wordspud",
@@ -73,12 +73,23 @@ export const GameIds = Object.freeze({
         key:"earwax",
         pack:2,
         name: "Earwax", 
-        id: '\\The Jackbox Party Pack 2\\games\\Earwax' 
+        id: '\\The Jackbox Party Pack 2\\games\\Earwax',
+        content:{
+            audioReplaceEditor:[
+                {
+                    name:'Audio Prompt Editor',
+                    audioFolder:'content\\EarwaxAudio\\Audio',
+                    dataFile:'content\\EarwaxAudio.jet',
+                    expand:false,
+                    key:'name'
+                }
+            ]
+        }
     },
     fibbage2: {
         key:"fibbage2",
         pack:2,
-        name: "Fibbage 2", 
+        name: "Fibbage 2",                             
         id: '\\The Jackbox Party Pack 2\\games\\Fibbage2' 
     },
     quipplashxl: {

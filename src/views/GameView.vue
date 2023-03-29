@@ -31,13 +31,16 @@ v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
           v-row.ma-4
             span.text-caption {{folder.name}}
 
-      v-col(v-for="prompt in fastPrompts").col-3.ma-2      
-        v-card(v-for="prompt in fastPrompts").mb-3
+      v-col(v-for="prompt in audioReplacEditor").col-3.ma-2      
+        v-card().mb-3
           v-row.d-flex.justify-center.ma-4
-            v-icon(@click="onFastPrompts(prompt)").mt-5(style="transform:scale(2)") mdi-message-text-fast-outline
+            v-icon(@click="onAudioReplaceEditor(prompt)").mt-5(style="transform:scale(2)") mdi-message-text-fast-outline
           v-divider
           v-row.ma-4
             span.text-caption {{prompt.name}}
+      v-col(v-for="prompt in audioReplacEditor").col-3.ma-2
+        v-card.mb-3
+          v-row.d-flex.justify-center.ma-4
 
   v-col.col-4
     v-card.pa-4
@@ -88,6 +91,9 @@ export default {
     audioReplacerList() {
       return (this.game?.content?.audioReplacer) ?? []
     },
+    audioReplacEditor(){
+      return (this.game?.content?.audioReplaceEditor) ?? []
+    },
     fastFolders() {
       return (this.game?.content?.fastFolders) ?? []
     },
@@ -99,6 +105,17 @@ export default {
     }
   },
   methods: {
+    onAudioReplaceEditor(editor){
+      console.log(editor)
+      //todo check if mod then use mod path
+      this.$router.pass('Editor', { 
+          editor: EditorMode.AudioPromptEditor,
+          editorValues:{
+            ...editor,
+            id:this.game.id
+          }
+      })
+    },
     onAudioReplacer(ar) {
       let folder = [this.gamePath, ar.path].join('\\')
 
@@ -137,6 +154,7 @@ export default {
         this.$router.pass('Editor', { 
           key: [this.steamPath+this.game.id, folder.path].join('\\'),
           editor: EditorMode.MonacoEditor
+          
         })
       }
     },
