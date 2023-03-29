@@ -60,7 +60,7 @@ div
         internalSearch:'',
         //pagination
         pageSize:8,
-        possiblePageSize: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
+        possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
         index:0,
       }
     },
