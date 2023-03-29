@@ -13,7 +13,7 @@ div(style="min-width:40vw")
 
   v-divider
   v-row.ma-3(v-if="yt.tab")
-    v-col.col-6.ma-0.pa-0
+    v-col.col-8.ma-0.pa-0
       v-text-field(
         v-model="yt.url"
         label="Url of the Sound Effect"
@@ -23,7 +23,7 @@ div(style="min-width:40vw")
       @click="replaceAudio"
       :disabled="!isValidYoutubeUrl(yt.url)"
       color="primary"
-    ) Replace Audio
+    ) Open Download Website
       
       
 </template>
@@ -41,9 +41,9 @@ export default {
     return {
       dragover: false,
       file: null,
-      yt:{
-        tab:false,
-        url:''
+      yt: {
+        tab: false,
+        url: 'https://www.youtube.com/watch?v=U9azBTKtoUQ&list=RDU9azBTKtoUQ&start_radio=1'
       }
     }
   },
@@ -61,20 +61,20 @@ export default {
       return `transform:scale(${scale})`
     },
     isValidYoutubeUrl(url) {
-    if(url==='')return false
-    // Regular expression to match valid YouTube URLs
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+      if (url === '') return false
+      // Regular expression to match valid YouTube URLs
+      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
 
-    if (youtubeRegex.test(url)) {
-      // If the URL is a YouTube video, return true
-      if (url.includes("/watch?v=")) {
-        return true;
+      if (youtubeRegex.test(url)) {
+        // If the URL is a YouTube video, return true
+        if (url.includes("/watch?v=")) {
+          return true;
+        }
+        return false;
       }
-      return false;
-    }
 
-    return false;
-  },
+      return false;
+    },
     async onDrop(e) {
       this.dragover = false;
       if (e.dataTransfer.files.length > 0) {
@@ -83,10 +83,15 @@ export default {
         // })
       }
     },
-    replaceAudio(){
-      console.log('WIP Download and convert YT Video')
+    async replaceAudio() {
+      let newUrl = this.yt.url.replace('be.com','bepi.com')
+      window.file.openInBrowser(newUrl)
+
+
+
+
     },
-    playAudio(){
+    playAudio() {
       window.file.playSound(this.data.fullPath)
     }
   },

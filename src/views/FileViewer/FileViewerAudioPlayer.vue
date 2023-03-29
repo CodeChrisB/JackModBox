@@ -67,18 +67,16 @@ export default {
         return
       }
       const file = files.dataTransfer.files[0];
-      console.log(file)
+
       if (file.type.includes("audio") ||file.type.includes('video') ) {
         const inputFilePath = file.path;
-        const outputFilePath = inputFilePath.split('.').slice(0,-1).join('.')+".ogg"
-        console.log(outputFilePath)
-        const ffmpegPath = window.file.path.join(window.file.cwd, 'ffmpeg.exe');
-        const ffmpegCommand = `${ffmpegPath} -y -i "${inputFilePath}" -codec:a libvorbis -q:a 5 "${this.path}"`;
+        const outputFilePath = (inputFilePath.split('.').slice(0,-1).join('.')+".ogg")
+        const ffmpegPath = window.file.getSetting(SETTING.FFMPEG_PATH)
+        const ffmpegCommand = `"${ffmpegPath}" -y -i "${inputFilePath}" -codec:a libvorbis -q:a 5 "${this.path}"`;
         window.file.exec(ffmpegCommand, (error, stdout, stderr) => {
           if (error) {
-           //todo add
+           //todo add info for user
           } else {
-            console.log(`File ${inputFilePath} converted to ${this.path}`);
           }
         });
       }

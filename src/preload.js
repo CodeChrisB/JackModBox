@@ -1,5 +1,5 @@
 import { contextBridge } from "electron";
-import { request } from "https";
+import { request } from "http";
 import { exec, spawn } from "child_process";
 import fs from "fs";
 import process from "process"; 
@@ -8,6 +8,7 @@ import https from "https"
 import os from "os"
 import path from "path";
 import electron from 'electron';
+import axios from "axios"
 
 const deepReadDir = async (dirPath) => await Promise.all(
   (await fs.readdir(dirPath, { withFileTypes: true })).map(async (dirent) => {
@@ -37,6 +38,7 @@ function deleteFolderRecursive(folderPath) {
 
 const settingsPath = 'settings.json'
 contextBridge.exposeInMainWorld("file", {
+  axios:axios,
   spawn:spawn,
   copyFolder: async(srcDir, destDir, overwrite) => {
     try {
@@ -117,7 +119,7 @@ contextBridge.exposeInMainWorld("file", {
     return files.map(x=>!folderOnly || x.isDirectory())
   },
   openInBrowser(url){
-    electron.shell.openExternal("https://ffbinaries.com/downloads")
+    electron.shell.openExternal(url)
   },
   openInFileExplorer(e) {
     let explorer;
