@@ -60,9 +60,12 @@ v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
               template(v-slot:default="{value}")
                 strong {{ Math.ceil(value) }}%
           span Shows how much of the core game you can Modify. 100% means you can change everything and create a fully new game out of it.
-      v-row(v-for="mod in MOD")
+      v-row(
+        v-for="mod in MOD"
+        v-if="hasMod(mod)"
+      )
         v-icon {{ getModIcon(mod.id) }}
-        span {{ mod.text }}
+        span {{ mod.text}}
   
   
   
@@ -106,9 +109,9 @@ export default {
   },
   methods: {
     onAudioReplaceEditor(editor){
-      console.log(editor)
       //todo check if mod then use mod path
-      this.$router.pass('Editor', { 
+      this.$router.pass('Editor', {
+          key: [this.steamPath,this.game.id,editor.audioFolder].join('\\'),
           editor: EditorMode.AudioPromptEditor,
           editorValues:{
             ...editor,
@@ -127,6 +130,12 @@ export default {
         })
 
       })
+    },
+    hasMod(mod){
+      if (this.game && this.game.content && this.game.content.modability) {
+        return  this.game.content.modability.content.includes(mod.id)
+      }
+      return false
     },
     getModIcon(mod) {
       if (this.game && this.game.content && this.game.content.modability) {

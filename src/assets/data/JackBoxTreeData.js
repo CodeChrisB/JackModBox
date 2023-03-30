@@ -7,20 +7,30 @@ export const Mod = Object.freeze({
         id:1,
         text:"Text As Input"
     },
-    ChangesWillShowOnDevices:{
+    AudioAsInput:{
         id:2,
+        text:'Audio As Input'
+    },
+    ImageAsInput:{
+        id:3,
+        text:'Drawing As Input'
+    },
+    ChangesWillShowOnDevices:{
+        id:4,
         text:"Will show for user"
     },
     HasChangableImages:{
-        id:3,
+        id:5,
         text:"Changeable Images"
     },
     HasAudienceContent:{
-        id:4,
+        id:6,
         text:"Has Audience Content"
     },
-    
-
+    PromptsCanBeChanged:{
+        id:7,
+        text:'Prompts can be changed'
+    }  
 })
 
 
@@ -83,7 +93,16 @@ export const GameIds = Object.freeze({
                     expand:false,
                     key:'name'
                 }
-            ]
+            ],
+            modability:{
+                score:100,
+                content:
+                [
+                    Mod.AudioAsInput.id,
+                    Mod.ChangesWillShowOnDevices.id,
+                    Mod.PromptsCanBeChanged.id
+                ]
+            }
         }
     },
     fibbage2: {

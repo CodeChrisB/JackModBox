@@ -117,14 +117,13 @@ export default {
     find out which mode it is
     calculate the rights props for the choosen editor
     */
-    if(this.key){
+    if(this.$route.params.key){
       this.key = this.$route.params.key;
       this.fileName = this.key.split('\\').slice(-1).join('');
     }
     this.editorMode = this.$route.params.editor
     this.editorValues = this.$route.params.editorValues
-    console.log(this.editorValues)
-    console.log(this.editorMode === EditorMode.AudioPromptEditor)
+    
     //Editors that handle load and save action itself due to complications
     this.atomicEditor = [EditorMode.SWFEditor,EditorMode.AudioPromptEditor].includes(this.editorMode) 
     if(this.atomicEditor) return
