@@ -31,6 +31,16 @@ v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
           v-row.ma-4
             span.text-caption {{folder.name}}
 
+            
+
+      v-col(v-for="prompt in fastPrompts").col-3.ma-2      
+        v-card().mb-3
+          v-row.d-flex.justify-center.ma-4
+            v-icon(@click="onFastPrompts(prompt)").mt-5(style="transform:scale(2)") mdi-message-text-fast-outline
+          v-divider
+          v-row.ma-4
+            span.text-caption {{prompt.name}}
+
       v-col(v-for="prompt in audioReplacEditor").col-3.ma-2      
         v-card().mb-3
           v-row.d-flex.justify-center.ma-4

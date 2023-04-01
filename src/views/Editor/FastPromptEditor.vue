@@ -82,20 +82,43 @@ export default {
     const currentLine = beforeLines[beforeLines.length - 1];
     const nextLine = currentValue.substring(0, endPos).split("\n").pop();
 
-    if (startPos <= 4 || currentLine.length <= 4 || nextLine === undefined || (endPos === currentLine.length && event.keyCode === 46)) {
+    // Check if the selection spans multiple lines
+    const selectionLines = currentValue.substring(startPos, endPos).split("\n");
+    if (selectionLines.length > 1) {
+      // Prevent deleting the text if the selection spans multiple lines
+      event.preventDefault();
+      return false;
+    }
+
+    if (startPos <= 7 || currentLine.length <= 7 || nextLine === undefined || (endPos === currentLine.length && event.keyCode === 46)) {
+      // Prevent deleting the line if it's empty, at the end of the text, or at the end of a line
+      event.preventDefault();
+      return false;
+    }
+
+    // Check if the selection crosses the boundary of allowed characters
+    if (startPos <= 7 || endPos <= 7 || (startPos <= 11 && endPos >= 15)) {
+      // Prevent deleting the text if it crosses the boundary
+      event.preventDefault();
+      return false;
+    } else if (currentLine.length <= 7 || nextLine === undefined || (endPos === currentLine.length && event.keyCode === 46)) {
       // Prevent deleting the line if it's empty, at the end of the text, or at the end of a line
       event.preventDefault();
       return false;
     }
   }
-}
+},
+    genWhiteSpace(num) {
+      num = (num + "").length
+      return ' '.repeat(6 - num)
+    }
   },
   watch: {
     jsonContent: {
       handler(newVal) {
         if (this.jsonKey && newVal) {
           this.internalJsonContent = newVal
-          let data = newVal.content.map((elem, index) => `[${index + 1}] ` + elem[this.jsonKey].replaceAll('\n', '/n'))
+          let data = newVal.content.map((elem, index) => `[${index + 1}] ${this.genWhiteSpace(index + 1)}` + elem[this.jsonKey].replaceAll('\n', '/n'))
           this.rows = data.length
           this.internalValue = data.join('\n')
         }

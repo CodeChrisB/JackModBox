@@ -87,11 +87,18 @@ export const GameIds = Object.freeze({
         content:{
             audioReplaceEditor:[
                 {
-                    name:'Audio Prompt Editor',
+                    name:'Audio Replace Editor',
                     audioFolder:'content\\EarwaxAudio\\Audio',
                     dataFile:'content\\EarwaxAudio.jet',
                     expand:false,
                     key:'name'
+                }
+            ],
+            fastPrompts:[
+                {   
+                    key:'name',
+                    name:'Fast Edit Prompts',
+                    path:'\\content\\EarwaxPrompts.jet'
                 }
             ],
             modability:{

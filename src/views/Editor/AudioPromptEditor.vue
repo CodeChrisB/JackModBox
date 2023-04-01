@@ -28,7 +28,6 @@ div
       v-card.pa-2
         v-row
           v-col.col-10
-            span {{ audio }}
             file-viewer-audio-player(
                 :icon-scale="1.5",
                 :file-name="audio.id>100000 ? 'Not in the game' : audio.id+'.ogg'"

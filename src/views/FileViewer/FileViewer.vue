@@ -307,10 +307,8 @@ export default {
       
     },
     onMassReplace(filesToReplace,index){
-      console.log('On Mass Replace',filesToReplace,index)
       let startIndex = this.pageSize*this.index+index
       for(let i =0;i<filesToReplace.length;i++){
-          console.log(startIndex)
           window.file.overwriteFile(this.files[startIndex+i].fullPath, filesToReplace[i]).then(()=>this.indexToReload=(startIndex+i))
       }
     },
