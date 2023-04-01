@@ -1,113 +1,112 @@
 <template lang="pug">
-v-card(@drop.prevent='onDrop($event)' @dragover='onDragOver' @dragenter.prevent='dragover = true' @dragleave.prevent='dragover = false' :class="{ 'grey lighten-2': dragover }")
-  v-img(
-    v-if="dragover === false"
-    :src="imageUrl" alt="User Image"
+v-card(
+    @drop.prevent='onDrop($event)' 
+    @dragover.prevent='dragover = true' 
+    @dragenter.prevent='dragover = true' 
+    @dragleave.prevent='dragover = false' 
+    :class="(dragover ? 'elevation-4' : 'elevation-0')"
   )
-  v-card-text(v-else)
-    v-row.d-flex.flex-column(dense='' align='center' justify='center')
-      v-icon(:class="[dragover ? 'mt-2, mb-6' : 'mt-5']" size='60')
-        | mdi-cloud-upload
-      p
-        | Drop your file(s) here, or click to select them.
-  
-  
-  </template>
-  
-<script>
-import vClickOutside from 'v-click-outside'
-import Vue from "vue"
-export default {
-  props: {
-    path: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      dragover: false,
-      file: null,
-      imageUrl: null,
-      internalIndex:-1,
-      selectedFile: null,
-      uploadedFiles: []
-    }
-  },
-  created() {
-    this.innerPath = this.path
-    this.getImage()
-    Vue.directive('click-outside', vClickOutside)
-    let self = this
-    this.$listen('imageDragOver',(index)=>{if(this.internalIndex !== index) this.dragover=false})
-  },
-  computed: {
-
-  },
-  methods: {
-    closeDialog() {
-      this.$emit("update:dialog", false);
-    },
-    async onDrop(e) {
-      this.dragover = false;
-      if (e.dataTransfer.files.length > 0) {
-        window.file.overwriteFile(this.path, e.dataTransfer.files[0].path).then(suceed => {
-          this.getImage()
-        })
-      } else {
-        const html = e.dataTransfer.getData('text/html');
-        const regexBase64 = /data:image\/\w+;base64,([\s\S]+)/;
-        const regexUrl = /https?:\/\/[^\s<>"]+|www\.[^\s<>"]+/gi;
-        const srcRegex = /src="([^"]+)"/;
-
-        //The Image was just a bas64 string
-        let match = (html.match(regexBase64) ?? [])[0];
-        if (match) { this.saveBas64Image(match); return }
-
-        //is it a url ?
-        match = (html.match(regexUrl) ?? [])[0];
-        if (match) { this.saveUrl(match) }
-        //is it an image tag
-
-        //idk anymore skip
-
-
-
-      }
-    },
-    getImage() {
-      const fs = window.file.fs;
-      const imageData = fs.readFileSync(this.innerPath);
-      if (!imageData) return
-      this.imageUrl = URL.createObjectURL(new Blob([imageData], { type: "image/png" }));
-    },
-    onDragOver(){
-      this.dragover=true
-      this.$broadcast('imageDragOver',this.internalIndex)
-    },
-    saveBas64Image(image) {
-      window.file.replaceFileWithBase64(this.path, image, (err) => { this.getImage() })
-    },
-    saveUrl(url) {
-      window.file.downloadImageAsBase64(url).then(base64 => {
-        this.saveBas64Image(base64)
-      })
-    },
-  },
-  watch:{
-    index:{
-      handler(newVal){
-        this.internalIndex=newVal
-      }
-    },
-    path:{
-      handler(newVal){
-        this.innerPath = newVal
-        this.getImage()
+  span {{ internalViewMode }}
+  v-img(
+    :src="imageUrl" alt="User Image"
+    :style="internalViewMode"
+  )
+    
+    
+    </template>
+    
+  <script>
+  export default {
+    props: {
+      path: {
+        type: String,
+        required: true
       },
-      immediate:true  
+      index:{
+        type:Number,
+        required:true
+      },
+      indexToReload:{
+        type:Number
+      },
+      viewMode:{
+        type:Number
+      }
+    },
+    data() {
+      return {
+        dragover: false,
+        file: null,
+        imageUrl: null,
+        internalViewMode:'',
+        selectedFile: null,
+        uploadedFiles: []
+      }
+    },
+    created() {
+      this.innerPath = this.path
+      this.getImage()
+
+      this.$listen('onReplace',)
+    },
+    computed: {
+  
+    },
+    methods: {
+      closeDialog() {
+        this.$emit("update:dialog", false);
+      },
+      async onDrop(e) {
+        this.dragover = false;
+        //Replace Images
+        debugger
+        if(e.dataTransfer.files.length===1) {
+          this.overrideImage(e.dataTransfer.files[0].path)
+        } else if( e.dataTransfer.files.length>1){
+          this.$emit('massReplace',Object.values(e.dataTransfer.files).map(x=>x.path))
+        }
+
+      },
+      getImage() {
+        const fs = window.file.fs;
+        const imageData = fs.readFileSync(this.innerPath);
+        if (!imageData) return
+        this.imageUrl = URL.createObjectURL(new Blob([imageData], { type: "image/png" }));
+      },
+      overrideImage(path){
+        window.file.overwriteFile(this.path, path).then(suceed => {
+            this.getImage()
+          })
+      },
+      saveBas64Image(image) {
+        window.file.replaceFileWithBase64(this.path, image, (err) => { this.getImage() })
+      },
+      saveUrl(url) {
+        window.file.downloadImageAsBase64(url).then(base64 => {
+          this.saveBas64Image(base64)
+        })
+      }
+    },
+    watch:{
+      path:{
+        handler(newVal){
+          this.innerPath = newVal
+          this.getImage()
+        },
+        immediate:true  
+      },
+      indexToReload:{
+        handler(newVal){
+          if(this.index === newVal) this.getImage()
+        }
+      },
+      viewMode:{
+        handler(newVal){
+          this.internalViewMode = newVal
+        },
+        immediate:true
+      }
     }
   }
-}
-</script>
-  
+  </script>
+    
