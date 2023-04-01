@@ -150,7 +150,7 @@ export default {
       viewIndex: 3,
       viewMode: [
         {
-          rule: 'min-width:100px;max-width:10%',
+          rule: 'min-width:100px;max-width:10%;',
           scale: 1.2
         },
         {
