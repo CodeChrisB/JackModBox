@@ -140,7 +140,7 @@ export default {
         },
 
       ],
-      pageSize: 32,
+      pageSize: 25,
       position: {
         x: 0,
         y: 0

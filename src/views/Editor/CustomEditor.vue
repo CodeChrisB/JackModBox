@@ -59,7 +59,7 @@ div
         internalFilter: [],
         internalSearch:'',
         //pagination
-        pageSize:8,
+        pageSize:10,
         possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
         index:0,
       }

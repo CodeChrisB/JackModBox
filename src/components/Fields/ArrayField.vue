@@ -4,16 +4,15 @@ div
     div(
       v-if="['string','number'].includes(typeof elem)"
     )
-      span {{ typeof elem }}
       v-text-field(
-        v-model="internalObj[index][field]"
-        :label="objKey"
+        v-model="internalObj[index]"
+        :label="firstLetterUp(`${objKey} - [${index+1}]`)"
         @input="onUpdate"
         :flat="true"
         v-on:update="onUpdate"
       )
     div(
-      v-if="['object'].includes(typeof elem)"
+      v-else-if="['object'].includes(typeof elem)"
     )
       custom-field(
         :obj="elem" 
@@ -57,7 +56,10 @@ export default {
   methods: {
     onUpdate(){
       this.$emit('update',this.internalObj)
-    }
+    },
+    firstLetterUp(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    },
   },
   watch:{
     obj: {
