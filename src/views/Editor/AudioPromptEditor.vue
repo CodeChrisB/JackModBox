@@ -41,6 +41,7 @@ div
                 icon
               )
                 v-icon mdi-swap-vertical
+        span {{ audio.id }} {{ playLoader }}
         v-text-field(
           v-model="textFieldValues[audio.id]"
           label="Audio Name"
@@ -55,8 +56,19 @@ div
             v-btn(
               @click="playAudio(audio.id)"
               icon
+              :disabled="!canPlay"
             )
-              v-icon mdi-chevron-right-circle-outline 
+              
+              v-progress-circular(
+                  v-if="playLoader === audio.id"
+                  size="22"
+                  small
+                  indeterminate
+                )
+              v-icon(
+                v-else
+              ) mdi-chevron-right-circle-outline 
+
 </template>
         
 <script>
@@ -70,6 +82,8 @@ export default {
   },
   data() {
     return {
+      canPlay:true,
+      playLoader:-1,
       folder: [],
       internalValue: '',
       audioFolder: '',
@@ -148,7 +162,16 @@ export default {
       else if (this.index > this.totalPages) this.index = 0
     },
     playAudio(audio){
-      window.file.playSound(this.fullpath(audio))
+      if(!this.canPlay)return
+      
+      this.playLoader =audio
+      this.canPlay=false
+      window.file.playSound(
+        this.fullpath(audio),
+        ()=>this.playLoader=-1,
+        ()=>this.canPlay=true
+      )
+      
     },
     savePrompt(audio){
       let index = this.promptFile.content.findIndex(x=>x.id === parseInt(audio))
@@ -167,10 +190,8 @@ export default {
       if(index<0) return
       let idToChange = this.promptFile.content[index].id+""
       if(idToChange.length === 5){
-        //add x
         this.$set(this.promptFile.content[index],'id',parseInt([this.promptFile.content[index].id,'000'].join('')))
       }else{
-        //length of 8 is modded
         this.$set(this.promptFile.content[index],'id',parseInt(idToChange.slice(0,5)))
       }
       this.$forceUpdate()

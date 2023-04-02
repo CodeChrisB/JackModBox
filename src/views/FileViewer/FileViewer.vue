@@ -133,7 +133,6 @@ export default {
           title: 'Open In Explorer',
           func: (game) => {
             let arr = game.fullPath.split('\\')
-            arr.pop()
             window.file.openInFileExplorer(arr.join('\\'))
           },
           visible: [State.ALLFILES]
@@ -236,8 +235,9 @@ export default {
       return `transform:scale(${scale})`
     },
     getEditorForFileType(state){
+      debugger
       if ([State.JSON,State.TEXTFILE].includes(state)) return EditorMode.MonacoEditor
-      if ([State.SWF].includes(state)) return EditorMode.MonacoEditor
+      if ([State.SWF].includes(state)) return EditorMode.SWFEditor
     },
     loadFiles() {
       if (this.expand) {
@@ -298,7 +298,7 @@ export default {
         
       let editorForFile = this.getEditorForFileType(fileType)
       this.clickedFile = this.folderPath + "\\" + e.name
-    
+
       this.$router.pass('Editor', {
         key: this.clickedFile,
         editor: editorForFile

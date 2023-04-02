@@ -117,14 +117,8 @@ contextBridge.exposeInMainWorld("file", {
   openInBrowser(url){
     electron.shell.openExternal(url)
   },
-  openInFileExplorer(e) {
-    let explorer;
-    switch (os.platform()) {
-      case "win32": explorer = "explorer"; break;
-      case "linux": explorer = "xdg-open"; break;
-      case "darwin": explorer = "open"; break;
-    }
-    spawn(explorer, [e], { detached: true }).unref();
+  openInFileExplorer(path) {
+    electron.shell.showItemInFolder(path)
   },
   overwriteFile: async (fileToReplacePath, replacerFilePath) => {
     try {
@@ -136,12 +130,17 @@ contextBridge.exposeInMainWorld("file", {
     }
   },
   path:path,
-  playSound(path){
-    var player = require('play-sound')({})
-    fs.readFile(path,(err,data)=>{
+  playSound: (path, cb,ended) => {
+    fs.readFile(path, (err, data) => {
       const audio = new Audio(`data:audio/ogg;base64,${data.toString('base64')}`);
+      audio.addEventListener('play', () => {
+        cb(); // invoke the callback when the audio starts playing
+      });
+      audio.addEventListener('ended', () => {
+        cb(); // invoke the callback when the audio starts playing
+      });
       audio.play();
-    })
+    });
   },
   replaceFileWithBase64:(pathToFile, base64Image, callback) => {
     // Convert the base64 image to a Buffer
