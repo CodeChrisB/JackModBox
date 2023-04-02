@@ -43,7 +43,7 @@ export default {
       file: null,
       yt: {
         tab: false,
-        url: 'https://www.youtube.com/watch?v=U9azBTKtoUQ&list=RDU9azBTKtoUQ&start_radio=1'
+        url: ''
       }
     }
   },
