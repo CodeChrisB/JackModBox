@@ -73,7 +73,6 @@
           const outputFilePath = (inputFilePath.split('.').slice(0,-1).join('.')+".ogg")
           const ffmpegPath = window.file.getSetting(SETTING.FFMPEG_PATH)
           const ffmpegCommand = `"${ffmpegPath}" -y -i "${inputFilePath}" -codec:a libvorbis -q:a 5 "${this.path}"`;
-          debugger
           window.file.exec(ffmpegCommand, (error, stdout, stderr) => {
             if (error) {
              //todo add info for user

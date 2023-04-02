@@ -235,7 +235,6 @@ export default {
       return `transform:scale(${scale})`
     },
     getEditorForFileType(state){
-      debugger
       if ([State.JSON,State.TEXTFILE].includes(state)) return EditorMode.MonacoEditor
       if ([State.SWF].includes(state)) return EditorMode.SWFEditor
     },

@@ -59,7 +59,6 @@ v-card(
       async onDrop(e) {
         this.dragover = false;
         //Replace Images
-        debugger
         if(e.dataTransfer.files.length===1) {
           this.overrideImage(e.dataTransfer.files[0].path)
         } else if( e.dataTransfer.files.length>1){
