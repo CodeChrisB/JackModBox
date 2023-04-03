@@ -387,6 +387,5 @@ export default {
 
 .view:-webkit-scrollbar {
   display: none !important;
-  ;
 }
 </style>

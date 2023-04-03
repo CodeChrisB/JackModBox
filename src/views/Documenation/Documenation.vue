@@ -1,6 +1,6 @@
 <template lang="pug">
-div(style="overflow: auto;max-height:calc(100vh - 26px)")
-  div(v-for="(line,index) in markdown").ma-4
+div(style="overflow: auto;max-height:calc(100vh - 26px)").view.ma-4.mr-6
+  div(v-for="(line,index) in markdown")
     span(v-if="line.startsWith('#')" :class="genHeaderClass(line)") {{ replaceLeadingHashes(line) }}
     div(v-else-if="isImage(line,index)")
         v-img(
@@ -10,6 +10,10 @@ div(style="overflow: auto;max-height:calc(100vh - 26px)")
         )
     div(v-else-if="line.startsWith('---')")
       v-divider
+    div(v-else-if="isEmpty(line)")
+      div(style="min-height:24px")
+    div(v-else-if="line.startsWith('[a]')")
+      a(@click="openWebsite(line.slice(3))") {{ line.slice(3) }}
     span(v-else) {{ line }}
 </template>
   
@@ -45,6 +49,7 @@ export default {
     changeDocumentation(filename) {
       this.images = {}
       this.markdown = require(`@/assets/docs/docs/${filename}`).default.split('\n')
+      console.log(this.markdown)
     },
     genHeaderClass(str){
       const firstNonHashIndex = str.indexOf(str.match(/[^#]/));
@@ -64,7 +69,10 @@ export default {
       const dimension = str.match(/(?<=!\[img\s)\d+x\d+(?=\])/)
       if(!dimension) return null
       return dimension[0].split('x')[dim ==='w'?0:1]
-    },  
+    },
+    isEmpty(line){
+      return line ==='\r'
+    }, 
     isImage(str,index){
       let is= str.startsWith('![img')
 
@@ -78,13 +86,20 @@ export default {
       }
       return is
     },
+    openWebsite(url){
+      window.file.openInBrowser(url)
+    },  
     replaceLeadingHashes(str) {
       const firstNonHashIndex = str.indexOf(str.match(/[^#]/));
       return str.slice(firstNonHashIndex)
-    }
+    },
+    
   }
 }
 </script>
   
 <style scoped>
+.view::-webkit-scrollbar {
+  display: none;
+}
 </style>
