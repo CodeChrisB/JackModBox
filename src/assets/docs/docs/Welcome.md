@@ -1,4 +1,4 @@
-# Welcome to JackModBox
+### Welcome to JackModBox
 
 Welcome to the documentation for the modding tool for Jack Box Party Games!
 
@@ -10,7 +10,7 @@ Whether you're an experienced modder or new to the world of game customization, 
 
 So let's dive in and get started!
 
-![img](waterdrop1.png)
+![img 300x250](waterdrop1.png)
 
 
-# This Tool was created by CCB
+##### This Tool was created by CCB
