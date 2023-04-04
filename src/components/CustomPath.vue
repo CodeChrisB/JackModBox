@@ -2,41 +2,40 @@
 div
   div(v-if="isDocumenation === false")
     v-row.pa-0.ml-2.mt-1
-        v-icon.mb-3(
-          v-if="isDocumenation === false"
-          small 
-          @click="toSettings"
-        ) mdi-cog
+      v-icon.mb-3(
+        v-if="isDocumenation === false"
+        small 
+        @click="toSettings"
+      ) mdi-cog
 
-        v-btn.mb-3(
-          v-if="isDocumenation === false"
-          text
-          icon
-          @click="back()",
-          small
-        ) 
-          v-icon(small) mdi-arrow-left
-        v-breadcrumbs(
-          v-if="false"
-          :items='computedCrumbs'
-          )
-          v-breadcrumbs-item(v-for='(item,index) in computedCrumbs' :key='index' @click="$router.pass('fileviewer',{key:item.fullPath})")
-            span {{ item.text }}
-            span(v-if='index !== computedCrumbs.length-1') /
-        span(style="max-width:65vw").text-truncate {{  computedText  }}
+      v-btn.mb-3(
+        v-if="isDocumenation === false"
+        text
+        icon
+        @click="back()",
+        small
+      ) 
+        v-icon(small) mdi-arrow-left
+      v-breadcrumbs(
+        v-if="false"
+        :items='computedCrumbs'
+        )
+        v-breadcrumbs-item(v-for='(item,index) in computedCrumbs' :key='index' @click="$router.pass('fileviewer',{key:item.fullPath})")
+          span {{ item.text }}
+          span(v-if='index !== computedCrumbs.length-1') /
+      span(style="max-width:65vw").text-truncate {{  computedText  }}
 
 
     v-row.ma-0.pa-0
       v-divider
-  div(
-    v-else
-    style="max-width:100%"
-    )
+  
+  div(v-if="isDocumenation === true")
+    v-row.mr-4.pt-4
       v-spacer
       v-icon(
-          v-if="isDocumenation"
-          @click="closeDocumentation()"
-        ) mdi-close
+        v-if="isDocumenation"
+        @click="closeDocumentation()"
+      ) mdi-close
 
 
         
@@ -50,7 +49,7 @@ div
 export default {
   name: 'CustomPath',
   data: () => ({
-    isDocumenation:false,
+    isDocumenation: false,
     path: [],
     backTo: {
       name: null,
@@ -76,14 +75,14 @@ export default {
       fullNew = fullNew.filter(x => x.text !== "")
       return fullNew
     },
-    computedText(){
-      return this.computedCrumbs.map(x=>x.text).join('/')
+    computedText() {
+      return this.computedCrumbs.map(x => x.text).join('/')
     }
   },
   created() {
     let self = this
     this.$listen('setCustomPath-BackTo', (e) => self.backTo = e)
-    this.$listen("documentation-state", (e)=>self.isDocumenation =!!e);
+    this.$listen("documentation-state", (e) => self.isDocumenation = !!e);
   },
   watch: {
     "$route.params.key": {
@@ -110,8 +109,8 @@ export default {
         this.$router.pass('fileviewer', { key: this.path.join('\\') })
       }
     },
-    closeDocumentation(){
-      this.$broadcast("documentation-state",false);
+    closeDocumentation() {
+      this.$broadcast("documentation-state", false);
       this.$router.push({ name: 'home' })
     },
     toSettings() {

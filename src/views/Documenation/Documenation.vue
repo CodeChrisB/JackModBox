@@ -1,6 +1,25 @@
 <template lang="pug">
-div(style="overflow: auto;max-height:calc(100vh - 26px)")
-  vue-markdown.ml-2.imgContainer(:source="this.markdown")
+div(style="overflow: auto;max-height:calc(100vh - 26px)").view.ma-4.mr-6.mb-6
+  div(v-for="(line,index) in markdown")
+    span(v-if="line.startsWith('#')" :class="genHeaderClass(line)") {{ replaceLeadingHashes(line) }}
+    span(v-else-if="line.startsWith('~~ ')").font-italic {{ line.slice(2) }}
+    div(v-else-if="isImage(line,index)")
+      v-img(
+        :width="getImageDimension(line,'w')"
+        :height="getImageDimension(line,'h')"
+        :src="imageData(index)"
+      )
+    div(v-else-if="line.startsWith('---')")
+      v-divider
+    div(v-else-if="isEmpty(line)")
+      div(style="min-height:24px")
+    div(v-else-if="regexLine(line,'icon',false)")
+      v-icon {{ regexLine(line,'icon',true).attribute }}
+      span {{ regexLine(line,'icon',true).value }}
+    div(v-else-if="line.startsWith('[a]')")
+      a(@click="openWebsite(line.slice(3))") {{ line.slice(3) }}
+    span(v-else) {{ line }}
+  div(style="min-height:29px")
 </template>
   
 <script>
@@ -14,7 +33,15 @@ export default {
   data() {
     return {
       dialog: true,
-      markdown: '#fuck'
+      markdown: '',
+      images: {}
+    }
+  },
+  computed: {
+    imageData() {
+      return (index) => {
+        return this.images[index] || '';
+      }
     }
   },
   created() {
@@ -25,35 +52,13 @@ export default {
   },
   methods: {
     changeDocumentation(filename) {
-      this.markdown = require(`@/assets/docs/docs/${filename}`).default
-      this.replaceImgTags(this.markdown)
-      if (!this.markdown) {
-        this.markdown = `Loading this requested file was not possible.
-
-        Try to
-        1. Reload the file.
-        2. Reopen the software
-        3. Reinstall or download the software again.
-        `
-      }
+      this.images = {}
+      this.markdown = require(`@/assets/docs/docs/${filename}`).default.split('\n')
+      console.log(this.markdown)
     },
-    async replaceImgTags(str) {
-      const regex = /!\[img\]\((.*?)\)/g;
-      const matches = str.match(regex);
-      if (!matches) {
-        return str;
-      }
-      const promises = matches.map(async (match) => {
-        const content = match.slice(7, -1);
-        const base64Image = await this.getImageBase64(content);
-        return `![Alt text](${base64Image})`;
-      });
-      const replacements = await Promise.all(promises);
-      for (let i = 0; i < replacements.length; i++) {
-        str = str.replace(matches[i], replacements[i]);
-      }
-      this.markdown = str;
-      return str;
+    genHeaderClass(str) {
+      const firstNonHashIndex = str.indexOf(str.match(/[^#]/));
+      return `text-h${(firstNonHashIndex === -1) ? str.length : firstNonHashIndex}`
     },
     async getImageBase64(filename) {
       const imagePath = require(`@/assets/docs/images/${filename}`);
@@ -65,15 +70,58 @@ export default {
       });
       return base64Image
     },
+    getImageDimension(str, dim) {
+      const dimension = str.match(/(?<=!\[img\s)\d+x\d+(?=\])/)
+      if (!dimension) return null
+      return dimension[0].split('x')[dim === 'w' ? 0 : 1]
+    },
+    isEmpty(line) {
+      return line === '\r'
+    },
+    isImage(str, index) {
+      let is = str.startsWith('![img')
+
+      if (is) {
+        let image = str.match(/(?<=\().+?(?=\))/)
+        if (!image) return this.images[index] = 'notFound.png'
+        this.getImageBase64(image[0]).then(x => {
+          this.$set(this.images, index, x)
+          this.images[index] = x
+        })
+      }
+      return is
+    },
+    regexLine(line, tag, returnObject) {
+      const regex = new RegExp(`\\[${tag}\\s+([^\\]]+)\\]\\s+(.*)`);
+      const match = line.match(regex);
+      if (match) {
+        if (returnObject) {
+          return {
+            line: match[0],
+            attribute: match[1],
+            value: match[2]
+          };
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    },
+    openWebsite(url) {
+      window.file.openInBrowser(url)
+    },
+    replaceLeadingHashes(str) {
+      const firstNonHashIndex = str.indexOf(str.match(/[^#]/));
+      return str.slice(firstNonHashIndex)
+    },
+
   }
 }
 </script>
   
 <style scoped>
-.imgContainer >>> img {
-  width: 100%!important;
-  height: auto!important;
-  /* Magic! */
-  max-width: 50vw!important;
+.view::-webkit-scrollbar {
+  display: none;
 }
 </style>
