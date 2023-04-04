@@ -19,6 +19,6 @@ JackModBox is an modding tool for following Jackbox Games
 ### Features
 
 - 5 Editors to make modding easier than ever
-- Drag and Drop Images to repalce them
+- Drag and Drop Images to replace them
 - Drag and Drop any Audio/Video file to convert to .ogg files
 - WIP: Full Tool Documentation of the tool inside the tool itself.
