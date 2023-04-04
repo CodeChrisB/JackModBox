@@ -1,6 +1,6 @@
 <template lang="pug">
-div
-  div(v-if="!isDocumenation")
+div(style="min-height:101vh")
+  div(v-if="!isDocumenation").d-flex.flex-column.justify-between
     CustomDialog
     v-card(
       v-for="(item,index) in items"
@@ -44,14 +44,18 @@ div
                   v-divider
                   v-list-item(v-for='(item, itemIndex) in menu.game' :key='itemIndex' v-if='game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly' @click='gameClick(item,game)')
                     v-list-item-title {{ item.title }}
-    .ma-4(v-if="!anyOpend")
-      v-row.mx-1
-          v-icon mdi-information
-          span.ml-2(style="max-width:86%") {{ fact }}
-      v-row
-        v-spacer
-        span Next Tip
-        v-icon(@click="nextFact()") mdi-chevron-right
+    v-row
+      v-col
+      .ma-4.d-flex(v-if="!anyOpend")
+        v-row.align-start.mx-3
+            v-icon(color="#DBA800") mdi-lightbulb-on-10
+            span.ml-2(style="max-width:86%") {{ fact }}
+    v-row.ma-4
+      v-spacer
+      span Next Tip
+      v-icon(@click="nextFact(-1)") mdi-chevron-left
+      span {{ factText }}
+      v-icon(@click="nextFact(1)") mdi-chevron-right
 
 
   div(v-else)
@@ -93,6 +97,7 @@ export default {
     this.$listen("reloadSideview", self.reloadSideView);
 
     this.fact = ToolFacts.getFact()
+    this.factText = ToolFacts.getPaginationText()
   },
   data() {
 
@@ -100,6 +105,7 @@ export default {
       active: null,
       isDocumenation: false,
       fact:'',
+      factText:'',
       menu: {
 
         pack: [
@@ -294,9 +300,12 @@ export default {
       this.panels = []
       this.loadPacks()
       this.fact = ToolFacts.getFact()
+      this.factText = ToolFacts.getPaginationText()
+
     },
-    nextFact(){
-      this.fact = ToolFacts.getNext()
+    nextFact(val){
+      this.fact = ToolFacts.setNext(val)
+      this.factText = ToolFacts.getPaginationText()
     }
   }
 
