@@ -1,6 +1,8 @@
 <template lang="pug">
 div 
-    v-card
+    v-card(
+        flat,
+        )
         v-tabs(v-model='tab' background-color='primary')
             v-tab(key="setting")
                 | Settings
@@ -8,7 +10,10 @@ div
                 | Updates
             v-tab(key="about")
                 | About
-        v-tabs-items(v-model='tab')
+        v-tabs-items(
+            v-model='tab'
+            style="max-height:85vh"
+        ).overflow-y-auto
             v-tab-item(key="setting")
                 v-card(flat='')
                     v-card-text 

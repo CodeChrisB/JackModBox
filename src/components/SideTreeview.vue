@@ -4,32 +4,35 @@ div
     CustomDialog
     v-card(
       v-for="(item,index) in items"
-    ).ma-0.rounded-0.elevation-1
+      flat
+    ).ma-0.rounded-0.elevation-0
       v-row.ma-0(
-        style="min-height:10px"
+        style="min-height:36px"
         )
-          span.text-body-2.hover(@click="toggle(index)").ml-6 {{ item.name }}
+          span.text-subtitle-1(@click="toggle(index)").ml-6 {{ item.name }}
           v-spacer.hover(@click="toggle(index)")
           v-menu(offset-y='')
             template(v-slot:activator='{ on, attrs }')
               v-icon(color="grey" v-bind='attrs' v-on='on') mdi-dots-vertical
             v-list
-              span.ml-2 {{ item.name }}
               v-divider
               v-list-item(
                 v-for='(item, itemIndex) in menu.pack' :key='itemIndex' @click="itemClick(item,index)"
               )
-                v-list-item-title {{ item.title }}
-      v-divider(v-if="!panels[index]")
+                v-list-item-title.text-subtitle-2 {{ item.title }}
+      v-divider(
+        v-if="index !== items.length"
+        disabled
+        :class="(panels[index] ? 'mx-6 px-6' : null)"
+      )
       v-col.panel.pa-0(
-        v-else
+        v-if="panels[index]"
         :style="panelHeight"
         )
           v-row.pl-2.ma-0.pa-0(v-for='game in item.children').d-flex
             v-col.col-11.overflow-hidden.pa-0
-              v-btn(style="text-align:left", text block='' @click='onClick(game)').d-flex
-                div
-                  span.justify-start.text-truncate.spanContainer {{ game.name }}
+              v-btn(style="text-align:left", text block='' @click='onClick(game)').d-flex.gameBtn
+                span.text-subtitle-2.justify-start.text-truncate  {{game.name }}
                 v-spacer
             v-col.col-1.pa-0.justify-end.d-flex.justify-end
               v-menu(offset-y='')
@@ -41,6 +44,15 @@ div
                   v-divider
                   v-list-item(v-for='(item, itemIndex) in menu.game' :key='itemIndex' v-if='game.isMod ? item.visiblity !== State.GameOnly : item.visiblity !== State.ModOnly' @click='gameClick(item,game)')
                     v-list-item-title {{ item.title }}
+    .ma-4(v-if="!anyOpend")
+      v-row.mx-1
+          v-icon mdi-information
+          span.ml-2(style="max-width:86%") {{ fact }}
+      v-row
+        v-spacer
+        span Next Tip
+        v-icon(@click="nextFact()") mdi-chevron-right
+
 
   div(v-else)
     DocumenationSideView
@@ -53,6 +65,7 @@ import { JackBoxTreeData, AllGames } from '@/assets/data/JackBoxTreeData'
 import DocumenationSideView from '@/views/Documenation/DocumenationSideView.vue'
 import CustomDialog from './CustomDialog.vue'
 import dialog from './dialog'
+import ToolFacts from "@/assets/data/ModToolFacts"
 
 const State = Object.freeze({
   GameOnly: 1,
@@ -78,12 +91,15 @@ export default {
     let self = this
     this.$listen("documentation-state", (e) => self.isDocumenation = !!e);
     this.$listen("reloadSideview", self.reloadSideView);
+
+    this.fact = ToolFacts.getFact()
   },
   data() {
 
     return {
       active: null,
       isDocumenation: false,
+      fact:'',
       menu: {
 
         pack: [
@@ -108,14 +124,17 @@ export default {
     }
   },
   computed: {
+    anyOpend(){
+      return this.panels.some(x=>x)
+    },
     panelHeight() {
       let count = this.panels.filter(x => x).length
       //calc(100vh)/open   -panels
       //return "min-height:3000px!important;background-color:red;"
       //max-height:calc((100vh - ${this.panels.length*30}px) / ${count});
       return false ? '' : `
-      min-height:calc((100vh - ${this.panels.length * 22}px) /${count});
-      max-height:calc((100vh - ${this.panels.length * 22}px) /${count});
+      min-height:calc((100vh - ${this.panels.length * 36}px) /${count});
+      max-height:calc((100vh - ${this.panels.length * 36}px) /${count});
       overflow: auto;
       `
     }
@@ -274,6 +293,10 @@ export default {
       this.items = []
       this.panels = []
       this.loadPacks()
+      this.fact = ToolFacts.getFact()
+    },
+    nextFact(){
+      this.fact = ToolFacts.getNext()
     }
   }
 
@@ -300,5 +323,9 @@ a {
 .hover {
   cursor: pointer;
   margin: 0px;
+}
+
+.gameBtn{
+  min-height: unset !important;
 }
 </style>

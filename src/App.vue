@@ -1,9 +1,9 @@
 <template lang="pug">
 v-app.main
   v-row
-    v-col.col-3.mt-2
-      SideTreeview
-    v-divider(vertical)
+    v-col.col-3.mt-2.mb-0
+      v-card.rounded-0
+        SideTreeview(stlye=" border-right: 1px solid black;")
     v-col.col-9.px-0
       CustomPath
       router-view
