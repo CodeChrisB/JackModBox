@@ -12,6 +12,10 @@ export const Documenation = Object.freeze([
     filename:'Modding.md'
   },
   {
+    title:'Editors',
+    filename:'Editors.md'
+  },
+  {
     title:'Contributors',
     filename:'Contributors.md'
   },
