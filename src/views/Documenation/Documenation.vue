@@ -54,7 +54,6 @@ export default {
     changeDocumentation(filename) {
       this.images = {}
       this.markdown = require(`@/assets/docs/docs/${filename}`).default.split('\n')
-      console.log(this.markdown)
     },
     genHeaderClass(str) {
       const firstNonHashIndex = str.indexOf(str.match(/[^#]/));
