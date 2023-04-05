@@ -208,6 +208,8 @@ export default {
     },
     toggle(index) {
       this.$set(this.panels, index, !this.panels[index])
+      this.fact = ToolFacts.getFact()
+      this.factText = ToolFacts.getPaginationText()
     },
     set(index, state) {
       this.$set(this.panels, index, state)

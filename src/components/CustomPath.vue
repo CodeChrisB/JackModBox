@@ -1,13 +1,16 @@
 <template lang="pug">
 div
   div(v-if="isDocumenation === false")
-    v-row.pa-0.ml-2.mt-1
-      v-icon.mb-3(
-        v-if="isDocumenation === false"
-        small 
-        @click="toSettings"
-      ) mdi-cog
-
+    v-row.pa-0.ml-2.mr-6.mt-1
+      v-btn.mb-3(
+          v-if="isDocumenation === false"
+          text
+          icon
+          @click="toggleSideview",
+          small
+        ) 
+          v-icon(small) {{ sideViewIcon }}
+    
       v-btn.mb-3(
         v-if="isDocumenation === false"
         text
@@ -24,6 +27,14 @@ div
           span {{ item.text }}
           span(v-if='index !== computedCrumbs.length-1') /
       span(style="max-width:65vw").text-truncate {{  computedText  }}
+
+
+      v-spacer
+      v-icon.ml-6.mb-3(
+        v-if="isDocumenation === false"
+        small 
+        @click="toSettings"
+      ) mdi-cog
 
 
     v-row.ma-0.pa-0
@@ -51,6 +62,7 @@ export default {
   data: () => ({
     isDocumenation: false,
     path: [],
+    sideOpen:true,
     backTo: {
       name: null,
       key: null
@@ -77,12 +89,16 @@ export default {
     },
     computedText() {
       return this.computedCrumbs.map(x => x.text).join('/')
+    },
+    sideViewIcon(){
+      return this.sideOpen ? 'mdi-playlist-remove': 'mdi-playlist-play'
     }
   },
   created() {
     let self = this
     this.$listen('setCustomPath-BackTo', (e) => self.backTo = e)
     this.$listen("documentation-state", (e) => self.isDocumenation = !!e);
+    this.$listen('sideviewState',(e)=> self.sideOpen = e)
   },
   watch: {
     "$route.params.key": {
@@ -113,6 +129,9 @@ export default {
       this.$broadcast("documentation-state", false);
       this.$router.push({ name: 'home' })
     },
+    toggleSideview(){
+      this.$broadcast('toggleSideview')
+    },  
     toSettings() {
       this.$router.push({ name: 'settings' })
     },

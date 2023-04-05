@@ -43,7 +43,9 @@ export default {
   beforeCreate() {
     this.EditorMode = EditorMode
   },
-  async created() {
+  created() {
+    let self = this
+    this.$listen('sideviewState',()=> self.onResize)
   },
   async mounted() {
     document.addEventListener("keydown", this.doSave);

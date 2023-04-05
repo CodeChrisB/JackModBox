@@ -1,15 +1,14 @@
 <template lang="pug">
-div
-  v-row(v-for="doc in Documenation").ma-2.ml-6
-    v-btn.px-6(
-      @click="$broadcast('documentation-data',doc.filename)"
-      block
-      text
-    )
-      |{{ doc.title }}
-    v-divider
-</template>
-    
+  div
+    v-row.ma-2.ml-6(v-for='doc in Documenation')
+      v-btn(
+        block
+        text
+        @click="$broadcast('documentation-data',doc.filename)" 
+        )
+        div.text-left {{ doc.title }}
+        v-spacer
+  </template>
 <script>
 import { Documenation } from '@/assets/data/DocumenationData';
 export default {
