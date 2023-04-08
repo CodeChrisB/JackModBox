@@ -20,10 +20,9 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
 
     span.pt-3.pr-3 {{ pageShowingText }}
 
-  v-row().overflow-auto
   v-divider 
-  v-row.mt-3.pr-3.ml-2
-    v-card.mb-3.ma-1(
+  v-row(style="max-height:50vh").mt-3.pr-3.ml-2
+    v-card().mb-3.ma-1(
       v-for="(fileContent,index) in pageContent"
       @click="onFileClick(fileContent)"
       @contextmenu="show($event,fileContent)"
@@ -34,7 +33,7 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
           :path="fileContent.fullPath"
           :index="index"
           :indexToReload="indexToReload"
-          :viewMode="viewMode[viewIndex].rule"
+          :viewMode="viewMode[viewIndex].scale"
           @massReplace="onMassReplace($event,index)"
           )
         span {{ fileContent.name }}
@@ -275,7 +274,7 @@ export default {
       }
     },
     onRecalculatePageSize() {
-      this.pageSize = Math.min(this.files.length, 32)
+      this.pageSize = Math.min(this.files.length, 25)
     },
     onFileClick(e) {
       if (e.isFolder === 1) {

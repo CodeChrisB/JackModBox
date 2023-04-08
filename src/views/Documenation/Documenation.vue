@@ -1,5 +1,5 @@
 <template lang="pug">
-div(style="overflow: auto;max-height:calc(100vh - 26px)").view.ma-4.mr-6.mb-6
+div(style="overflow: auto;max-height:calc(100vh - 26px);max-width:80vw").view.ma-4.mr-6.mb-6
   div(v-for="(line,index) in markdown")
     span(v-if="line.startsWith('#')" :class="genHeaderClass(line)") {{ replaceLeadingHashes(line) }}
     span(v-else-if="line.startsWith('~~ ')").font-italic {{ line.slice(2) }}

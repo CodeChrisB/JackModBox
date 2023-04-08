@@ -3,14 +3,13 @@ div
   div(v-if="isDocumenation === false")
     v-row.pa-0.ml-2.mr-6.mt-1
       v-btn.mb-3(
-          v-if="isDocumenation === false"
+          v-if="isDocumenation === false && sideOpen === true"
           text
           icon
           @click="toggleSideview",
           small
         ) 
-          v-icon(small) {{ sideViewIcon }}
-    
+          v-icon(small) mdi-chevron-double-left
       v-btn.mb-3(
         v-if="isDocumenation === false"
         text
@@ -91,7 +90,7 @@ export default {
       return this.computedCrumbs.map(x => x.text).join('/')
     },
     sideViewIcon(){
-      return this.sideOpen ? 'mdi-playlist-remove': 'mdi-playlist-play'
+      return this.sideOpen ? 'chevron-double-left': 'mdi-playlist-play'
     }
   },
   created() {

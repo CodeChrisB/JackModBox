@@ -28,8 +28,10 @@ div
       v-card.pa-2
         v-row
           v-col.col-10
+            span {{}}
             file-viewer-audio-player(
                 :icon-scale="1.5",
+                :spectrumFolder="gamePath+'/'+data.spectrumFolder"
                 :file-name="audio.id>100000 ? 'Not in the game' : audio.id+'.ogg'"
                 :path="fullpath(audio.id)"
               )
@@ -41,7 +43,6 @@ div
                 icon
               )
                 v-icon mdi-swap-vertical
-        span {{ audio.id }} {{ playLoader }}
         v-text-field(
           v-model="textFieldValues[audio.id]"
           label="Audio Name"
@@ -139,7 +140,7 @@ export default {
 
     //read the prompt json
     this.promptFilePath = [this.gamePath, this.data.dataFile].join('\\')
-   
+    this.spectrumFilePath = [this.spectrumFolder, this.data.dataFile].join('\\')
     window.file.fs.readFile(this.promptFilePath, (err, content) => {
       this.promptFile = JSON.parse(new TextDecoder().decode(content))
       for (const value in this.promptFile.content) {

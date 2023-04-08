@@ -89,6 +89,7 @@ export const GameIds = Object.freeze({
                 {
                     name:'Audio Replace Editor',
                     audioFolder:'content\\EarwaxAudio\\Audio',
+                    spectrumFolder:'content\\EarwaxAudio\\Spectrum',
                     dataFile:'content\\EarwaxAudio.jet',
                     expand:false,
                     key:'name'

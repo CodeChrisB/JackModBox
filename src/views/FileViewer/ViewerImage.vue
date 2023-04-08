@@ -6,7 +6,6 @@ v-card(
     @dragleave.prevent='dragover = false' 
     :class="(dragover ? 'elevation-4' : 'elevation-0')"
   )
-  span {{ internalViewMode }}
   v-img(
     :src="imageUrl" alt="User Image"
     :style="internalViewMode"
@@ -34,6 +33,7 @@ v-card(
       }
     },
     data() {
+      
       return {
         dragover: false,
         file: null,

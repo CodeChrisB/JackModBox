@@ -1,16 +1,16 @@
 <template lang="pug">
 v-app.main
   v-row
-    v-col(
-      v-if="col.side===3"
-      :class="sideCol"
+    div(
+      :style="sideCol"
       ).mt-2.mb-0
-      v-card.rounded-0
-        SideTreeview
+      v-card(style="min-height:101vh").rounded-0
+        SideTreeview(v-if="side==='25vw'")
+        IconDrawer(v-else)
 
-    v-col(:class="mainCol").col-9.px-0
-      CustomPath
-      router-view
+    div(:style="mainCol")
+      CustomPath.mt-4
+      router-view.ml-1(:style="mainCol")
     
       
 
@@ -20,6 +20,7 @@ v-app.main
 import HelloWorld from './components/HelloWorld';
 import SideTreeview from './components/SideTreeview.vue';
 import CustomPath from './components/CustomPath.vue';
+import IconDrawer from './components/IconDrawer.vue'
 import { SETTING } from './assets/data/SettingData'
 export default {
   name: 'App',
@@ -27,26 +28,27 @@ export default {
   components: {
     HelloWorld,
     SideTreeview,
-    CustomPath
+    CustomPath,
+    IconDrawer
   },
   data(){
     return {
-      col:{
-        main:9,
-        side:3
-      }
+        main:'75vw',
+        side:'25vw',
+        iconDrawerSize:'60px',
+        treeviewOpend:true
     }
   },
   created(){
     let self = this
-    this.$listen('toggleSideview',self.toggleSideview)
+    this.$listen('toggleSideview',(e)=>self.toggleSideview(e))
   },
   computed:{
     mainCol(){
-      return `col-${this.col.main} ${this.col.side === 0 ? 'ma-2':null}`
+      return `min-width:${this.main};max-width:${this.main};`
     },
     sideCol(){
-      return `col-${this.col.side}`
+      return `min-width:${this.side};max-width:${this.side};`
     }
   },
   mounted() {
@@ -59,16 +61,19 @@ export default {
     
   },
   methods:{
-    toggleSideview(){
-      if(this.col.side>0){
-        this.col.side=0
-        this.col.main=12
+    toggleSideview(e){
+      this.treeviewOpend =  e ? e : !this.treeviewOpend
+
+      if(this.treeviewOpend){
+        this.side= this.iconDrawerSize
+        this.main = `calc(100vw - ${this.iconDrawerSize})`
         this.$broadcast('sideviewState',false)
       }else{
-        this.col.side=3
-        this.col.main=9
+        this.side='25vw'
+        this.main='75vw'
         this.$broadcast('sideviewState',true)
       }
+      this.$forceUpdate()
     }
   }
 };
