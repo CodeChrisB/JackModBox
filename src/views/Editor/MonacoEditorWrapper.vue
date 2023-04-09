@@ -45,7 +45,11 @@ export default {
   },
   created() {
     let self = this
-    this.$listen('sideviewState',()=> self.onResize)
+    this.$listen('sideviewState',()=> {
+      console.log('state',this.editor)
+      self.onResize()
+    })
+    this.onResize()
   },
   async mounted() {
     document.addEventListener("keydown", this.doSave);
@@ -57,6 +61,7 @@ export default {
     editorMounted(value) {
       this.editor = value
       this.editor.getModel().setValue(this.internalValue)
+      this.onResize()
     },
     onChange(value) {
       this.isDirty = true

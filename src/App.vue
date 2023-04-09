@@ -5,7 +5,7 @@ v-app.main
       :style="sideCol"
       ).mt-2.mb-0
       v-card(style="min-height:101vh").rounded-0
-        SideTreeview(v-if="side==='25vw'")
+        SideTreeview(v-if="treeviewOpend")
         IconDrawer(v-else)
 
     div(:style="mainCol")
@@ -62,18 +62,20 @@ export default {
   },
   methods:{
     toggleSideview(e){
-      this.treeviewOpend =  e ? e : !this.treeviewOpend
+      if(e !== undefined) this.treeviewOpend = e
+      else this.treeviewOpend = !this.treeviewOpend
 
-      if(this.treeviewOpend){
+      if(!this.treeviewOpend){
         this.side= this.iconDrawerSize
         this.main = `calc(100vw - ${this.iconDrawerSize})`
-        this.$broadcast('sideviewState',false)
       }else{
         this.side='25vw'
         this.main='75vw'
-        this.$broadcast('sideviewState',true)
       }
       this.$forceUpdate()
+      this.$nextTick(()=>{
+        this.$broadcast('sideviewState',this.treeviewOpend)
+      })
     }
   }
 };

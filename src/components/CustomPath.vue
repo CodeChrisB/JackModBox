@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   div(v-if="isDocumenation === false")
-    v-row.pa-0.ml-2.mr-6.mt-1
+    v-row().pa-0.ml-2.mr-6.mt-1
       v-btn.mb-3(
           v-if="isDocumenation === false && sideOpen === true"
           text
@@ -11,13 +11,14 @@ div
         ) 
           v-icon(small) mdi-chevron-double-left
       v-btn.mb-3(
-        v-if="isDocumenation === false"
+        v-if="isDocumenation === false && anyData"
         text
         icon
         @click="back()",
         small
       ) 
         v-icon(small) mdi-arrow-left
+
       v-breadcrumbs(
         v-if="false"
         :items='computedCrumbs'
@@ -30,7 +31,7 @@ div
 
       v-spacer
       v-icon.ml-6.mb-3(
-        v-if="isDocumenation === false"
+        v-if="isDocumenation === false && sideOpen"
         small 
         @click="toSettings"
       ) mdi-cog
@@ -89,6 +90,9 @@ export default {
     computedText() {
       return this.computedCrumbs.map(x => x.text).join('/')
     },
+    anyData(){
+      return this.computedCrumbs.length>0
+    },
     sideViewIcon(){
       return this.sideOpen ? 'chevron-double-left': 'mdi-playlist-play'
     }
@@ -129,7 +133,7 @@ export default {
       this.$router.push({ name: 'home' })
     },
     toggleSideview(){
-      this.$broadcast('toggleSideview')
+      this.$broadcast('toggleSideview',false)
     },  
     toSettings() {
       this.$router.push({ name: 'settings' })

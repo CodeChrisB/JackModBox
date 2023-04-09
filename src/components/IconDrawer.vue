@@ -4,7 +4,7 @@ div(
   min-height="101vh"
 ).pl-4
   v-icon(@click="openSideview").my-4.mx-2 mdi-chevron-double-right
-  v-icon.my-4.mx-2 mdi-cog
+  v-icon(@click="toSettings").my-4.mx-2 mdi-cog
   v-icon.my-4.mx-2 mdi-account   
 
 </template>
@@ -24,8 +24,11 @@ div(
       },
       methods: {
         openSideview(){
-          this.$broadcast('toggleSideview')
-        }
+          this.$broadcast('toggleSideview',true)
+        },
+        toSettings() {
+          this.$router.push({ name: 'settings' })
+        },
       }
     };
     </script>

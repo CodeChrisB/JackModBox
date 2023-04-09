@@ -56,17 +56,17 @@ div
                             v-btn() Check For Update
             v-tab-item(key="about")
                 v-card(flat='')
-                        v-card-text 
-                            span.text-h4 About this tool
-                            v-col.col-8
-                                span {{aboutText}}
-                            v-divider
-                            span.text-h4 Documentation
-                            v-col.col.col-8 
-                                span {{ docText }}
-                            v-btn(
-                                @click="toDocumenation()"
-                            )| View Documenation
+                    v-card-text 
+                        span.text-h4 About this tool
+                        v-col.col-8
+                            span {{aboutText}}
+                        v-divider
+                        span.text-h4 Documentation
+                        v-col.col.col-8 
+                            span {{ docText }}
+                        v-btn(
+                            @click="toDocumenation()"
+                        )| View Documenation
             
 
         
@@ -77,33 +77,33 @@ div
 import { SETTING } from '@/assets/data/SettingData';
 export default {
     name: 'SettingsView',
-    created(){
-        SETTING.SettingsPath    
+    created() {
+        SETTING.SettingsPath
         this.file = window.file
         this.SETTING = SETTING
         this.getData()
-    },  
-    methods:{
-        getData(){
+    },
+    methods: {
+        getData() {
             this.settings[SETTING.MODS_PATH] = this.file.getSetting(SETTING.MODS_PATH)
             this.settings[SETTING.STEAM_PATH] = this.file.getSetting(SETTING.STEAM_PATH)
             this.settings[SETTING.FFMPEG_PATH] = this.file.getSetting(SETTING.FFMPEG_PATH)
             this.settings[SETTING.SHOW_ALL_NO_PACKS] = this.file.getSetting(SETTING.SHOW_ALL_NO_PACKS)
         },
-        openPage(){
+        openPage() {
             window.file.openInBrowser('https://ffbinaries.com/downloads')
-        },  
-        toDocumenation(){
-            this.$broadcast("documentation-state",true)
+        },
+        toDocumenation() {
+            this.$broadcast("documentation-state", true)
             this.$router.replace('/Documenation')
         }
     },
     data() {
         return {
-            aboutText:'This is an open-source modding tool designed for modifying Jackbox games. Please note that this tool is not an official Jackbox tool and is not affiliated with the developers of Jackbox in any way. This third-party tool has been created to allow users to mod Jackbox games according to their preferences. Its intuitive interface makes it easy to use and enables users to access advanced modding features with ease. We believe that this modding tool will enable users to customize their Jackbox game experience and make it even more enjoyable. We hope that you find this tool useful and that it enhances your Jackbox game experience.',
-            docText:'For further questions regarding JackModBox, please consult the documentation for detailed information on the tools features and functionalities. If you still have questions or concerns after reviewing the documentation, feel free to open an Issue on Gihub.',
-            settings:{},
-            tab:null,
+            aboutText: 'This is an open-source modding tool designed for modifying Jackbox games. Please note that this tool is not an official Jackbox tool and is not affiliated with the developers of Jackbox in any way. This third-party tool has been created to allow users to mod Jackbox games according to their preferences. Its intuitive interface makes it easy to use and enables users to access advanced modding features with ease. We believe that this modding tool will enable users to customize their Jackbox game experience and make it even more enjoyable. We hope that you find this tool useful and that it enhances your Jackbox game experience.',
+            docText: 'For further questions regarding JackModBox, please consult the documentation for detailed information on the tools features and functionalities. If you still have questions or concerns after reviewing the documentation, feel free to open an Issue on Gihub.',
+            settings: {},
+            tab: null,
         }
     },
 

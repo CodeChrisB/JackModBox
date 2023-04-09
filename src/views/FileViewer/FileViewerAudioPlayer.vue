@@ -95,7 +95,7 @@ export default {
       let path = `${this.spectrumFolder}\\${this.innerFileName.split('.')[0]}.jet`
       path = path.replaceAll('\\','/')
       console.log(path)
-      debugger
+
       let spectrumMock = require('@/assets/data/EarWaxFrequency').EarWaxSpectrum
       window.file.fs.writeFile(path,JSON.stringify(spectrumMock),(a,b,c)=>console.log([a,b,c]))
     }

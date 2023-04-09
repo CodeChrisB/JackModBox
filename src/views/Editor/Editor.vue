@@ -117,6 +117,9 @@ export default {
     find out which mode it is
     calculate the rights props for the choosen editor
     */
+
+    this.$broadcast('toggleSideview',false)
+
     if(this.$route.params.key){
       this.key = this.$route.params.key;
       this.fileName = this.key.split('\\').slice(-1).join('');
@@ -158,10 +161,15 @@ export default {
       const rawRead = window.file.fs.readFileSync(this.key)
       this.fileContent = new TextDecoder().decode(rawRead);
       //todo show error that the file is malformatted
-      this.jsonContent = JSON.parse(this.fileContent);
-      if (this.jsonContent && this.jsonContent.content) {
-        this.props = Object.keys(this.jsonContent.content[0]);
+      try{
+        this.jsonContent = JSON.parse(this.fileContent);
+        if (this.jsonContent && this.jsonContent.content) {
+          this.props = Object.keys(this.jsonContent.content[0]);
+        }
+      }catch(ex){
+        this.jsonContent = null
       }
+
     },
     setEditor(mode){
       switch(mode){
