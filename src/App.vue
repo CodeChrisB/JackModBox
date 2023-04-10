@@ -22,7 +22,7 @@ import SideTreeview from './components/SideTreeview.vue';
 import CustomPath from './components/CustomPath.vue';
 import IconDrawer from './components/IconDrawer.vue'
 import { SETTING } from './assets/data/SettingData'
-import Code from '@/assets/data/BusCode'
+import { Code } from '@/assets/data/BusCode'
 export default {
   name: 'App',
 
