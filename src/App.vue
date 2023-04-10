@@ -5,8 +5,8 @@ v-app.main
       :style="sideCol"
       ).mt-2.mb-0
       v-card(style="min-height:101vh").rounded-0
-        SideTreeview(v-if="treeviewOpend")
-        IconDrawer(v-else)
+        SideTreeview(v-show="treeviewOpend")
+        IconDrawer(v-show="!treeviewOpend")
 
     div(:style="mainCol")
       CustomPath.mt-4
@@ -22,6 +22,7 @@ import SideTreeview from './components/SideTreeview.vue';
 import CustomPath from './components/CustomPath.vue';
 import IconDrawer from './components/IconDrawer.vue'
 import { SETTING } from './assets/data/SettingData'
+import Code from '@/assets/data/BusCode'
 export default {
   name: 'App',
 
@@ -41,7 +42,7 @@ export default {
   },
   created(){
     let self = this
-    this.$listen('toggleSideview',(e)=>self.toggleSideview(e))
+    this.$listen(Code.SetToggleSideView,(e)=>self.SetToggleSideView(e))
   },
   computed:{
     mainCol(){
@@ -61,7 +62,7 @@ export default {
     
   },
   methods:{
-    toggleSideview(e){
+    SetToggleSideView(e){
       if(e !== undefined) this.treeviewOpend = e
       else this.treeviewOpend = !this.treeviewOpend
 
@@ -74,7 +75,7 @@ export default {
       }
       this.$forceUpdate()
       this.$nextTick(()=>{
-        this.$broadcast('sideviewState',this.treeviewOpend)
+        this.$broadcast(Code.InfoSideViewState,this.treeviewOpend)
       })
     }
   }

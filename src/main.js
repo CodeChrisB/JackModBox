@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import Bus from './plugins/Bus'
+import Code from "@/assets/data/BusCode"
 import router from './router'
 
 Vue.config.productionTip = false

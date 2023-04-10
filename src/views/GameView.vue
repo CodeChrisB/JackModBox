@@ -88,6 +88,7 @@ import HelloWorld from '@/components/HelloWorld.vue'
 import { GameIds, Mod } from '@/assets/data/JackBoxTreeData'
 import { SETTING } from '@/assets/data/SettingData'
 import { EditorMode } from '@/assets/data/Editor'
+import { Code } from '@/assets/data/BusCode'
 const emptyOGG = require('@/assets/audioFile/empty.ogg')
 export default {
   name: 'HomeView',
@@ -156,7 +157,7 @@ export default {
     },
     toFileViewer(e, sendBackTo) {
       if (sendBackTo) {
-        this.$broadcast('setCustomPath-BackTo', {
+        this.$broadcast(Code.SetCustomPathBackTo, {
           name: e.split('\\').slice(-1)[0],
           key: this.key
         })

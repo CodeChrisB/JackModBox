@@ -6,7 +6,7 @@ div
           v-if="isDocumenation === false && sideOpen === true"
           text
           icon
-          @click="toggleSideview",
+          @click="SetToggleSideView",
           small
         ) 
           v-icon(small) mdi-chevron-double-left
@@ -56,6 +56,8 @@ div
   </template>
   
 <script>
+import { Code } from '@/assets/data/BusCode';
+
 
 export default {
   name: 'CustomPath',
@@ -99,9 +101,9 @@ export default {
   },
   created() {
     let self = this
-    this.$listen('setCustomPath-BackTo', (e) => self.backTo = e)
-    this.$listen("documentation-state", (e) => self.isDocumenation = !!e);
-    this.$listen('sideviewState',(e)=> self.sideOpen = e)
+    this.$listen(Code.SetCustomPathBackTo, (e) => self.backTo = e)
+    this.$listen(Code.InfoDocumentationState, (e) => self.isDocumenation = !!e);
+    this.$listen(Code.InfoSideViewState,(e)=> self.sideOpen = e)
   },
   watch: {
     "$route.params.key": {
@@ -129,11 +131,11 @@ export default {
       }
     },
     closeDocumentation() {
-      this.$broadcast("documentation-state", false);
+      this.$broadcast(Code.InfoDocumentationState, false);
       this.$router.push({ name: 'home' })
     },
-    toggleSideview(){
-      this.$broadcast('toggleSideview',false)
+    SetToggleSideView(){
+      this.$broadcast(Code.SetToggleSideView,false)
     },  
     toSettings() {
       this.$router.push({ name: 'settings' })

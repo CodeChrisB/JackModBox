@@ -72,6 +72,7 @@ import FastPromptEditor from './FastPromptEditor.vue';
 import MonacoEditor from 'monaco-editor-vue';
 import MonacoEditorWrapper from './MonacoEditorWrapper.vue';
 import SWFEditor from './SWFEditor.vue';
+import { Code } from '@/assets/data/BusCode';
 
 export default {
   name: "App",
@@ -118,7 +119,7 @@ export default {
     calculate the rights props for the choosen editor
     */
 
-    this.$broadcast('toggleSideview',false)
+    this.$broadcast(Code.SetToggleSideView,false)
 
     if(this.$route.params.key){
       this.key = this.$route.params.key;
@@ -126,6 +127,7 @@ export default {
     }
     this.editorMode = this.$route.params.editor
     this.editorValues = this.$route.params.editorValues
+    this.setIconDrawer()
     
     //Editors that handle load and save action itself due to complications
     this.atomicEditor = [EditorMode.SWFEditor,EditorMode.AudioPromptEditor].includes(this.editorMode) 
@@ -214,6 +216,9 @@ export default {
     },        
     setFilter(prop,index,val){
       this.$set(this.filter,index,{[prop]:val})
+    },
+    setIconDrawer(){
+
     }
   }
 };

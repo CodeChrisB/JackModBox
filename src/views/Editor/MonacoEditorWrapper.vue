@@ -12,7 +12,7 @@ MonacoEditor(
 <script>
 import MonacoEditor from 'monaco-editor-vue';
 import { EditorMode } from '@/assets/data/Editor';
-
+import { Code } from '@/assets/data/BusCode';
 export default {
   name: "MonacoEditorWrapper",
   components: { MonacoEditor },
@@ -45,7 +45,7 @@ export default {
   },
   created() {
     let self = this
-    this.$listen('sideviewState',()=> {
+    this.$listen(Code.InfoSideViewState,()=> {
       console.log('state',this.editor)
       self.onResize()
     })

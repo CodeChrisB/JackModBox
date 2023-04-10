@@ -23,14 +23,14 @@ div
                                 label="SteamApps Folder"
                                 hint=`SteamLibrary  >  steamapps  >  common`
                                 append-outer-icon="mdi-content-save"
-                                @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH]).then(()=>$broadcast('reloadSideview',true))"
+                                @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH]).then(()=>UpdateReloadSideview)"
                             )
                             v-text-field(
                                 v-model="settings[SETTING.MODS_PATH]"
                                 label="Mods Folder"
                                 hint=`A folder to save & load your mods from`
                                 append-outer-icon="mdi-content-save"
-                                @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH]).then(()=>$broadcast('reloadSideview',true))"
+                                @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH]).then(()=>UpdateReloadSideview)"
                             )
                             v-text-field(
                                 v-model="settings[SETTING.FFMPEG_PATH]"
@@ -44,7 +44,7 @@ div
                             v-checkbox(
                                 v-model="settings[SETTING.SHOW_ALL_NO_PACKS]"
                                 label="Show all Games without Packs"
-                                @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>$broadcast('reloadSideview',true))"
+                                @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>UpdateReloadSideview)"
                             )
 
             v-tab-item(key="update")
@@ -74,6 +74,7 @@ div
 </template>
 
 <script>
+import { Code } from '@/assets/data/BusCode';
 import { SETTING } from '@/assets/data/SettingData';
 export default {
     name: 'SettingsView',
@@ -93,8 +94,11 @@ export default {
         openPage() {
             window.file.openInBrowser('https://ffbinaries.com/downloads')
         },
+        UpdateReloadSideview(){
+            this.$broadcast(Code.UpdateReloadSideview,true)
+        },
         toDocumenation() {
-            this.$broadcast("documentation-state", true)
+            this.$broadcast(Code.InfoDocumentationState, true)
             this.$router.replace('/Documenation')
         }
     },

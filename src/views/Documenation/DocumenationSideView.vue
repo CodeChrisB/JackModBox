@@ -4,13 +4,14 @@
       v-btn(
         block
         text
-        @click="$broadcast('documentation-data',doc.filename)" 
+        @click="broadcast(doc)" 
         )
         div.text-left {{ doc.title }}
         v-spacer
   </template>
 <script>
 import { Documenation } from '@/assets/data/DocumenationData';
+import { Code } from '@/assets/data/BusCode';
 export default {
   name: 'DocumenationSideView',
   data() {
@@ -21,7 +22,9 @@ export default {
     this.Documenation = Documenation
   },
   methods: {
-
+    broadcast(doc){
+      this.$broadcast(Code.UpdateDocumentationData,doc.filename)
+    }
   }
 }
 </script>

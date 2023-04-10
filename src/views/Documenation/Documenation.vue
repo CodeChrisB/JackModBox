@@ -25,6 +25,7 @@ div(style="overflow: auto;max-height:calc(100vh - 26px);max-width:80vw").view.ma
 <script>
 import VueMarkdown from 'vue-markdown-render';
 import Welcome from '@/assets/docs/docs/Welcome.md'
+import { Code } from '@/assets/data/BusCode';
 export default {
   name: 'DocumenationView',
   components: {
@@ -47,7 +48,7 @@ export default {
   created() {
     this.markdown = Welcome
     let self = this
-    this.$listen('documentation-data', self.changeDocumentation)
+    this.$listen(Code.UpdateDocumentationData, self.changeDocumentation)
     this.changeDocumentation('Welcome.md')
   },
   methods: {

@@ -70,6 +70,7 @@ import DocumenationSideView from '@/views/Documenation/DocumenationSideView.vue'
 import CustomDialog from './CustomDialog.vue'
 import dialog from './dialog'
 import ToolFacts from "@/assets/data/ModToolFacts"
+import { Code } from '@/assets/data/BusCode'
 
 const State = Object.freeze({
   GameOnly: 1,
@@ -93,8 +94,8 @@ export default {
     }
 
     let self = this
-    this.$listen("documentation-state", (e) => self.isDocumenation = !!e);
-    this.$listen("reloadSideview", self.reloadSideView);
+    this.$listen(Code.InfoDocumentationState, (e) => self.isDocumenation = !!e);
+    this.$listen("UpdateReloadSideview", self.UpdateReloadSideview);
 
     this.fact = ToolFacts.getFact()
     this.factText = ToolFacts.getPaginationText()
@@ -250,7 +251,7 @@ export default {
               if (success) {
                 let json = { key: game.key }
                 window.file.fs.writeFileSync([this.modPath, this.answer, "modSettings.json"].join('\\'), JSON.stringify(json));
-                this.reloadSideView()
+                this.UpdateReloadSideview()
               }
             })
           }
@@ -267,7 +268,7 @@ export default {
             tmp = game.id.split('\\')
             tmp[tmp.length - 1] = this.answer
             this.file.fs.rename(game.id, tmp.join('\\'), function (err) {
-              self.reloadSideView()
+              self.UpdateReloadSideview()
             })
           }
           break
@@ -283,7 +284,7 @@ export default {
         case 3:
           tmp = window.file.deleteFolder(game.id)
           if (tmp) {
-            this.reloadSideView()
+            this.UpdateReloadSideview()
           }
           break;
         case 4:
@@ -295,7 +296,7 @@ export default {
           break;
       }
     },
-    reloadSideView() {
+    UpdateReloadSideview() {
       this.steamPath = this.file.getSetting(SETTING.STEAM_PATH)
       this.modPath = this.file.getSetting(SETTING.MODS_PATH)
       this.items = []
