@@ -46,7 +46,6 @@ export default {
   created() {
     let self = this
     this.$listen(Code.InfoSideViewState,()=> {
-      console.log('state',this.editor)
       self.onResize()
     })
     this.onResize()

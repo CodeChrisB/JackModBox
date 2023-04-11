@@ -23,7 +23,7 @@ div(style="min-height:101vh")
       v-divider(
         v-if="index !== items.length"
         disabled
-        :class="(panels[index] ? 'mx-6 px-6' : null)"
+        :class=""
       )
       v-col.panel.pa-0(
         v-if="panels[index]"
@@ -32,7 +32,7 @@ div(style="min-height:101vh")
           v-row.pl-2.ma-0.pa-0(v-for='game in item.children').d-flex
             v-col.col-11.overflow-hidden.pa-0
               v-btn(style="text-align:left", text block='' @click='onClick(game)').d-flex.gameBtn
-                span.text-subtitle-2.justify-start.text-truncate  {{game.name }}
+                span.ml-3.text-subtitle-2.justify-start.text-truncate  {{ game.name }}
                 v-spacer
             v-col.col-1.pa-0.justify-end.d-flex.justify-end
               v-menu(offset-y='')
@@ -95,7 +95,7 @@ export default {
 
     let self = this
     this.$listen(Code.InfoDocumentationState, (e) => self.isDocumenation = !!e);
-    this.$listen("UpdateReloadSideview", self.UpdateReloadSideview);
+    this.$listen(Code.UpdateReloadSideview, ()=> self.UpdateReloadSideview());
 
     this.fact = ToolFacts.getFact()
     this.factText = ToolFacts.getPaginationText()

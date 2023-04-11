@@ -69,16 +69,14 @@ export default {
         '-y', '-ss', '0', '-t', this.maxLength, '-i', inputFilePath,
         '-map', '0:a:0', '-vn', '-codec:a', 'libvorbis', '-q:a', '5', `"${this.path}"`
       ];
-      console.log(commandArgs.join(' '))
       const command = `"${ffmpegPath}" ${commandArgs.join(" ")}`;
-      console.log(command)
       if (file.type.includes("audio") || file.type.includes("video")) {
         if (file.type.includes("ogg")) {
           window.file.copy(inputFilePath, outputFilePath);
         } else {
           window.file.exec(command, (error, stdout, stderr) => {
             if (error) {
-              console.log(this.path)
+              // Todo error handling
             } else {
               this.saveSpectrum()
             }
@@ -91,13 +89,11 @@ export default {
     },
     saveSpectrum(){
       if(!this.spectrumFolder) return
-      //console.log(`${this.spectrumFolder}\\${this.innerFileName.split('.')[0]}.jet`,JSON.stringify(require('@/assets/data/EarWaxFrequency').EarWaxSpectrum),()=>{})
       let path = `${this.spectrumFolder}\\${this.innerFileName.split('.')[0]}.jet`
       path = path.replaceAll('\\','/')
-      console.log(path)
 
       let spectrumMock = require('@/assets/data/EarWaxFrequency').EarWaxSpectrum
-      window.file.fs.writeFile(path,JSON.stringify(spectrumMock),(a,b,c)=>console.log([a,b,c]))
+      window.file.fs.writeFile(path,JSON.stringify(spectrumMock),()=>{})
     }
   },
   watch: {

@@ -121,7 +121,7 @@ export default {
   methods: {
     onAudioReplaceEditor(editor){
       //todo check if mod then use mod path
-      console.log(editor)
+
       this.$router.pass('Editor', {
           key: [this.steamPath,this.game.id,editor.audioFolder].join('\\'),
           editor: EditorMode.AudioPromptEditor,

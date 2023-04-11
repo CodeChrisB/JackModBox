@@ -5,10 +5,9 @@ div(
 ).pl-4
   v-icon(@click="openSideview").my-4.mx-2 mdi-chevron-double-right
   v-icon(@click="toSettings").my-4.mx-2 mdi-cog
-  v-icon(
-    v-for="icon in icons"
-    @click="callBus(icon)"
-  ).my-4.mx-2 {{ icon.icon }}
+  v-btn(v-for='icon in icons' :key='icon.icon' icon='')
+    v-icon(@click='callBus(icon)') {{ icon.icon }}
+
 
 </template>
       
@@ -31,7 +30,7 @@ import { Code } from '@/assets/data/BusCode';
       computed: {
       },
       created() {
-        this.$listen('iconDrawer-set',e=>this.setIcons(e))
+        this.$listen(Code.SetIconDrawerContent,e=>this.setIcons(e))
       },
       watch: {
       },
@@ -42,9 +41,11 @@ import { Code } from '@/assets/data/BusCode';
         openSideview(){
           this.$broadcast(Code.SetToggleSideView,true)
         },
-        setIcon(e){
+        setIcons(e){
+          this.icons = []
           if(!e) return
           if(!Array.isArray(e)) return
+          if(e.some(elem=>!(elem.icon && elem.callee))) return
 
           //an icon has 2 props
           /*
@@ -54,7 +55,9 @@ import { Code } from '@/assets/data/BusCode';
             params: [Optional data any data...]
           }
           */
+          
           this.icons = e
+          this.$set(this,'icons',e)
         },
         toSettings() {
           this.$router.push({ name: 'settings' })

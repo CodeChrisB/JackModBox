@@ -1,8 +1,8 @@
 <template lang="pug">
 div
   div(v-if="isDocumenation === false")
-    v-row().pa-0.ml-2.mr-6.mt-1
-      v-btn.mb-3(
+    v-row().pa-0.ml-2.mr-6.mt-1.mb-0
+      v-btn(
           v-if="isDocumenation === false && sideOpen === true"
           text
           icon
@@ -10,7 +10,7 @@ div
           small
         ) 
           v-icon(small) mdi-chevron-double-left
-      v-btn.mb-3(
+      v-btn(
         v-if="isDocumenation === false && anyData"
         text
         icon
@@ -18,7 +18,7 @@ div
         small
       ) 
         v-icon(small) mdi-arrow-left
-
+        
       v-breadcrumbs(
         v-if="false"
         :items='computedCrumbs'
@@ -30,11 +30,15 @@ div
 
 
       v-spacer
-      v-icon.ml-6.mb-3(
-        v-if="isDocumenation === false && sideOpen"
-        small 
-        @click="toSettings"
-      ) mdi-cog
+      v-btn(
+        v-if="isDocumenation === false && anyData"
+        text
+        icon
+        @click="toPage",
+        small
+      ) 
+        v-icon(small)  {{ routeIcon }}
+
 
 
     v-row.ma-0.pa-0
@@ -46,7 +50,8 @@ div
       v-icon(
         v-if="isDocumenation"
         @click="closeDocumentation()"
-      ) mdi-close
+      ) {{ routeIcon }}
+    
 
 
         
@@ -95,6 +100,9 @@ export default {
     anyData(){
       return this.computedCrumbs.length>0
     },
+    routeIcon(){
+      return this.$route.name === 'settings' ? 'mdi-home' : 'mdi-cog'
+    },
     sideViewIcon(){
       return this.sideOpen ? 'chevron-double-left': 'mdi-playlist-play'
     }
@@ -104,6 +112,7 @@ export default {
     this.$listen(Code.SetCustomPathBackTo, (e) => self.backTo = e)
     this.$listen(Code.InfoDocumentationState, (e) => self.isDocumenation = !!e);
     this.$listen(Code.InfoSideViewState,(e)=> self.sideOpen = e)
+    this.$broadcast(Code.SetIconDrawerContent,undefined)
   },
   watch: {
     "$route.params.key": {
@@ -137,8 +146,10 @@ export default {
     SetToggleSideView(){
       this.$broadcast(Code.SetToggleSideView,false)
     },  
-    toSettings() {
-      this.$router.push({ name: 'settings' })
+    toPage() {
+      let name = 'settings'
+      if(name === this.$route.name) name ='home'
+      this.$router.push({ name: name })
     },
   }
 };

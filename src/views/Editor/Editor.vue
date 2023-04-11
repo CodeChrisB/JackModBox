@@ -128,6 +128,8 @@ export default {
     this.editorMode = this.$route.params.editor
     this.editorValues = this.$route.params.editorValues
     this.setIconDrawer()
+    let self=this
+    this.$listen(Code.EditorFormatCode,()=>self.cleanJson())
     
     //Editors that handle load and save action itself due to complications
     this.atomicEditor = [EditorMode.SWFEditor,EditorMode.AudioPromptEditor].includes(this.editorMode) 
@@ -155,6 +157,13 @@ export default {
   methods: {
     backToFileviewer(){
       this.$router.pass('fileviewer',{key:this.key.split('\\').slice(0,-1).join('\\')})
+    },
+    cleanJson(){
+      try{
+        this.fileContent = JSON.stringify(JSON.parse(this.fileContent),null,2)
+      }catch(ex){
+
+      }
     },
     editorMounted(value){
       this.editor = value
@@ -218,7 +227,15 @@ export default {
       this.$set(this.filter,index,{[prop]:val})
     },
     setIconDrawer(){
+      let icons = []
 
+      icons.push({
+        icon:'mdi-format-color-highlight',
+        callee: Code.EditorFormatCode,
+        hint:'Format the text'
+      })
+      
+      this.$broadcast(Code.SetIconDrawerContent,icons)
     }
   }
 };

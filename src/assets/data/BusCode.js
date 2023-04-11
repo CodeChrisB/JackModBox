@@ -8,5 +8,8 @@ export const Code = Object.freeze({
   //Setter Calls
   SetToggleSideView:'3000',
   SetCustomPathBackTo:'3001',
+  SetIconDrawerContent:'3002',
+  //Editor
+  EditorFormatCode:'4000'
 
 })

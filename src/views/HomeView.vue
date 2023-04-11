@@ -10,7 +10,10 @@ div
     p.text-disabled {{ slogans[getRandomInt(slogans.length-1)] }}
 </template>
 
-<script> 
+<script>
+import { Code } from '@/assets/data/BusCode';
+
+ 
 
 export default {
   name: 'HomeView',
@@ -66,6 +69,9 @@ export default {
         "There is a 2.17% chance to see this prompt!"
       ]
     }
+  },
+  created(){
+    this.$broadcast(Code.SetToggleSideView,true)
   },
   methods:{
     getRandomInt(max) {

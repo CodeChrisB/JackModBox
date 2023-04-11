@@ -1,6 +1,6 @@
 {
   "steampath": "D:\\SteamLibrary\\steamapps\\common",
-  "usePacksOrdering": false,
+  "usePacksOrdering": true,
   "modpath": "D:\\Programs\\Jackbox Mods",
   "ffmpeg": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe"
 }

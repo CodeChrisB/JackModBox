@@ -44,7 +44,7 @@ div
                             v-checkbox(
                                 v-model="settings[SETTING.SHOW_ALL_NO_PACKS]"
                                 label="Show all Games without Packs"
-                                @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>UpdateReloadSideview)"
+                                @change="file.setSetting(SETTING.SHOW_ALL_NO_PACKS,settings[SETTING.SHOW_ALL_NO_PACKS]).then(()=>UpdateReloadSideview())"
                             )
 
             v-tab-item(key="update")
