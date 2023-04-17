@@ -50,7 +50,7 @@ contextBridge.exposeInMainWorld("file", {
   },
   openGithubIssue(title,description){
     let url = `https://github.com/CodeChrisB/Jack-Mod-Box/issues/new?title=${title}&body=${description}`
-    electron.shell.openExternal(url.replaceAll('\n','%0A'))
+    electron.shell.openExternal(url.replaceAll('\n','%0A').replaceAll('#','%23'))
   },
   cwd: process.cwd(),
   deleteFolder:(imagePath) => deleteFolderRecursive(imagePath),

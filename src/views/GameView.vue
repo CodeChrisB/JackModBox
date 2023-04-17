@@ -121,7 +121,7 @@ export default {
   methods: {
     requestMenu(){
       window.file.openGithubIssue(this.game.name,
-      "Please add a fast access options for following files/folders\n- XX \n- XX \n\n These features would greatly help make this mod tool better\nSincere  [My Name]"
+      "### Custom Gameview -"+this.game.name+"\n- XX \n- XX \n\n These features would greatly help make this mod tool better\nSincere  [My Name]"
       )
     },
     onAudioReplaceEditor(editor){
