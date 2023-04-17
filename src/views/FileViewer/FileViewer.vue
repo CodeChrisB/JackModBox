@@ -59,7 +59,7 @@ div
       v-list
         v-list-item(
           v-for='prop in computedMenu' 
-          v-if='prop.visible.includes(fileType(clickedFile)) || prop.visible[0] === State.ALLFILES' 
+          v-if='(prop.visible.includes(fileType(clickedFile)) || prop.visible[0] === State.ALLFILES) && (!prop.hasContentProp ||clickedFileContent.content)' 
           @click='prop.func(clickedFile,prop,$event)'
         )
           v-icon(v-if="prop.icon") {{ prop.icon }}
@@ -112,6 +112,7 @@ export default {
   data() {
     return {
       clickedFile: {},
+      clickedFileContent:{},
       dialog: {
         open: false,
         component: null,
@@ -186,6 +187,7 @@ export default {
               editor: EditorMode.CustomEditor,
               title:'Card Editor',
               visible: [State.JSON],
+              hasContentProp:true,
               func: () => {
                 this.$router.pass('Editor', {
                   key:  this.folderPath+"\\"+this.clickedFile.name,
@@ -198,16 +200,13 @@ export default {
               editor: EditorMode.FastPromptEditor,
               title:'Fast Editor',
               visible: [State.JSON],
+              hasContentProp:true,
               func: async () => {
                 //get the key of the file
                 let keys=[]
-                try{
-                  let fileContent = window.file.fs.readFileSync( this.folderPath+"\\"+this.clickedFile.name)
-                  fileContent = new TextDecoder().decode(fileContent);
-                  fileContent = JSON.parse(fileContent)
-                  fileContent = fileContent.content[0]
-                  keys = Object.keys(fileContent)
-                }catch(ex){}
+                let fileContent = this.clickedFileContent
+                fileContent = fileContent.content[0]
+                keys = Object.keys(fileContent)
                 //Open a dialog to ask the user what fast editor key to use
                 this.answer = await dialog
                 .title('Fast Editor Key')
@@ -434,10 +433,18 @@ export default {
       this.position.x = e.clientX;
       this.position.y = e.clientY;
       this.clickedFile = file
+      this.clickedFileContent = window.file.fs.readFileSync( this.folderPath+"\\"+this.clickedFile.name)
+      this.clickedFileContent = new TextDecoder().decode(this.clickedFileContent);
+      this.clickedFileContent = JSON.parse(this.clickedFileContent)
+      console.log(this.clickedFileContent)
       this.$nextTick(() => {
         this.useSubMenu=false,
         this.showMenu = true;
       });
+
+
+
+
     },
     viewIndexStep(step) {
       if (step === 1) {
