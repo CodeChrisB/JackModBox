@@ -1,5 +1,5 @@
 <template lang="pug">
-v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
+v-row(style="max-height:90vh;min-height:90vh").overflow-y-auto.overflow-x-hidden
   v-col.col-8
     v-row
       v-col.col-4.ma-2
@@ -23,6 +23,10 @@ v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
     v-divider
     span.ma-3 Custom Features
     v-row
+      div.ma-6(v-if="(fastFolders.length + fastPrompts.length + audioReplacEditor.length)  === 0")
+        span.font-italic ~This game currently does not feature any fast acess menu points, it will be implemented later you can open an Issue explaining why you want a specific gameview now.
+        v-divider.my-3
+        v-btn(color="primary").mt-4(@click="requestMenu()") Open Issue
       v-col(v-for="folder in fastFolders").col-3.ma-2      
         v-card.mb-3
           v-row.d-flex.justify-center.ma-4
@@ -30,8 +34,6 @@ v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
           v-divider
           v-row.ma-4
             span.text-caption {{folder.name}}
-
-            
 
       v-col(v-for="prompt in fastPrompts").col-3.ma-2      
         v-card().mb-3
@@ -48,9 +50,7 @@ v-row(style="max-height:90vh").overflow-y-auto.overflow-x-hidden
           v-divider
           v-row.ma-4
             span.text-caption {{prompt.name}}
-      v-col(v-for="prompt in audioReplacEditor").col-3.ma-2
-        v-card.mb-3
-          v-row.d-flex.justify-center.ma-4
+
 
   v-col.col-4
     v-card.pa-4
@@ -119,6 +119,11 @@ export default {
     }
   },
   methods: {
+    requestMenu(){
+      window.file.openGithubIssue(this.game.name,
+      "Please add a fast access options for following files/folders\n- XX \n- XX \n\n These features would greatly help make this mod tool better\nSincere  [My Name]"
+      )
+    },
     onAudioReplaceEditor(editor){
       //todo check if mod then use mod path
 

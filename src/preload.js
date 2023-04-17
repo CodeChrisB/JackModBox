@@ -48,6 +48,10 @@ contextBridge.exposeInMainWorld("file", {
       return false
     }
   },
+  openGithubIssue(title,description){
+    let url = `https://github.com/CodeChrisB/Jack-Mod-Box/issues/new?title=${title}&body=${description}`
+    electron.shell.openExternal(url.replaceAll('\n','%0A'))
+  },
   cwd: process.cwd(),
   deleteFolder:(imagePath) => deleteFolderRecursive(imagePath),
 
