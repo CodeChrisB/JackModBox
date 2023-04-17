@@ -9,12 +9,19 @@ v-card(v-if='dialog.state.active').rounded-lg
       .pa-6   
         p(v-if='dialog.state.html' v-html='dialog.state.message')
         p(v-else='') {{ dialog.state.message }}
+        v-select(
+          v-if="dialog.state.selectContent"
+          v-model="userInput"
+          :label="dialog.state.label"
+          :items="dialog.state.selectContent"
+        )
         v-text-field(
           v-model='userInput'
           :label="dialog.state.label"
-          v-if="dialog.state.type === 'prompt'" 
+          v-else-if="dialog.state.type === 'prompt'" 
           :type='dialog.state.inputType' 
           )
+        span {{ dialog.state }}
         div
           v-btn(
             v-if="dialog.state.type !== 'alert'" 

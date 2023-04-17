@@ -1,5 +1,5 @@
 <template lang="pug">
-div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
+div
   v-row.ma-0
     v-col.pa-0.pt-2.pl-3
       v-btn(:disabled="index === 0" icon @click="page(-1)") 
@@ -15,13 +15,12 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
         :items="pageSizeStates"
         hide-details
       )
-
     v-spacer
 
     span.pt-3.pr-3 {{ pageShowingText }}
 
   v-divider 
-  v-row(style="max-height:50vh").mt-3.pr-3.ml-2
+  v-row(style="max-height:85vh").overflow-y-auto.mt-3.pr-3.ml-2
     v-card().mb-3.ma-1(
       v-for="(fileContent,index) in pageContent"
       @click="onFileClick(fileContent)"
@@ -50,15 +49,24 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
         v-row.d-flex.justify-center.ma-0
           span.text-truncate.text-caption(style="word-break: break-word") {{fileContent.name}}
 
-    v-menu(v-model="showMenu" :position-x="position.x" :position-y="position.y" absolute offset-y)
+    v-menu(
+      v-model='showMenu'
+      :position-x='position.x' 
+      :position-y='position.y' 
+      absolute='' offset-y=''
+      :close-on-content-click="false"
+      )
       v-list
-
         v-list-item(
-          v-for="prop in menu"
-          v-if="prop.visible.includes(fileType(clickedFile)) || prop.visible[0] === State.ALLFILES"
-          @click="prop.func(clickedFile)"
+          v-for='prop in computedMenu' 
+          v-if='prop.visible.includes(fileType(clickedFile)) || prop.visible[0] === State.ALLFILES' 
+          @click='prop.func(clickedFile,prop,$event)'
         )
+          v-icon(v-if="prop.icon") {{ prop.icon }}
+          v-icon(v-else) {{ prop.isMenu ? 'mdi-arrow-right-bottom' : 'mdi-cursor-default-click-outline'}}
           span {{ prop.title }}
+
+    div(min-height="5vh")
 
   v-dialog(v-model='dialog.open' width='auto')
     v-card
@@ -66,6 +74,7 @@ div(style="max-height:90vh;min-height:90vh").view.ma-2.overflow-x-hidden
         audio-player-dialog(
           :data="dialog.data"
         )
+  CustomDialog
 
       
 
@@ -89,13 +98,16 @@ import { EditorMode } from '@/assets/data/Editor'
 import ViewerImage from './ViewerImage.vue'
 import FileViewerAudioPlayer from './FileViewerAudioPlayer.vue'
 import AudioPlayerDialog from '../Dialogs/AudioPlayerDialog.vue'
+import CustomDialog from '@/components/CustomDialog.vue'
+import dialog from '@/components/dialog'
 
 export default {
   name: 'FileViewer',
   components: {
     ViewerImage,
     FileViewerAudioPlayer,
-    AudioPlayerDialog
+    AudioPlayerDialog,
+    CustomDialog
   },
   data() {
     return {
@@ -112,12 +124,21 @@ export default {
       menu: [
         {
           title: 'Open',
-          func: (game) => this.onFileClick(game),
+          func: (game) => {
+            this.onFileClick(game)
+            this.showMenu=false
+
+          },
           visible: [State.JSON]
         },
         {
+          icon:'mdi-folder-arrow-up-outline',
           title: 'Open Folder',
-          func: (game) => this.onFileClick(game),
+          func: (game) => {
+            this.onFileClick(game)
+            this.showMenu=false
+
+          },
           visible: [State.FOLDER]
         },
         {
@@ -125,17 +146,87 @@ export default {
           func: (folder) => {
             folder.expand = true
             this.onFileClick(folder)
+            this.showMenu=false
+
           },
           visible: [State.FOLDER]
         },
         {
           title: 'Open In Explorer',
           func: (game) => {
-            let arr = game.fullPath.split('\\')
-            window.file.openInFileExplorer(arr.join('\\'))
+            window.file.openInFileExplorer(game.fullPath)
+            this.showMenu=false
           },
           visible: [State.ALLFILES]
         },
+        {
+          title:'Open Editor',
+          isMenu:true,
+          func: (game,prop,e) =>{
+            this.useSubMenu=true
+            this.subMenu = prop.menu
+            this.$forceUpdate()
+          },
+          visible: [State.JSON,State.TEXTFILE],
+          menu:[
+            {
+              icon:'mdi-code-array',
+              editor:EditorMode.MonacoEditor,
+              title:'Code Editor',
+              visible: [State.JSON,State.TEXTFILE],
+              func: () => {
+                this.$router.pass('Editor', {
+                  key:  this.folderPath+"\\"+this.clickedFile.name,
+                  editor: EditorMode.MonacoEditor
+                })
+              }
+            },
+            {
+              icon:'mdi-form-select',
+              editor: EditorMode.CustomEditor,
+              title:'Card Editor',
+              visible: [State.JSON],
+              func: () => {
+                this.$router.pass('Editor', {
+                  key:  this.folderPath+"\\"+this.clickedFile.name,
+                  editor: EditorMode.CustomEditor
+                })
+              }
+            },
+            {
+              icon:'mdi-message-text-fast',
+              editor: EditorMode.FastPromptEditor,
+              title:'Fast Editor',
+              visible: [State.JSON],
+              func: async () => {
+                //get the key of the file
+                let keys=[]
+                try{
+                  let fileContent = window.file.fs.readFileSync( this.folderPath+"\\"+this.clickedFile.name)
+                  fileContent = new TextDecoder().decode(fileContent);
+                  fileContent = JSON.parse(fileContent)
+                  fileContent = fileContent.content[0]
+                  keys = Object.keys(fileContent)
+                }catch(ex){}
+                //Open a dialog to ask the user what fast editor key to use
+                this.answer = await dialog
+                .title('Fast Editor Key')
+                .selectContent(keys)
+                .cancelText('Close')
+                .okText('Use Key')
+                .html()
+                .label("Mod Name")
+                .prompt('Pick a Key')
+                this.$router.pass('Editor', {
+                  key:  this.folderPath+"\\"+this.clickedFile.name,
+                  editor: EditorMode.FastPromptEditor,
+                  editorValues:{key:this.answer}
+                })
+              }
+            },
+
+          ]
+        }
 
       ],
       pageSize: 25,
@@ -145,6 +236,8 @@ export default {
       },
       possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
       showMenu: false,
+      subMenu:[],
+      useSubMenu:false,
       viewIndex: 3,
       viewMode: [
         {
@@ -174,6 +267,9 @@ export default {
   /*  min-width: 23%;
   max-width: 250px;*/
   computed: {
+    computedMenu(){
+      return this.useSubMenu ?  this.subMenu : this.menu
+    },
     pageContent() {
       return this.items.slice(
         this.pageSize * this.index,
@@ -335,11 +431,11 @@ export default {
     },
     show(e, file) {
       e.preventDefault();
-      this.showMenu = false;
       this.position.x = e.clientX;
       this.position.y = e.clientY;
       this.clickedFile = file
       this.$nextTick(() => {
+        this.useSubMenu=false,
         this.showMenu = true;
       });
     },

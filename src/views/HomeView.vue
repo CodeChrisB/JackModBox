@@ -19,7 +19,7 @@ export default {
   name: 'HomeView',
   data(){
     return {
-      maxWaterDropIndex:5,
+      maxWaterDropIndex:6,
       slogans:[
         "Drawful - Artistic deception at its finest",
         "Fibbage XL - Can you spot the lies?",

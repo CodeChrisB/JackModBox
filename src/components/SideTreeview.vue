@@ -208,7 +208,8 @@ export default {
       )
     },
     toggle(index) {
-      this.$set(this.panels, index, !this.panels[index])
+      for(let i =0;i<this.panels.length;i++)  
+        this.$set(this.panels, i, (i===index) ? !this.panels[index]:false)
       this.fact = ToolFacts.getFact()
       this.factText = ToolFacts.getPaginationText()
     },

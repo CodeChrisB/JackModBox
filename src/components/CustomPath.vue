@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div(style="max-height:6vh")
   div(v-if="isDocumenation === false")
     v-row().pa-0.ml-2.mr-6.mt-1.mb-0
       v-btn(

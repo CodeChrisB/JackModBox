@@ -6,6 +6,7 @@ const state = Vue.observable({
     inputRequired:true,
     inputType: 'text',
     label: '',
+    selectContent:[],
     message: '',
     okText: 'Ok',
     title: '',
@@ -26,6 +27,7 @@ const reset = () => {
     state.active = false
     state.cancelText = 'Cancel'
     state.html = false
+    state.selectContent = []
     state.inputRequired = true
     state.inputType = 'text'
     state.label = ''
@@ -92,6 +94,10 @@ const dialog = {
         close(input)
         reset()
     },
+    selectContent(content){
+        state.selectContent = content
+        return this
+    }
 }
 
 export default dialog

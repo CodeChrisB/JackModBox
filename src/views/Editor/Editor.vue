@@ -1,6 +1,6 @@
 <template lang="pug">
 div.overflow-y-hidden.overflow-x-hidden
-  v-row.mt-1.pl-2
+  v-row(style="max-height:5vh").mt-1.pl-2
     v-card(style="width:100%;padding:3px;background-color:#0078d7")
       div(style="max-width:95%;display: flex; align-items: center;")
         v-btn.ml-4(icon @click="backToFileviewer")
@@ -35,10 +35,10 @@ div.overflow-y-hidden.overflow-x-hidden
           :fileContent="fileContent"
           @update="onSaveMonacoEditor"
         )
-  v-row(
+  v-row.parent.pb-4.mb-4(
     v-else-if="EditorMode.CustomEditor === editorMode"
     style="min-width:100%"
-    ).parent
+    )
       custom-editor(
         :jsonContent="jsonContent" 
         :filter="filter"
@@ -157,6 +157,7 @@ export default {
   methods: {
     backToFileviewer(){
       this.$router.pass('fileviewer',{key:this.key.split('\\').slice(0,-1).join('\\')})
+      this.$broadcast(Code.SetToggleSideView,true)
     },
     cleanJson(){
       try{
