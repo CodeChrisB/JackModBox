@@ -21,7 +21,6 @@ v-card(v-if='dialog.state.active').rounded-lg
           v-else-if="dialog.state.type === 'prompt'" 
           :type='dialog.state.inputType' 
           )
-        span {{ dialog.state }}
         div
           v-btn(
             v-if="dialog.state.type !== 'alert'" 

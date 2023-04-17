@@ -436,7 +436,7 @@ export default {
       this.clickedFileContent = window.file.fs.readFileSync( this.folderPath+"\\"+this.clickedFile.name)
       this.clickedFileContent = new TextDecoder().decode(this.clickedFileContent);
       this.clickedFileContent = JSON.parse(this.clickedFileContent)
-      console.log(this.clickedFileContent)
+
       this.$nextTick(() => {
         this.useSubMenu=false,
         this.showMenu = true;
