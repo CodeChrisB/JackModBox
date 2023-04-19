@@ -23,14 +23,14 @@ div
                                 label="SteamApps Folder"
                                 hint=`SteamLibrary  >  steamapps  >  common`
                                 append-outer-icon="mdi-content-save"
-                                @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH]).then(()=>UpdateReloadSideview)"
+                                @click:append-outer="file.setSetting(SETTING.STEAM_PATH,settings[SETTING.STEAM_PATH]).then(()=>UpdateReloadSideview())"
                             )
                             v-text-field(
                                 v-model="settings[SETTING.MODS_PATH]"
                                 label="Mods Folder"
                                 hint=`A folder to save & load your mods from`
                                 append-outer-icon="mdi-content-save"
-                                @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH]).then(()=>UpdateReloadSideview)"
+                                @click:append-outer="file.setSetting(SETTING.MODS_PATH,settings[SETTING.MODS_PATH]).then(()=>UpdateReloadSideview())"
                             )
                             v-text-field(
                                 v-model="settings[SETTING.FFMPEG_PATH]"
@@ -38,7 +38,7 @@ div
                                 hint=`A folder to save & load your mods from`
                                 append-outer-icon="mdi-content-save"
                                 hide-details
-                                @click:append-outer="file.setSetting(SETTING.FFMPEG_PATH,settings[SETTING.FFMPEG_PATH])"
+                                @click:append-outer="file.setSetting(SETTING.FFMPEG_PATH,settings[SETTING.FFMPEG_PATH]).then(()=>UpdateReloadSideview())"
                             )
                             a(@click="openPage()") Download the latest ffmpeg binary
                             v-checkbox(
