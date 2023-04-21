@@ -9,7 +9,6 @@ div(style="overflow: auto;max-height:calc(100vh - 26px);max-width:80vw").view.ma
         :height="getImageDimension(line,'h')"
         :src="require('@/assets/docs/images/'+regexLine(line,'img',true).value)"
       )
-      span {{ regexLine(line,'img',true).value }}
     div(v-else-if="line.startsWith('---')")
       v-divider
     div(v-else-if="isEmpty(line)")
