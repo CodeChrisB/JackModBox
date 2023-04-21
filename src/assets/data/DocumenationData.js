@@ -26,5 +26,10 @@ export const Documenation = Object.freeze([
   {
     title:'Legal',
     filename:'Legal.md'
+  },
+  {
+    title:'Markdown Guideline',
+    filename:'MarkdownGuideline.md',
+    dev:true
   }
 ])

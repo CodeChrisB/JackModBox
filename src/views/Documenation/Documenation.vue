@@ -1,24 +1,29 @@
 <template lang="pug">
 div(style="overflow: auto;max-height:calc(100vh - 26px);max-width:80vw").view.ma-4.mr-6.mb-6
-  div(v-for="(line,index) in markdown")
+  div(v-for="(line,index) in markdown").pl-3
     span(v-if="line.startsWith('#')" :class="genHeaderClass(line)") {{ replaceLeadingHashes(line) }}
     span(v-else-if="line.startsWith('~~ ')").font-italic {{ line.slice(2) }}
-    div(v-else-if="isImage(line,index)")
+    div(v-else-if="regexLine(line,'img',false)")
       v-img(
         :width="getImageDimension(line,'w')"
         :height="getImageDimension(line,'h')"
-        :src="imageData(index)"
+        :src="require('@/assets/docs/images/'+regexLine(line,'img',true).value)"
       )
+      span {{ regexLine(line,'img',true).value }}
     div(v-else-if="line.startsWith('---')")
       v-divider
     div(v-else-if="isEmpty(line)")
       div(style="min-height:24px")
+    div(v-else-if="line.startsWith('||')")
+      div(style="min-height:12px")
     div(v-else-if="regexLine(line,'icon',false)")
-      v-icon {{ regexLine(line,'icon',true).attribute }}
+      v-icon(
+        :color="regexLine(line,'icon',true).attribute.split(' ')[1]"
+        ) {{ regexLine(line,'icon',true).attribute.split(' ')[0] }}
       span {{ regexLine(line,'icon',true).value }}
-    div(v-else-if="line.startsWith('[a]')")
-      a(@click="openWebsite(line.slice(3))") {{ line.slice(3) }}
-    span(v-else) {{ line }}
+    div(v-else-if="regexLine(line,'a',false)")
+      a(@click="openWebsite(regexLine(line,'a',true).attribute)") {{ regexLine(line,'a',true).value }}
+    span(v-else) {{ line }} 
   div(style="min-height:29px")
 </template>
   
@@ -71,9 +76,9 @@ export default {
       return base64Image
     },
     getImageDimension(str, dim) {
-      const dimension = str.match(/(?<=!\[img\s)\d+x\d+(?=\])/)
+      const dimension =str.match(/\[img\s+(\d+x\d+)\]/)[1]
       if (!dimension) return null
-      return dimension[0].split('x')[dim === 'w' ? 0 : 1]
+      return dimension.split('x')[dim === 'w' ? 0 : 1]
     },
     isEmpty(line) {
       return line === '\r'
@@ -92,7 +97,8 @@ export default {
       return is
     },
     regexLine(line, tag, returnObject) {
-      const regex = new RegExp(`\\[${tag}\\s+([^\\]]+)\\]\\s+(.*)`);
+      if(!line.startsWith('[')) return false
+      const regex =  new RegExp(`\\[${tag}\\s*([^\\]]+)\\]\\s*(.*)`)
       const match = line.match(regex);
       if (match) {
         if (returnObject) {

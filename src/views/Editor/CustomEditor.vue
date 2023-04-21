@@ -1,19 +1,10 @@
 <template lang="pug">
 div
   v-row.ma-0
-    v-col.pa-0.pt-2.pl-3
-      v-btn(:disabled="index === 0" icon @click="page(-1)") 
-        | <
-      span {{ pageText }}
-      v-btn(:disabled="index === totalPages || totalPages ===1" icon @click="page(1)")
-        | >
-    v-col.pa-0
-      v-select.mt-5(
-        v-model="pageSize"
-        dense
-        label="PageSize"
-        :items="pageSizeStates"
-        hide-details
+    pagination(
+        :allItems="files"
+        @update:shownItems="pageContent=$event"
+        @update:pages-size="pageSize=$event"
       )
     v-spacer
     span.pt-3 {{ pageShowingText }}
@@ -38,10 +29,12 @@ div
   import { CEErrors } from '@/assets/data/EditorValues'
   import { CCState } from '@/assets/data/CustomCheckBoxData'
   import CustomField from '@/components/Fields/CustomField.vue'
+  import Pagination from '@/components/tools/Pagination.vue'
   export default {
     name: 'CustomEditor',
     components: {
-      CustomField
+      CustomField,
+      Pagination
     },
     props: {
       filter:{

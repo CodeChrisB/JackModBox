@@ -1,25 +1,13 @@
 <template lang="pug">
 div
   v-row.ma-0
-    v-col.pa-0.pt-2.pl-3
-      v-btn(:disabled="index === 0" icon @click="page(-1)") 
-        | <
-      span {{ pageText }}
-      v-btn(:disabled="index === totalPages || totalPages ===1" icon @click="page(1)")
-        | >
-    v-col.pa-0
-      v-select.mt-5(
-        v-model="pageSize"
-        dense
-        label="PageSize"
-        :items="pageSizeStates"
-        hide-details
-      )
-    v-spacer
+    pagination(
+      :allItems="files"
+      @update:shownItems="pageContent=$event"
+      @update:pages-size="pageSize=$event"
+    )
 
-    span.pt-3.pr-3 {{ pageShowingText }}
-
-  v-divider 
+  v-divider  
   v-row(style="max-height:85vh").overflow-y-auto.mt-3.pr-3.ml-2
     v-card().mb-3.ma-1(
       v-for="(fileContent,index) in pageContent"
@@ -75,11 +63,11 @@ div
           :data="dialog.data"
         )
   CustomDialog
-
-      
-
-</template>
-
+  
+        
+  
+  </template>
+  
 <script>
 const State = Object.freeze({
   FOLDER: 0,
@@ -93,6 +81,7 @@ const State = Object.freeze({
 const Dialog = Object.freeze({
   AudioViewer: 0
 })
+import Pagination from '@/components/tools/Pagination.vue'
 import { SETTING } from '@/assets/data/SettingData'
 import { EditorMode } from '@/assets/data/Editor'
 import ViewerImage from './ViewerImage.vue'
@@ -107,12 +96,14 @@ export default {
     ViewerImage,
     FileViewerAudioPlayer,
     AudioPlayerDialog,
-    CustomDialog
+    CustomDialog,
+    Pagination
   },
   data() {
     return {
+      pageContent:[],
       clickedFile: {},
-      clickedFileContent:{},
+      clickedFileContent: {},
       dialog: {
         open: false,
         component: null,
@@ -121,23 +112,23 @@ export default {
       files: [],
       index: 0,
       isWheeling: false,
-      indexToReload:-1,
+      indexToReload: -1,
       menu: [
         {
           title: 'Open',
           func: (game) => {
             this.onFileClick(game)
-            this.showMenu=false
+            this.showMenu = false
 
           },
           visible: [State.JSON]
         },
         {
-          icon:'mdi-folder-arrow-up-outline',
+          icon: 'mdi-folder-arrow-up-outline',
           title: 'Open Folder',
           func: (game) => {
             this.onFileClick(game)
-            this.showMenu=false
+            this.showMenu = false
 
           },
           visible: [State.FOLDER]
@@ -147,7 +138,7 @@ export default {
           func: (folder) => {
             folder.expand = true
             this.onFileClick(folder)
-            this.showMenu=false
+            this.showMenu = false
 
           },
           visible: [State.FOLDER]
@@ -156,70 +147,70 @@ export default {
           title: 'Open In Explorer',
           func: (game) => {
             window.file.openInFileExplorer(game.fullPath)
-            this.showMenu=false
+            this.showMenu = false
           },
           visible: [State.ALLFILES]
         },
         {
-          title:'Open Editor',
-          isMenu:true,
-          func: (game,prop,e) =>{
-            this.useSubMenu=true
+          title: 'Open Editor',
+          isMenu: true,
+          func: (game, prop, e) => {
+            this.useSubMenu = true
             this.subMenu = prop.menu
             this.$forceUpdate()
           },
-          visible: [State.JSON,State.TEXTFILE],
-          menu:[
+          visible: [State.JSON, State.TEXTFILE],
+          menu: [
             {
-              icon:'mdi-code-array',
-              editor:EditorMode.MonacoEditor,
-              title:'Code Editor',
-              visible: [State.JSON,State.TEXTFILE],
+              icon: 'mdi-code-array',
+              editor: EditorMode.MonacoEditor,
+              title: 'Code Editor',
+              visible: [State.JSON, State.TEXTFILE],
               func: () => {
                 this.$router.pass('Editor', {
-                  key:  this.folderPath+"\\"+this.clickedFile.name,
+                  key: this.folderPath + "\\" + this.clickedFile.name,
                   editor: EditorMode.MonacoEditor
                 })
               }
             },
             {
-              icon:'mdi-form-select',
+              icon: 'mdi-form-select',
               editor: EditorMode.CustomEditor,
-              title:'Card Editor',
+              title: 'Card Editor',
               visible: [State.JSON],
-              hasContentProp:true,
+              hasContentProp: true,
               func: () => {
                 this.$router.pass('Editor', {
-                  key:  this.folderPath+"\\"+this.clickedFile.name,
+                  key: this.folderPath + "\\" + this.clickedFile.name,
                   editor: EditorMode.CustomEditor
                 })
               }
             },
             {
-              icon:'mdi-message-text-fast',
+              icon: 'mdi-message-text-fast',
               editor: EditorMode.FastPromptEditor,
-              title:'Fast Editor',
+              title: 'Fast Editor',
               visible: [State.JSON],
-              hasContentProp:true,
+              hasContentProp: true,
               func: async () => {
                 //get the key of the file
-                let keys=[]
+                let keys = []
                 let fileContent = this.clickedFileContent
                 fileContent = fileContent.content[0]
                 keys = Object.keys(fileContent)
                 //Open a dialog to ask the user what fast editor key to use
                 this.answer = await dialog
-                .title('Fast Editor Key')
-                .selectContent(keys)
-                .cancelText('Close')
-                .okText('Use Key')
-                .html()
-                .label("Mod Name")
-                .prompt('Pick a Key')
+                  .title('Fast Editor Key')
+                  .selectContent(keys)
+                  .cancelText('Close')
+                  .okText('Use Key')
+                  .html()
+                  .label("Mod Name")
+                  .prompt('Pick a Key')
                 this.$router.pass('Editor', {
-                  key:  this.folderPath+"\\"+this.clickedFile.name,
+                  key: this.folderPath + "\\" + this.clickedFile.name,
                   editor: EditorMode.FastPromptEditor,
-                  editorValues:{key:this.answer}
+                  editorValues: { key: this.answer }
                 })
               }
             },
@@ -233,10 +224,9 @@ export default {
         x: 0,
         y: 0
       },
-      possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
       showMenu: false,
-      subMenu:[],
-      useSubMenu:false,
+      subMenu: [],
+      useSubMenu: false,
       viewIndex: 3,
       viewMode: [
         {
@@ -266,35 +256,9 @@ export default {
   /*  min-width: 23%;
   max-width: 250px;*/
   computed: {
-    computedMenu(){
-      return this.useSubMenu ?  this.subMenu : this.menu
+    computedMenu() {
+      return this.useSubMenu ? this.subMenu : this.menu
     },
-    pageContent() {
-      return this.items.slice(
-        this.pageSize * this.index,
-        this.pageSize * (this.index + 1)
-      )
-    },
-    items() {
-      return this.files
-    },
-    totalItems() {
-      return this.items.length
-    },
-    totalPages() {
-      return Math.floor(this.totalItems / this.pageSize)
-    },
-    pageText() {
-      if (this.totalItems === this.pageSize) return '1/1'
-      return `${this.index + 1}/${this.totalPages + 1}`
-    },
-    pageShowingText() {
-      let max = Math.min((this.index + 1) * this.pageSize, this.totalItems)
-      return `Showing Items ${this.index * this.pageSize + 1} - ${max}`
-    },
-    pageSizeStates() {
-      return [...this.possiblePageSize, this.totalItems].filter(x => x <= this.totalItems)
-    }
   },
   mounted() {
     document.addEventListener("keydown", this.onKeyDown)
@@ -328,9 +292,15 @@ export default {
     genTransformScale(scale) {
       return `transform:scale(${scale})`
     },
-    getEditorForFileType(state){
-      if ([State.JSON,State.TEXTFILE].includes(state)) return EditorMode.MonacoEditor
+    getEditorForFileType(state) {
+      if ([State.JSON, State.TEXTFILE].includes(state)) return EditorMode.MonacoEditor
       if ([State.SWF].includes(state)) return EditorMode.SWFEditor
+    },
+    getFileContent(){
+      let path=this.folderPath + "\\" + this.clickedFile.name
+      this.clickedFileContent = window.file.fs.readFileSync(path)
+      this.clickedFileContent = new TextDecoder().decode(this.clickedFileContent)
+      this.clickedFileContent = JSON.parse(this.clickedFileContent)
     },
     loadFiles() {
       if (this.expand) {
@@ -347,7 +317,6 @@ export default {
             }
           }).sort(({ isFolder: a }, { isFolder: b }) => b - a)
           this.files = files
-          this.onRecalculatePageSize()
         })
       } else {
         window.file.fs.readdir(this.folderPath, (error, files) => {
@@ -364,12 +333,8 @@ export default {
           }
           ).sort(({ isFolder: a }, { isFolder: b }) => b - a)
           this.files = files
-          this.onRecalculatePageSize()
         })
       }
-    },
-    onRecalculatePageSize() {
-      this.pageSize = Math.min(this.files.length, 25)
     },
     onFileClick(e) {
       if (e.isFolder === 1) {
@@ -388,7 +353,7 @@ export default {
         this.dialog.data = e
         return
       }
-        
+
       let editorForFile = this.getEditorForFileType(fileType)
       this.clickedFile = this.folderPath + "\\" + e.name
 
@@ -396,13 +361,13 @@ export default {
         key: this.clickedFile,
         editor: editorForFile
       })
-      
-      
+
+
     },
-    onMassReplace(filesToReplace,index){
-      let startIndex = this.pageSize*this.index+index
-      for(let i =0;i<filesToReplace.length;i++){
-          window.file.overwriteFile(this.files[startIndex+i].fullPath, filesToReplace[i]).then(()=>this.indexToReload=(startIndex+i))
+    onMassReplace(filesToReplace, index) {
+      let startIndex = this.pageSize * this.index + index
+      for (let i = 0; i < filesToReplace.length; i++) {
+        window.file.overwriteFile(this.files[startIndex + i].fullPath, filesToReplace[i]).then(() => this.indexToReload = (startIndex + i))
       }
     },
     onKeyDown(e) {
@@ -433,15 +398,17 @@ export default {
       this.position.x = e.clientX;
       this.position.y = e.clientY;
       this.clickedFile = file
-      this.clickedFileContent = window.file.fs.readFileSync( this.folderPath+"\\"+this.clickedFile.name)
-      this.clickedFileContent = new TextDecoder().decode(this.clickedFileContent);
-      this.clickedFileContent = JSON.parse(this.clickedFileContent)
+
+      if(this.clickedFile.name.endsWith('.jet')){
+        this.getFileContent()
+      }else{
+        this.clickedFileContent=null
+      }
 
       this.$nextTick(() => {
-        this.useSubMenu=false,
+        this.useSubMenu = false,
         this.showMenu = true;
-      });
-
+      })
 
 
 

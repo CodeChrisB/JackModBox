@@ -79,6 +79,8 @@ contextBridge.exposeInMainWorld("file", {
 
     return setting ? settings[setting] : settings
   },
+  node: process.env.NODE_ENV,
+  isDevelopment: process.env.NODE_ENV === 'development',
   isFile: (path) => !fs.lstatSync(path).isDirectory() ? 1 : -1,
   isFolder: (path) => fs.lstatSync(path).isDirectory() ? 1 : -1,
   loadAssetImage: (file)=>{

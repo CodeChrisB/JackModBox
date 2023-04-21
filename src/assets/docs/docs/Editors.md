@@ -20,8 +20,8 @@ A code free editor of JSON Objects, this editor aims to make editting easier
 Inside the Custom editor the menu also features  toggle checkboxes for each property of the json file.
 The Checkbox has 3 states :
 [icon mdi-checkbox-blank-outline] - Off
-[icon mdi-checkbox-marked] - Search
-[icon mdi-checkbox-blank-off-outline] - Ignore (Do not show this property)
+[icon mdi-checkbox-marked primary] - Search
+[icon mdi-checkbox-blank-off-outline red] - Ignore (Do not show this property)
 
 ---
 

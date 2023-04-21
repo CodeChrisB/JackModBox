@@ -115,7 +115,7 @@ export default {
       return (this.game?.content?.fastPrompts) ?? []
     },
     modabilityScore() {
-      return (this.game?.content?.modability?.score) ?? -1
+      return (this.game?.content?.modability?.score) ?? 'Not tested.'
     }
   },
   methods: {

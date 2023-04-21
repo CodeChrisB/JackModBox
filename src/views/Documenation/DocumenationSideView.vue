@@ -16,10 +16,19 @@ export default {
   name: 'DocumenationSideView',
   data() {
     return {
+      env:''
     }
   },
   created(){
-    this.Documenation = Documenation
+    console.log(window.file.isDevelopment)
+    this.env = window.file.node
+
+    if(window.file.isDevelopment === false){
+      this.Documenation = Documenation.filter(x=>!x.dev)
+    } else{
+      this.Documenation = Documenation
+
+    }
   },
   methods: {
     broadcast(doc){

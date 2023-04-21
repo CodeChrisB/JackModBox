@@ -99,6 +99,7 @@ export default {
         },
         toDocumenation() {
             this.$broadcast(Code.InfoDocumentationState, true)
+            this.$broadcast(Code.SetToggleSideView,true)
             this.$router.replace('/Documenation')
         }
     },

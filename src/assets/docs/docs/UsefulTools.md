@@ -1,4 +1,3 @@
 #### Useful Tools
 
-AI Voice Changer (Including Schmitty Voice)
-[a] https://www.google.com
+~~ Currently nothing to see here mehh..

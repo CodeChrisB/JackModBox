@@ -31,7 +31,6 @@ div(style="max-height:6vh")
 
       v-spacer
       v-btn(
-        v-if="isDocumenation === false && anyData"
         text
         icon
         @click="toPage",
