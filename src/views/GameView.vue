@@ -154,7 +154,6 @@ export default {
       let folder = [this.gamePath, ar.path].join('\\')
 
       window.file.openExpandFolder(folder).then(x => {
-        debugger
         x = x.filter(path => path.includes(ar.originalFilename))
         x.forEach(audioFile => {
           window.file.replaceFileWithBase64(audioFile, emptyOGG, (err) => {
@@ -196,9 +195,11 @@ export default {
         this.toFileViewer(this.game.id,folder.path)
       } else {
         //monaco editor
+        console.log(folder)
         this.$router.pass('Editor', { 
           key: [this.gamePath, folder.path].join('\\'),
-          editor: EditorMode.MonacoEditor
+          editor: folder.editorMode,
+          editorValues: folder.editorValues
           
         })
       }

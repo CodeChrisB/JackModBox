@@ -1,3 +1,5 @@
+import { EditorMode } from "./Editor"
+import { CCState } from "./CustomCheckBoxData"
 export const Mod = Object.freeze({
     HasTextPrompts:{
         id:0,
@@ -192,7 +194,22 @@ export const GameIds = Object.freeze({
         key:"madversecity",
         pack:5,
         name: 'Mad Verse City', 
-        id: '\\The Jackbox Party Pack 5\\games\\RapBattle' 
+        id: '\\The Jackbox Party Pack 5\\games\\RapBattle',
+        content:{
+            fastFolders:[
+                {
+                    name:'Prompts Round 1',
+                    path:"content\\RapBattleStandardPromptRound1.jet",
+                    editorMode: EditorMode.CustomEditor,
+                    editorValues:{
+                        noExpansion:true,
+                        ccstate:[
+
+                        ]
+                    }
+                }
+            ]   
+        }
     },
     patentlystupid: {
         key:"patentlystupid",

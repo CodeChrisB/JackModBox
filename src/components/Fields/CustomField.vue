@@ -1,11 +1,12 @@
 <template lang="pug">
-v-card.form.mt-1(
+v-card.mt-1(
   :flat="flat"
 )
   div(
-    v-for="key in Object.keys(templateJson)" 
+    v-for="(key,i) in Object.keys(templateJson)" 
     v-if="!['modded'].includes(key) && canShow(key)"
   )
+
     v-col
       v-text-field(
         v-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string')"
@@ -16,11 +17,39 @@ v-card.form.mt-1(
         rows=2
       )
       array-field(
-        v-if="Array.isArray(templateJson[key])"
+        v-else-if="Array.isArray(templateJson[key])"
         :obj="templateJson[key]"
         :obj-key="key"
         @update="onUpdate($event,key)"
       )
+      div(
+        v-else-if="typeof templateJson[key] === 'object'"
+      )
+        v-expansion-panels(v-if="internalEditorValue.noExpansion ===false")
+          v-expansion-panel
+            v-expansion-panel-header
+              | Property "{{ key }}"
+            v-expansion-panel-content
+              CustomField(
+                v-if="typeof templateJson[key] === 'object'"
+                :obj="templateJson[key]"
+                flat
+                :editorValues="internalEditorValue"
+                :index="i"
+                :filter="internalFilter"
+                :searchInput="internalSearch"
+              )
+        div(v-else)
+          CustomField(
+            v-if="typeof templateJson[key] === 'object'"
+            :obj="templateJson[key]"
+            flat
+            :editorValues="internalEditorValue"
+            :index="i"
+            :filter="internalFilter"
+            :searchInput="internalSearch"
+          )
+
   v-spacer
   v-checkbox(
     v-if="showModded"
@@ -44,6 +73,10 @@ export default {
     flat: {
       type: Boolean,
     },
+    editorValues: {
+      type: Object,
+      default: ()=> {}
+    },
     index: {
       type: Number
     },
@@ -62,6 +95,14 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      templateJson: {},
+      internalFilter: [],
+      internalSearch: '',
+      internalIndex: -1,
+    }
+  },
   created() {
     //type
     //typeof obj[key]
@@ -69,7 +110,7 @@ export default {
       this.templateJson[x] = this.obj[x]
     })
 
-    this.internalIndex=this.index
+    this.internalIndex = this.index
 
 
     /*
@@ -80,15 +121,6 @@ export default {
     */
 
 
-  },
-  data() {
-
-    return {
-      templateJson: {},
-      internalFilter: [],
-      internalSearch: '',
-      internalIndex:-1
-    }
   },
   computed: {
     filterTriesToSearch() {
@@ -120,15 +152,21 @@ export default {
     },
   },
   watch: {
+    editorValues:{
+      handler(newVal){
+        this.internalEditorValue = newVal??{}
+      },
+      immediate:true
+    },
     filter: {
       handler(newVal) {
         this.internalFilter = newVal
       },
       immediate: true
     },
-    index:{
-      handler(newVal){
-        this.internalIndex=newVal
+    index: {
+      handler(newVal) {
+        this.internalIndex = newVal
       },
     },
     searchInput: {

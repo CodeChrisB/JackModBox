@@ -43,6 +43,7 @@ div.overflow-y-hidden.overflow-x-hidden
         :jsonContent="jsonContent" 
         :filter="filter"
         :searchInput="searchInput" 
+        :editorValues="editorValues"
         @changed="onCustomEditorChanged"
       )
   v-row(v-else-if="EditorMode.FastPromptEditor === editorMode")
@@ -130,7 +131,7 @@ export default {
     this.setIconDrawer()
     let self=this
     this.$listen(Code.EditorFormatCode,()=>self.cleanJson())
-    
+
     //Editors that handle load and save action itself due to complications
     this.atomicEditor = [EditorMode.SWFEditor,EditorMode.AudioPromptEditor].includes(this.editorMode) 
     if(this.atomicEditor) return

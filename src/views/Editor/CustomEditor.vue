@@ -2,7 +2,7 @@
 div
   v-row.ma-0
     pagination(
-        :allItems="files"
+        :allItems="internalValue.content"
         @update:shownItems="pageContent=$event"
         @update:pages-size="pageSize=$event"
       )
@@ -56,15 +56,10 @@ div
         pageSize:10,
         possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
         index:0,
+        pageContent:[]
       }
     },
     computed:{
-      pageContent(){
-        return this.items.slice(
-          this.pageSize*this.index,
-          this.pageSize*(this.index+1)
-        )
-      },
       propsToSearch() {
         if (!this.internalFilter) return []
         return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.ON)
