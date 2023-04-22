@@ -6,7 +6,7 @@ v-row(style="max-height:90vh;min-height:90vh").overflow-y-auto.overflow-x-hidden
       v-col.col-4.ma-2
         v-card.mb-3
           v-row.d-flex.justify-center.ma-4
-            v-icon(@click="toFileViewer(game.id,true)").mt-5(style="transform:scale(2)") mdi-folder
+            v-icon(@click="toFileViewer(game.id,'',true)").mt-5(style="transform:scale(2)") mdi-folder
           v-divider
           v-row.ma-4
             span.text-caption Browse and Edit all the Files of the Game.
