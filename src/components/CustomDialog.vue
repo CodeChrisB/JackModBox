@@ -10,7 +10,7 @@ v-card(v-if='dialog.state.active').rounded-lg
         p(v-if='dialog.state.html' v-html='dialog.state.message')
         p(v-else='') {{ dialog.state.message }}
         v-select(
-          v-if="dialog.state.selectContent"
+          v-if="dialog.state.selectContent.length>0"
           v-model="userInput"
           :label="dialog.state.label"
           :items="dialog.state.selectContent"

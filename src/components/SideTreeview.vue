@@ -180,7 +180,6 @@ export default {
                 name: x,
                 id: [this.modPath, x].join('\\'),
                 isMod: true
-
               }
             })
           ]
@@ -204,7 +203,17 @@ export default {
         e.key = this.getKeyFromModPath(e.id)
       }
       //todo if not able to get key just forward to file viewer
-      this.$router.pass('gameview', { key: e.key }
+      console.log(e)
+      this.$router.pass('gameview', { 
+        key: e.key,
+        ...(e.isMod ? {
+          isMod:true,
+          mod:{
+            name:e.name,
+            path:e.id
+          }
+        }: {})
+      }
       )
     },
     toggle(index) {

@@ -1,6 +1,8 @@
 <template lang="pug">
 v-row(style="max-height:90vh;min-height:90vh").overflow-y-auto.overflow-x-hidden
   v-col.col-8
+    span {{ gamePath }}
+    span isMod:{{ isMod }}
     v-row
       v-col.col-4.ma-2
         v-card.mb-3
@@ -21,7 +23,7 @@ v-row(style="max-height:90vh;min-height:90vh").overflow-y-auto.overflow-x-hidden
             span.text-caption {{ audioReplacer.hint }}
             v-row
     v-divider
-    span.ma-3 Custom Features
+    span.ma-3 Custom Features [{{ isMod ? 'Mod':'Original Game' }}]
     v-row
       div.ma-6(v-if="(fastFolders.length + fastPrompts.length + audioReplacEditor.length)  === 0")
         span.font-italic ~This game currently does not feature any fast acess menu points, it will be implemented later you can open an Issue explaining why you want a specific gameview now.
@@ -98,7 +100,8 @@ export default {
   data() {
     return {
       key: null,
-      game: {}
+      game: {},
+      isMod:false
     }
   },
   computed: {
@@ -116,6 +119,10 @@ export default {
     },
     modabilityScore() {
       return (this.game?.content?.modability?.score) ?? 'Not tested.'
+    },
+    gamePath(){
+      if(this.isMod) return this.mod.path
+      return `${(this.steamPath)}\\${this.game.id}`
     }
   },
   methods: {
@@ -160,32 +167,38 @@ export default {
       }
       return 'mdi-checkbox-blank-outline'
     },
-    toFileViewer(e, sendBackTo) {
+    toFileViewer(game,path, sendBackTo) {
+      let gamePath = [game,path].join('\\')
       if (sendBackTo) {
         this.$broadcast(Code.SetCustomPathBackTo, {
-          name: e.split('\\').slice(-1)[0],
+          name: gamePath.split('\\').slice(-1)[0],
           key: this.key
         })
       }
+      console.log(this.gamePath)
+      console.log(game)
+      console.log(path)
+
       this.$router.pass('fileviewer', {
-        key: [this.steamPath, e].join('')
+        key: [this.gamePath, path].join('\\')
       })
     },
     onFastAcessClick(folder) {
       if (folder.isFolder) {
         //fileviewer
-        this.toFileViewer([this.game.id, folder.path].join('\\'))
+        console.log(this.game.id)
+        this.toFileViewer(this.game.id,folder.path)
       } else {
         //monaco editor
         this.$router.pass('Editor', { 
-          key: [this.steamPath+this.game.id, folder.path].join('\\'),
+          key: [this.gamePath, folder.path].join('\\'),
           editor: EditorMode.MonacoEditor
           
         })
       }
     },
     onFastPrompts(prompt){
-      let filePath= [this.steamPath+this.game.id, prompt.path].join('\\')
+      let filePath= [this.gamePath, prompt.path].join('\\')
 
       this.$router.pass('Editor', { 
         key: filePath,
@@ -205,6 +218,15 @@ export default {
         if (newVal === "settings") return
         this.key = this.$route.params.key
         this.game = GameIds[this.key]
+        this.game.isMod = this.isMod
+      },
+      immediate: true
+    },
+    "$route.params.isMod": {
+      handler(newVal) {
+        this.isMod = this.$route.params.isMod
+        this.mod = this.$route.params.mod
+        this.game.isMod = this.isMod
       },
       immediate: true
     }
@@ -212,7 +234,8 @@ export default {
   created() {
     this.MOD = Mod
     this.steamPath = window.file.getSetting(SETTING.STEAM_PATH)
-    this.gamePath = [this.steamPath, this.game.id].join("\\")
+    this.modPath = window.file.getSetting(SETTING.MODS_PATH)
+    console.log(this.game)
   }
 }
 </script>
