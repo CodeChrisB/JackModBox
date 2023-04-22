@@ -1,8 +1,7 @@
 <template lang="pug">
 v-row(style="max-height:90vh;min-height:90vh").overflow-y-auto.overflow-x-hidden
+  CustomDialog
   v-col.col-8
-    span {{ gamePath }}
-    span isMod:{{ isMod }}
     v-row
       v-col.col-4.ma-2
         v-card.mb-3
@@ -85,17 +84,17 @@ v-row(style="max-height:90vh;min-height:90vh").overflow-y-auto.overflow-x-hidden
   </template>
     
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 import { GameIds, Mod } from '@/assets/data/JackBoxTreeData'
 import { SETTING } from '@/assets/data/SettingData'
 import { EditorMode } from '@/assets/data/Editor'
 import { Code } from '@/assets/data/BusCode'
+import dialog from '@/components/dialog'
+import CustomDialog from '@/components/CustomDialog.vue'
 const emptyOGG = require('@/assets/audioFile/empty.ogg')
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld
+    CustomDialog
   },
   data() {
     return {
@@ -143,10 +142,19 @@ export default {
           }
       })
     },
-    onAudioReplacer(ar) {
+    async onAudioReplacer(ar) {
+      this.answer = await dialog
+            .title('Export Mod')
+            .cancelText('Close')
+            .okText('Yes remove all narations.')
+            .html()
+            .confirm(ar.hint)
+
+      if(this.answer === false) return
       let folder = [this.gamePath, ar.path].join('\\')
 
       window.file.openExpandFolder(folder).then(x => {
+        debugger
         x = x.filter(path => path.includes(ar.originalFilename))
         x.forEach(audioFile => {
           window.file.replaceFileWithBase64(audioFile, emptyOGG, (err) => {
@@ -175,9 +183,7 @@ export default {
           key: this.key
         })
       }
-      console.log(this.gamePath)
-      console.log(game)
-      console.log(path)
+
 
       this.$router.pass('fileviewer', {
         key: [this.gamePath, path].join('\\')
@@ -186,7 +192,7 @@ export default {
     onFastAcessClick(folder) {
       if (folder.isFolder) {
         //fileviewer
-        console.log(this.game.id)
+
         this.toFileViewer(this.game.id,folder.path)
       } else {
         //monaco editor
@@ -235,7 +241,7 @@ export default {
     this.MOD = Mod
     this.steamPath = window.file.getSetting(SETTING.STEAM_PATH)
     this.modPath = window.file.getSetting(SETTING.MODS_PATH)
-    console.log(this.game)
+
   }
 }
 </script>

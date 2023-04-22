@@ -20,7 +20,6 @@ export default {
     }
   },
   created(){
-    console.log(window.file.isDevelopment)
     this.env = window.file.node
 
     if(window.file.isDevelopment === false){

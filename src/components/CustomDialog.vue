@@ -31,7 +31,7 @@ v-card(v-if='dialog.state.active').rounded-lg
           v-btn(
             @click='dialog.ok(userInput)'
             color="primary"
-            :disabled="dialog.state.inputRequired && userInput.length<1",
+            :disabled="(dialog.state.inputRequired && userInput.length<1) && dialog.state.type !=='confirm'",
           ).ma-2 {{dialog.state.okText}}
 
     .dialog-bg(@click='dialog.cancel()')

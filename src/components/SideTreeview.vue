@@ -203,7 +203,6 @@ export default {
         e.key = this.getKeyFromModPath(e.id)
       }
       //todo if not able to get key just forward to file viewer
-      console.log(e)
       this.$router.pass('gameview', { 
         key: e.key,
         ...(e.isMod ? {
