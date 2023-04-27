@@ -42,25 +42,25 @@ export const GameIds = Object.freeze({
         key:"ydkj2015",
         pack:1,
         name: "YDKJ 2015",
-        id: '\\The Jackbox Party Pack\\games\\FakinIt'
+        id: '\\The Jackbox Party Pack\\games\\YDKJ2015'
     },
     fibbagexl: {
         key:"fibbagexl",
         pack:1,
         name: "Fibbabge XL", 
-        id: '\\The Jackbox Party Pack\\games\\BombInterns' 
+        id: '\\The Jackbox Party Pack\\games\\Fibbage' 
     },
     drawful: {
         key:"drawful",
         pack:1,
         name: "Drawful", 
-        id: '\\The Jackbox Party Pack\\games\\Earwax',
+        id: '\\The Jackbox Party Pack\\games\\Drawful',
     },
     wordspud: {
         key:"wordspud",
         pack:1,
         name: "Wordspud", 
-        id: '\\The Jackbox Party Pack\\games\\Fibbage2' 
+        id: '\\The Jackbox Party Pack\\games\\WordSpud' 
     },
     lieswatter: {
         key:"lieswatter",
@@ -73,7 +73,16 @@ export const GameIds = Object.freeze({
         key:"bidiots",
         pack:2,
         name: "bidiots",
-        id: '\\The Jackbox Party Pack 2\\games\\FakinIt'
+        id: '\\The Jackbox Party Pack 2\\games\\Auction',
+        content:{
+            fastPrompts:[
+                {   
+                    key:'name',
+                    name:'Fast Edit Prompts',
+                    path:'\\content\\EarwaxPrompts.jet'
+                }
+            ],
+        }
     },
     bombcorp: {
         key:"bombcorp",

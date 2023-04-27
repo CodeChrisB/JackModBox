@@ -25,7 +25,8 @@ div.overflow-y-hidden.overflow-x-hidden
                 disabled
               ) 
             div(v-if="EditorMode.CustomEditor === editorMode")
-              v-divider   
+              v-divider 
+              span {{ props }}
               div(v-for="(prop,index) in props")
                 CustomCheckbox(:label="prop" @update="setFilter(prop,index,$event)")
   Dialog
@@ -63,25 +64,25 @@ div.overflow-y-hidden.overflow-x-hidden
 
 </template>
 <script>
-import { EditorMode } from '@/assets/data/Editor';
-import AudioPromptEditor from './AudioPromptEditor.vue';
-import CustomCheckbox from '@/components/Fields/CustomCheckbox.vue';
-import CustomEditor from './CustomEditor.vue';
-import CustomPath from '@/components/CustomPath.vue';
-import Dialog from '@/components/CustomDialog.vue';
-import FastPromptEditor from './FastPromptEditor.vue';
-import MonacoEditor from 'monaco-editor-vue';
-import MonacoEditorWrapper from './MonacoEditorWrapper.vue';
-import SWFEditor from './SWFEditor.vue';
-import { Code } from '@/assets/data/BusCode';
+import { EditorMode } from "@/assets/data/Editor";
+import AudioPromptEditor from "./AudioPromptEditor.vue";
+import CustomCheckbox from "@/components/Fields/CustomCheckbox.vue";
+import CustomEditor from "./CustomEditor.vue";
+import CustomPath from "@/components/CustomPath.vue";
+import Dialog from "@/components/CustomDialog.vue";
+import FastPromptEditor from "./FastPromptEditor.vue";
+import MonacoEditor from "monaco-editor-vue";
+import MonacoEditorWrapper from "./MonacoEditorWrapper.vue";
+import SWFEditor from "./SWFEditor.vue";
+import { Code } from "@/assets/data/BusCode";
 
 export default {
   name: "App",
-  components: { 
+  components: {
     AudioPromptEditor,
-    CustomCheckbox, 
-    CustomEditor, 
-    CustomPath, 
+    CustomCheckbox,
+    CustomEditor,
+    CustomPath,
     Dialog,
     FastPromptEditor,
     MonacoEditor,
@@ -91,14 +92,14 @@ export default {
   data() {
     return {
       //Editor
-      editorMode:-1,
+      editorMode: -1,
       //Info About File
-      fileName:'',
-      fileContent: '',
+      fileName: "",
+      fileContent: "",
       jsonContent: {},
 
-      updatedFileContent:'',
-
+      updatedFileContent: "",
+      nodeIdCounter: 0,
       //Check if needed after rework
       isDirty: false,
       isCustomEditor: true,
@@ -106,41 +107,41 @@ export default {
       showModded: true,
       customEditorValue: [],
       props: [],
-      searchInput: '',
+      searchInput: "",
       filter: [],
     };
   },
-  beforeCreate(){
-    this.EditorMode = EditorMode
+  beforeCreate() {
+    this.EditorMode = EditorMode;
   },
-  async  created() {
+  async created() {
     /*
     Read the file into global variable
     find out which mode it is
     calculate the rights props for the choosen editor
     */
 
-    this.$broadcast(Code.SetToggleSideView,false)
+    this.$broadcast(Code.SetToggleSideView, false);
 
-    if(this.$route.params.key){
+    if (this.$route.params.key) {
       this.key = this.$route.params.key;
-      this.fileName = this.key.split('\\').slice(-1).join('');
+      this.fileName = this.key.split("\\").slice(-1).join("");
     }
-    this.editorMode = this.$route.params.editor
-    this.editorValues = this.$route.params.editorValues
-    this.setIconDrawer()
-    let self=this
-    this.$listen(Code.EditorFormatCode,()=>self.cleanJson())
+    this.editorMode = this.$route.params.editor;
+    this.editorValues = this.$route.params.editorValues;
+    this.setIconDrawer();
+    let self = this;
+    this.$listen(Code.EditorFormatCode, () => self.cleanJson());
 
     //Editors that handle load and save action itself due to complications
-    this.atomicEditor = [EditorMode.SWFEditor,EditorMode.AudioPromptEditor].includes(this.editorMode) 
-    if(this.atomicEditor) return
-    await this.loadFile()
-
-
+    this.atomicEditor = [
+      EditorMode.SWFEditor,
+      EditorMode.AudioPromptEditor,
+    ].includes(this.editorMode);
+    if (this.atomicEditor) return;
+    await this.loadFile();
 
     //todo make the top bar own component
-
   },
   async mounted() {
     document.addEventListener("keydown", this.doSave);
@@ -148,107 +149,140 @@ export default {
   beforeDestroy() {
     document.removeEventListener("keydown", this.doSave);
   },
-  computed:{
-    genContent(){
-      let base = JSON.parse(this.fileContent)
-      base.content = this.customEditorValue
-      return  JSON.stringify(base, null, 2)
+  computed: {
+    genContent() {
+      let base = JSON.parse(this.fileContent);
+      base.content = this.customEditorValue;
+      return JSON.stringify(base, null, 2);
     },
   },
   methods: {
-    backToFileviewer(){
-      this.$router.pass('fileviewer',{key:this.key.split('\\').slice(0,-1).join('\\')})
-      this.$broadcast(Code.SetToggleSideView,true)
-    },
-    cleanJson(){
-      try{
-        this.fileContent = JSON.stringify(JSON.parse(this.fileContent),null,2)
-      }catch(ex){
+    getAllKeys(jsonData) {
+      const keys = new Set();
 
+      function traverse(obj, parentKey) {
+        if (typeof obj !== "object" || obj === null) {
+          return;
+        }
+
+        for (const key in obj) {
+          if (Object.hasOwnProperty.call(obj, key)) {
+            const currentKey = Array.isArray(obj) ? parentKey : key;
+            keys.add(currentKey);
+            traverse(obj[key], currentKey);
+          }
+        }
       }
+
+      traverse(jsonData, "");
+
+      return Array.from(keys);
     },
-    editorMounted(value){
-      this.editor = value
+    backToFileviewer() {
+      this.$router.pass("fileviewer", {
+        key: this.key.split("\\").slice(0, -1).join("\\"),
+      });
+      this.$broadcast(Code.SetToggleSideView, true);
+    },
+    cleanJson() {
+      try {
+        this.fileContent = JSON.stringify(
+          JSON.parse(this.fileContent),
+          null,
+          2
+        );
+      } catch (ex) {}
+    },
+    editorMounted(value) {
+      this.editor = value;
     },
     loadFile() {
-      const rawRead = window.file.fs.readFileSync(this.key)
+      const rawRead = window.file.fs.readFileSync(this.key);
       this.fileContent = new TextDecoder().decode(rawRead);
       //todo show error that the file is malformatted
-      try{
+      try {
         this.jsonContent = JSON.parse(this.fileContent);
+        console.log("yo", this.jsonContent);
         if (this.jsonContent && this.jsonContent.content) {
-          this.props = Object.keys(this.jsonContent.content[0]);
+          this.props = this.getAllKeys(this.jsonContent.content[0]);
         }
-      }catch(ex){
-        this.jsonContent = null
+      } catch (ex) {
+        this.jsonContent = {};
       }
-
     },
-    setEditor(mode){
-      switch(mode){
+    setEditor(mode) {
+      switch (mode) {
         case EditorMode.MonacoEditor:
-          break
+          break;
         case EditorMode.CustomEditor:
-          this.editorMode = mode
-          break
+          this.editorMode = mode;
+          break;
       }
     },
     onChange(value) {
-      this.isDirty=true
+      this.isDirty = true;
     },
-    onCustomEditorChanged(val){
-      this.isDirty=true
-      this.customEditorValue=val
-    },  
+    onCustomEditorChanged(val) {
+      this.isDirty = true;
+      this.customEditorValue = val;
+    },
     doSave(e) {
       //Todo rework the save system there are to many save methods here
       if (!(e.keyCode === 83 && e.ctrlKey)) {
         return;
       }
 
-      this.onSave()
-    }, 
-    onSaveMonacoEditor(content){
-      this.updatedFileContent = content
-      this.isDirty =true
-    },  
-    onSave(){
-      //WIP 
-      const resetDirty = (err)=> {if(!err) this.isDirty = false}
-      switch(this.editorMode){
+      this.onSave();
+    },
+    onSaveMonacoEditor(content) {
+      this.updatedFileContent = content;
+      this.isDirty = true;
+    },
+    onSave() {
+      //WIP
+      const resetDirty = (err) => {
+        if (!err) this.isDirty = false;
+      };
+      switch (this.editorMode) {
         case EditorMode.MonacoEditor:
-          window.file.fs.writeFile(this.key,this.updatedFileContent,err=>resetDirty(err))
-          break
+          window.file.fs.writeFile(this.key, this.updatedFileContent, (err) =>
+            resetDirty(err)
+          );
+          break;
         case EditorMode.CustomEditor:
         case EditorMode.FastPromptEditor:
-          window.file.fs.writeFile(this.key,this.genContent,err=>resetDirty(err))
-          break
+          window.file.fs.writeFile(this.key, this.genContent, (err) =>
+            resetDirty(err)
+          );
+          break;
       }
-    },        
-    setFilter(prop,index,val){
-      this.$set(this.filter,index,{[prop]:val})
     },
-    setIconDrawer(){
-      let icons = []
+    setFilter(prop, index, val) {
+      this.$set(this.filter, index, { [prop]: val });
+    },
+    setIconDrawer() {
+      let icons = [];
 
       icons.push({
-        icon:'mdi-format-color-highlight',
+        icon: "mdi-format-color-highlight",
         callee: Code.EditorFormatCode,
-        hint:'Format the text'
-      })
-      
-      this.$broadcast(Code.SetIconDrawerContent,icons)
-    }
-  }
+        hint: "Format the text",
+      });
+
+      this.$broadcast(Code.SetIconDrawerContent, icons);
+    },
+  },
 };
 </script>
 
 <style scoped>
-
 .me {
-    width:100%; height:100%; max-height:100% !important;
-    margin:0; padding:0;
-    overflow:hidden;
+  width: 100%;
+  height: 100%;
+  max-height: 100% !important;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 .parent {
   display: flex;

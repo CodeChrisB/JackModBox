@@ -9,7 +9,7 @@ v-card.mt-1(
 
     v-col
       v-text-field(
-        v-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string')"
+        v-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string') && canShow(key)"
         v-model="templateJson[key]"
         :label="firstLetterUp(key)"
         @input="onUpdate($event,key)"
@@ -20,6 +20,7 @@ v-card.mt-1(
         v-else-if="Array.isArray(templateJson[key])"
         :obj="templateJson[key]"
         :obj-key="key"
+        :filter="internalFilter"
         @update="onUpdate($event,key)"
       )
       div(
