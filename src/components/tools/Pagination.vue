@@ -6,7 +6,7 @@ v-row(style="min-width:100%").py-3
     span {{ pageText }} 
     v-btn(:disabled="index === totalPages-1 || totalPages ===1" icon @click="page(1)")
       | >
-  v-select.mt-5(
+  v-select.mt-6(
     v-model="pageSize"
     dense
     label="PageSize"

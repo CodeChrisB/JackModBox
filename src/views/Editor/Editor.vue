@@ -18,6 +18,7 @@ div.overflow-y-hidden.overflow-x-hidden
               v-icon mdi-magnify
           v-card(style="max-width:30vw;min-width:30vw;overflow:hidden")
             v-row.pa-5
+              span {{ filter }}
               v-text-field(
                 v-model="searchInput" 
                 append-icon="mdi-magnify" 
@@ -26,9 +27,11 @@ div.overflow-y-hidden.overflow-x-hidden
               ) 
             div(v-if="EditorMode.CustomEditor === editorMode")
               v-divider 
-              span {{ props }}
               div(v-for="(prop,index) in props")
-                CustomCheckbox(:label="prop" @update="setFilter(prop,index,$event)")
+                CustomCheckbox(
+                  :val="filter[index][prop]"
+                  :label="prop" @update="setFilter(prop,index,$event)"
+                )
   Dialog
   v-row(v-if="EditorMode.MonacoEditor === editorMode").parent
     div.editor.overflow-y-hidden
@@ -93,6 +96,7 @@ export default {
     return {
       //Editor
       editorMode: -1,
+      atomicEditor:false,
       //Info About File
       fileName: "",
       fileContent: "",
@@ -132,6 +136,11 @@ export default {
     this.setIconDrawer();
     let self = this;
     this.$listen(Code.EditorFormatCode, () => self.cleanJson());
+
+
+
+    //set filter from tree data
+    this.setCustomFilter(this.$route.params.editorValues.ccstate)
 
     //Editors that handle load and save action itself due to complications
     this.atomicEditor = [
@@ -202,7 +211,6 @@ export default {
       //todo show error that the file is malformatted
       try {
         this.jsonContent = JSON.parse(this.fileContent);
-        console.log("yo", this.jsonContent);
         if (this.jsonContent && this.jsonContent.content) {
           this.props = this.getAllKeys(this.jsonContent.content[0]);
         }
@@ -256,6 +264,9 @@ export default {
           );
           break;
       }
+    },
+    setCustomFilter(data){
+      this.$set(this, 'filter',data);
     },
     setFilter(prop, index, val) {
       this.$set(this.filter, index, { [prop]: val });

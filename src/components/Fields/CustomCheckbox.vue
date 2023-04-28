@@ -22,6 +22,10 @@ export default {
   props: {
     label:{
       type:String
+    },
+    val:{
+      type: Number,
+      default: () => CCState.OFF
     }
   },
   computed:{
@@ -63,8 +67,22 @@ export default {
     onRightClick(){
       this.innerValue = CCState.OFF
       this.$emit('update',this.innerValue)
+    },
+    CCStateToInnerVal(state){
+      if(CCState.OFF === state) return 0
+      if(CCState.ON === state) return 1
+      if(CCState.IGNORE === state) return 2
+      return null
     }
   },
+  watch:{
+    val:{
+      handler(newVal){
+        this.innerValue = this.CCStateToInnerVal(newVal)?? this.innerValue
+      },
+      immediate:true,
+    }
+  }
 }
 </script>
     

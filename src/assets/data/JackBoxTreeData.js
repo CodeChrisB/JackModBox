@@ -213,7 +213,13 @@ export const GameIds = Object.freeze({
                     editorValues:{
                         noExpansion:true,
                         ccstate:[
-
+                            {a:CCState.OFF},
+                            {examples:CCState.IGNORE},
+                            {text:CCState.OFF},
+                            {type:CCState.IGNORE},
+                            {gene:CCState.IGNORE},
+                            {x:CCState.IGNORE},
+                            {id:CCState.IGNORE},
                         ]
                     }
                 }

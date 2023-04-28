@@ -6,8 +6,6 @@ div
         @update:shownItems="pageContent=$event"
         @update:pages-size="pageSize=$event"
       )
-    v-spacer
-    span.pt-3 {{ pageShowingText }}
     v-col.col-2.pa-0
   v-divider.mb-4
   v-row.yo(style="max-height:80vh;min-width:100%").ma-1.overflow-y-auto
@@ -64,25 +62,6 @@ div
         if (!this.internalFilter) return []
         return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.ON)
           .map(elem => Object.keys(elem)[0])
-      },
-      items() {
-        return this.internalValue.content
-      },
-      totalItems(){
-        return this.items.length
-      },
-      totalPages(){
-        return Math.floor(this.totalItems/this.pageSize)
-      },
-      pageText(){
-        return `${ this.index+1}/${this.totalPages+1}`
-      },
-      pageShowingText(){
-        let max = Math.min((this.index+1)*this.pageSize,this.totalItems)
-        return `Showing Items ${this.index*this.pageSize+1} - ${max}`
-      },
-      pageSizeStates() {
-        return [...this.possiblePageSize, this.totalItems].filter(x => x <= this.totalItems)
       }
     },
     methods: {
@@ -102,8 +81,10 @@ div
     watch: {
       filter: {
         handler(newVal) {
+          console.log('update filter ce',newVal)
           this.internalFilter = newVal
-        }
+        },
+        immediate:true
       },
       searchInput: {
         handler(newVal) {

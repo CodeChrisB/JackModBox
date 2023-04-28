@@ -195,7 +195,6 @@ export default {
         this.toFileViewer(this.game.id,folder.path)
       } else {
         //monaco editor
-        console.log(folder)
         this.$router.pass('Editor', { 
           key: [this.gamePath, folder.path].join('\\'),
           editor: folder.editorMode,

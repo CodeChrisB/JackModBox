@@ -86,7 +86,6 @@ export default {
   watch:{
     filter: {
       handler(newVal) {
-        console.log('arrayfield',this.internalFilter)
         this.internalFilter = newVal
       },
       immediate: true
