@@ -140,7 +140,7 @@ export default {
 
 
     //set filter from tree data
-    this.setCustomFilter(this.$route.params.editorValues.ccstate)
+    this.setCustomFilter(this.$route.params?.editorValues?.ccstate)
 
     //Editors that handle load and save action itself due to complications
     this.atomicEditor = [
