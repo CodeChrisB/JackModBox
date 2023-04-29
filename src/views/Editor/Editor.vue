@@ -18,7 +18,6 @@ div.overflow-y-hidden.overflow-x-hidden
               v-icon mdi-magnify
           v-card(style="max-width:30vw;min-width:30vw;overflow:hidden")
             v-row.pa-5
-              span {{ filter }}
               v-text-field(
                 v-model="searchInput" 
                 append-icon="mdi-magnify" 
@@ -29,8 +28,9 @@ div.overflow-y-hidden.overflow-x-hidden
               v-divider 
               div(v-for="(prop,index) in props")
                 CustomCheckbox(
-                  :val="filter[index][prop]"
-                  :label="prop" @update="setFilter(prop,index,$event)"
+                  :val="getCCVal(index,prop)"
+                  :label="prop"
+                  @update="setFilter(prop,index,$event)"
                 )
   Dialog
   v-row(v-if="EditorMode.MonacoEditor === editorMode").parent
@@ -140,6 +140,7 @@ export default {
 
 
     //set filter from tree data
+
     this.setCustomFilter(this.$route.params?.editorValues?.ccstate)
 
     //Editors that handle load and save action itself due to complications
@@ -205,6 +206,10 @@ export default {
     editorMounted(value) {
       this.editor = value;
     },
+    getCCVal(index,prop){
+      if(this.filter && this.filter[index] && this.filter[index][prop])  return this.filter[index][prop]
+      return null
+    },
     loadFile() {
       const rawRead = window.file.fs.readFileSync(this.key);
       this.fileContent = new TextDecoder().decode(rawRead);
@@ -266,9 +271,11 @@ export default {
       }
     },
     setCustomFilter(data){
+      if(!data) return
       this.$set(this, 'filter',data);
     },
     setFilter(prop, index, val) {
+      console.log('setFilter',this.filter)
       this.$set(this.filter, index, { [prop]: val });
     },
     setIconDrawer() {

@@ -8,8 +8,15 @@ v-card.mt-1(
   )
 
     v-col
+      v-text-field(
+        v-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string') && canShow(key) && textAreaRows === 1"
+        v-model="templateJson[key]"
+        :label="firstLetterUp(key)"
+        @input="onUpdate($event,key)"
+        hide-details
+      )
       v-textarea(
-        v-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string') && canShow(key)"
+        v-else-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string') && canShow(key)"
         v-model="templateJson[key]"
         :label="firstLetterUp(key)"
         @input="onUpdate($event,key)"
@@ -21,6 +28,13 @@ v-card.mt-1(
         :obj="templateJson[key]"
         :obj-key="key"
         :filter="internalFilter"
+        @update="onUpdate($event,key)"
+      )
+      v-checkbox(
+        v-else-if="typeof templateJson[key] === 'boolean'"
+        v-model="templateJson[key]"
+        :label="key"
+        hide-details
         @update="onUpdate($event,key)"
       )
       div(
@@ -50,14 +64,13 @@ v-card.mt-1(
             :filter="internalFilter"
             :searchInput="internalSearch"
           )
-
-  v-checkbox(
-    v-if="internalShowModded && showModded"
-    v-model="templateJson['modded']"
-    label="Already Modded"
-    hide-details
-    @change="onUpdate($event,'modded')"
-  )
+  div(v-if="internalShowModded && showModded")
+    v-checkbox(
+      v-model="templateJson['modded']"
+      label="Already Modded"
+      hide-details
+      @change="onUpdate($event,'modded')"
+    )
   
 </template>
   
@@ -192,7 +205,7 @@ export default {
     },
     showModded:{
       hanlder(newVal){
-        this.internalShowModded = !!newVal
+        this.internalShowModded = newVal
       },
       immediate:true
     }
@@ -207,5 +220,9 @@ export default {
 
 .col {
   padding: 0px;
+}
+
+.view::-webkit-scrollbar {
+  display: none;
 }
 </style>
