@@ -8,13 +8,13 @@ v-card.mt-1(
   )
 
     v-col
-      v-text-field(
+      v-textarea(
         v-if="(typeof templateJson[key] === 'number' || typeof templateJson[key] === 'string') && canShow(key)"
         v-model="templateJson[key]"
         :label="firstLetterUp(key)"
         @input="onUpdate($event,key)"
         hide-details
-        rows=2
+        :rows="textAreaRows"
       )
       array-field(
         v-else-if="Array.isArray(templateJson[key])"
@@ -51,9 +51,8 @@ v-card.mt-1(
             :searchInput="internalSearch"
           )
 
-  v-spacer
   v-checkbox(
-    v-if="showModded"
+    v-if="internalShowModded && showModded"
     v-model="templateJson['modded']"
     label="Already Modded"
     hide-details
@@ -65,6 +64,7 @@ v-card.mt-1(
 <script>
 import { CCState } from '@/assets/data/CustomCheckBoxData'
 import ArrayField from './ArrayField.vue'
+import { Code } from '@/assets/data/BusCode'
 export default {
   name: 'CustomField',
   components: {
@@ -94,7 +94,7 @@ export default {
     showModded: {
       type: Boolean,
       default: false
-    }
+    },
   },
   data() {
     return {
@@ -102,6 +102,8 @@ export default {
       internalFilter: [],
       internalSearch: '',
       internalIndex: -1,
+      internalShowModded:true,
+      textarea:false,
     }
   },
   created() {
@@ -120,8 +122,9 @@ export default {
     *creates the input fields for the elements
     *add/delete button's for entries
     */
-
-
+    let self=this
+    this.$listen(Code.EditorToggleTextArea,() => self.textarea = !self.textarea)
+    this.$listen(Code.EditorShowAlreadyModded,() => self.internalShowModded = !self.internalShowModded)
   },
   computed: {
     filterTriesToSearch() {
@@ -133,6 +136,9 @@ export default {
       return this.internalFilter.filter(elem => elem[Object.keys(elem)[0]] === CCState.IGNORE)
         .map(elem => Object.keys(elem)[0])
     },
+    textAreaRows(){
+      return this.textarea ? 4: 1
+    }
   },
   methods: {
     canShow(key) {
@@ -184,7 +190,12 @@ export default {
       },
       deep: true
     },
-
+    showModded:{
+      hanlder(newVal){
+        this.internalShowModded = !!newVal
+      },
+      immediate:true
+    }
   }
 }
 </script>

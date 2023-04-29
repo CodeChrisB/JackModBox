@@ -10,6 +10,8 @@ export const Code = Object.freeze({
   SetCustomPathBackTo:'3001',
   SetIconDrawerContent:'3002',
   //Editor
-  EditorFormatCode:'4000'
+  EditorFormatCode:'4000',
+  EditorToggleTextArea:'4001',
+  EditorShowAlreadyModded:'4002'
 
 })

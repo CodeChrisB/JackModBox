@@ -12,10 +12,11 @@ div
       CustomField.container(
         v-for="(obj,i) in pageContent"
         :obj="obj"  
+        show-modded
         :index="getIndex(i)"
         :filter="internalFilter"
         :searchInput="internalSearch"
-        show-modded
+        :textarea="useTextArea"
         v-on:update="onUpdate"
       )
       div(style="min-height:70vh")
@@ -28,6 +29,7 @@ div
   import { CCState } from '@/assets/data/CustomCheckBoxData'
   import CustomField from '@/components/Fields/CustomField.vue'
   import Pagination from '@/components/tools/Pagination.vue'
+import { Code } from '@/assets/data/BusCode'
   export default {
     name: 'CustomEditor',
     components: {
@@ -50,11 +52,11 @@ div
         internalValue: [],
         internalFilter: [],
         internalSearch:'',
-        //pagination
-        pageSize:10,
-        possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
         index:0,
-        pageContent:[]
+        pageSize:10,
+        pageContent:[],
+        possiblePageSize: [4, 10, 25, 50, 100, 200, 500, 1000, 2000, 4000],
+        useTextArea:false,
       }
     },
     computed:{
@@ -64,6 +66,9 @@ div
           .map(elem => Object.keys(elem)[0])
       }
     },
+    created(){
+      this.setIconDrawer()
+    },    
     methods: {
       getIndex(i){
         return this.pageSize*this.index+i
@@ -76,12 +81,33 @@ div
         this.index +=indexChange
         if(this.index<0) this.index=this.totalPages;
         else if(this.index>this.totalPages)this.index=0
+      },
+      setIconDrawer(){
+        let icons= [
+          {
+          icon: "mdi-card-text-outline",
+          callee: Code.EditorToggleTextArea,
+          hint: "Format the text",
+          },
+          {
+            icon:"mdi-information-box-outline",
+            callee: Code.EditorShowAlreadyModded
+          }
+      ];
+
+      this.$broadcast(Code.SetIconDrawerContent, icons);
+
+      let self=this
+      this.$listen(Code.EditorToggleTextArea,() => self.toggleTextArea())
+      },  
+      toggleTextArea(){
+        this.useTextArea=!this.useTextArea
+        this.$forceUpdate()
       }
     },
     watch: {
       filter: {
         handler(newVal) {
-          console.log('update filter ce',newVal)
           this.internalFilter = newVal
         },
         immediate:true
