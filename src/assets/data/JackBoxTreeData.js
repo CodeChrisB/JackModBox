@@ -222,6 +222,40 @@ export const GameIds = Object.freeze({
                             {id:CCState.IGNORE},
                         ]
                     }
+                },
+                {
+                    name:'Prompts Round 2',
+                    path:"content\\RapBattleStandardPromptRound2.jet",
+                    editorMode: EditorMode.CustomEditor,
+                    editorValues:{
+                        noExpansion:true,
+                        ccstate:[
+                            {a:CCState.OFF},
+                            {examples:CCState.IGNORE},
+                            {text:CCState.OFF},
+                            {type:CCState.IGNORE},
+                            {gene:CCState.IGNORE},
+                            {x:CCState.IGNORE},
+                            {id:CCState.IGNORE},
+                        ]
+                    }
+                },
+                {
+                    name:'Prompts Round 3',
+                    path:"content\\RapBattleStandardPromptRound3.jet",
+                    editorMode: EditorMode.CustomEditor,
+                    editorValues:{
+                        noExpansion:true,
+                        ccstate:[
+                            {a:CCState.OFF},
+                            {examples:CCState.IGNORE},
+                            {text:CCState.OFF},
+                            {type:CCState.IGNORE},
+                            {gene:CCState.IGNORE},
+                            {x:CCState.IGNORE},
+                            {id:CCState.IGNORE},
+                        ]
+                    }
                 }
             ]   
         }
@@ -422,6 +456,37 @@ export const GameIds = Object.freeze({
         pack:9,
         name: 'Quixort',
         id: '\\The Jackbox Party Pack 9\\games\\Lineup'
+    },
+    //Pack 10
+    awshirt2: {
+        key:"awshirt2",
+        pack:10,
+        name: 'Tee KO 2',
+        id: '\\The Jackbox Party Pack 10\\games\\AwShirt2'
+    },
+    dodoremi: {
+        key:"dodoremi",
+        pack:10,
+        name: 'Do Do Remi',
+        id: '\\The Jackbox Party Pack 10\\games\\NopusOpus'
+    },
+    hypno: {
+        key:"hypno",
+        pack:10,
+        name: 'Hypnotorious',
+        id: '\\The Jackbox Party Pack 10\\games\\Hypnotorious'
+    },
+    fixyText: {
+        key:"riskyText",
+        pack:10,
+        name: 'Fixy Text',
+        id: '\\The Jackbox Party Pack 10\\games\\Strangers'
+    },
+    timetriva: {
+        key:"timetriva",
+        pack:10,
+        name: 'Time Jinx',
+        id: '\\The Jackbox Party Pack 10\\games\\TimeTrivia'
     }
 
 })
@@ -489,6 +554,13 @@ export const JackBoxTreeData = [
         genChildNode(GameIds.roomerang),
         genChildNode(GameIds.quixort)
     ]),
+    genNode("Pack 10", 10, [
+        genChildNode(GameIds.awshirt2),
+        genChildNode(GameIds.dodoremi),
+        genChildNode(GameIds.hypno),
+        genChildNode(GameIds.fixyText),
+        genChildNode(GameIds.timetriva)
+    ]),
 ]
 
 export const AllGames = [genNode('All Games',99,[    
@@ -536,7 +608,12 @@ export const AllGames = [genNode('All Games',99,[
     genChildNode(GameIds.wordspud),
     genChildNode(GameIds.ydkj2015),
     genChildNode(GameIds.ydkj2018),
-    genChildNode(GameIds.zeepledoome)]
+    genChildNode(GameIds.zeepledoome),
+    genChildNode(GameIds.awshirt2),
+    genChildNode(GameIds.dodoremi),
+    genChildNode(GameIds.fixyText),
+    genChildNode(GameIds.hypno),
+    genChildNode(GameIds.timetriva)]
 )]
 
 
