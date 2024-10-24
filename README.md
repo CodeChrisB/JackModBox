@@ -15,7 +15,7 @@ JackModBox is an modding tool for following Jackbox Games
 | Jackbox Party Pack 7  | ✔️  |
 | Jackbox Party Pack 8  | ✔️  |
 | Jackbox Party Pack 9  | ✔️  |
-| Jackbox Party Pack 10 | 1 week after release |
+| Jackbox Party Pack 10 | probably never? |
 
 ### Features
 
